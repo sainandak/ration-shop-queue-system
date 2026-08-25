@@ -73,7 +73,7 @@ let queueState = loadJson(QUEUE_FILE, {
   history: []
 });
 let settings = loadJson(SETTINGS_FILE, {
-  shopName: 'Sri Lakshmi Fair Price Shop',
+  shopName: 'Fair Price Shop (#03)',
   village: 'Gram Panchayat',
   adminPin: '1234',
   autoAnnounceOnScan: true,

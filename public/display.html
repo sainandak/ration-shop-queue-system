@@ -1,9 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="te">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Live Display - Ration Token System</title>
+  <title>Live Display - Fair Price Shop (#03)</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
   <script src="/socket.io/socket.io.js"></script>
   <style>
     :root {
@@ -236,7 +240,7 @@
   <header>
     <div class="shop-header">
       <span style="font-size: 1.5rem;">🌾</span>
-      <div class="shop-title" id="shopNameDisplay">Sri Lakshmi Fair Price Shop</div>
+      <div class="shop-title" id="shopNameDisplay">Fair Price Shop (#03)</div>
     </div>
     <div class="header-actions">
       <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
@@ -350,9 +354,21 @@
       }
     }
 
+    let wakeLock = null;
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.log('Wake Lock note:', err.message);
+      }
+    }
+
     function enableAudio() {
       audioUnlocked = true;
       playChime();
+      requestWakeLock();
       
       if (speechSynth) {
         const dummy = new SpeechSynthesisUtterance('Audio enabled');

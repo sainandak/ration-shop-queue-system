@@ -1,0 +1,15 @@
+﻿{
+  "name": "Fair Price Shop (#03) - Ration Queue",
+  "short_name": "RationQueue",
+  "start_url": "/counter",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e40af",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
