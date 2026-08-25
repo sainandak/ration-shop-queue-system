@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const http = require('http');
 const https = require('https');
 const { Server } = require('socket.io');
@@ -97,28 +97,36 @@ function getLocalIpAddresses() {
 // Multer for Excel file upload
 const upload = multer({ dest: UPLOADS_DIR });
 
+app.enable('trust proxy');
+
 // ==========================================
 // API ROUTES
 // ==========================================
 
-// Get network information & pairing QR
+// Get network information & pairing QR (Supports both Local Wi-Fi & Live Render Domain)
 app.get('/api/network-info', async (req, res) => {
-  const port = 3000;
+  const host = req.get('host') || 'localhost:3000';
+  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+  const isCloud = !host.includes('localhost') && !host.includes('127.0.0.1') && !host.startsWith('192.168.') && !host.startsWith('10.');
+  
+  const liveUrl = `${proto}://${host}`;
+  const port = process.env.PORT || 3000;
   const httpsPort = 3443;
   const ips = getLocalIpAddresses();
   const primaryIp = ips[0] || 'localhost';
-  const baseUrl = `http://${primaryIp}:${port}`;
-  const httpsBaseUrl = `https://${primaryIp}:${httpsPort}`;
+
+  const baseUrl = isCloud ? liveUrl : `http://${primaryIp}:${port}`;
+  const httpsBaseUrl = isCloud ? liveUrl : `https://${primaryIp}:${httpsPort}`;
 
   try {
-    // For mobile phone camera, prefer HTTPS link
     const counterQr = await QRCode.toDataURL(`${httpsBaseUrl}/counter`);
     const displayQr = await QRCode.toDataURL(`${baseUrl}/display`);
-    const homeQr = await QRCode.toDataURL(httpsBaseUrl);
+    const homeQr = await QRCode.toDataURL(baseUrl);
 
     res.json({
       port,
-      httpsPort,
+      isCloud,
+      liveUrl,
       ips,
       primaryIp,
       baseUrl,
@@ -126,8 +134,7 @@ app.get('/api/network-info', async (req, res) => {
       urls: {
         home: baseUrl,
         homeHttps: httpsBaseUrl,
-        counter: `${baseUrl}/counter`,
-        counterHttps: `${httpsBaseUrl}/counter`,
+        counter: `${httpsBaseUrl}/counter`,
         display: `${baseUrl}/display`,
         admin: `${baseUrl}/admin`
       },

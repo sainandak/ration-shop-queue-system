@@ -449,7 +449,9 @@
 
       cameraStream = stream;
       video.srcObject = stream;
-      video.setAttribute('playsinline', true);
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.muted = true;
       await video.play();
 
       isCameraRunning = true;
@@ -461,48 +463,64 @@
       document.getElementById('toggleCameraBtn').classList.replace('btn-primary', 'btn-danger');
       statusEl.innerHTML = '🟢 <strong>Camera active & scanning!</strong> Align QR inside the green square.';
 
-      // Enumerate cameras for switching
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        availableCameras = devices.filter(d => d.kind === 'videoinput');
-        if (availableCameras.length > 1) {
-          const select = document.getElementById('cameraSelect');
-          select.innerHTML = availableCameras.map((cam, idx) => `
-            <option value="${cam.deviceId}">${cam.label || ('Camera ' + (idx + 1))}</option>
-          `).join('');
-          document.getElementById('cameraSelectWrapper').style.display = 'block';
+      // Initialize hardware BarcodeDetector if available on device
+      let nativeBarcodeDetector = null;
+      if ('BarcodeDetector' in window) {
+        try {
+          nativeBarcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        } catch (e) {}
+      }
+
+      function handleDecodedCode(rawText) {
+        const now = Date.now();
+        if (rawText !== lastScannedCode || (now - lastScanTime) > 2500) {
+          lastScannedCode = rawText;
+          lastScanTime = now;
+
+          // Visual flash reticle
+          reticle.style.borderColor = '#eab308';
+          setTimeout(() => { reticle.style.borderColor = '#22c55e'; }, 400);
+
+          submitRationScan(rawText);
         }
-      } catch (e) {}
+      }
 
       // Start continuous frame-by-frame decoding loop
-      function scanFrame() {
+      async function scanFrame() {
         if (!isCameraRunning) return;
 
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+          // 1. Try Hardware-Accelerated BarcodeDetector (Chrome Mobile)
+          if (nativeBarcodeDetector) {
+            try {
+              const barcodes = await nativeBarcodeDetector.detect(video);
+              if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                handleDecodedCode(barcodes[0].rawValue);
+                scanAnimationId = requestAnimationFrame(scanFrame);
+                return;
+              }
+            } catch (e) {}
+          }
 
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          
-          if (window.jsQR) {
-            const code = jsQR(imageData.data, imageData.width, imageData.height, {
-              inversionAttempts: 'dontInvert'
-            });
+          // 2. jsQR Fast Engine with both normal & inverted contrast
+          try {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            if (code && code.data) {
-              const now = Date.now();
-              if (code.data !== lastScannedCode || (now - lastScanTime) > 2500) {
-                lastScannedCode = code.data;
-                lastScanTime = now;
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            if (window.jsQR) {
+              const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'attemptBoth'
+              });
 
-                // Visual flash reticle
-                reticle.style.borderColor = '#eab308';
-                setTimeout(() => { reticle.style.borderColor = '#22c55e'; }, 400);
-
-                submitRationScan(code.data);
+              if (code && code.data) {
+                handleDecodedCode(code.data);
               }
             }
+          } catch (frameErr) {
+            console.error('Frame decode error:', frameErr);
           }
         }
 
