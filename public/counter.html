@@ -234,7 +234,49 @@
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <!-- Enhanced Toast Notification Container -->
+  <div id="toast" class="toast" style="z-index: 9999; font-size: 0.95rem; font-weight: 600; padding: 0.85rem 1.25rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);"></div>
+
+  <!-- Camera Permission Help Modal -->
+  <div id="cameraPermissionModal" class="modal-overlay" style="display: none; z-index: 9999;">
+    <div class="modal" style="max-width: 460px; text-align: left;">
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <div style="font-size: 3rem;">📷 ⚠️</div>
+        <h3 style="font-size: 1.25rem; color: #b91c1c; margin-top: 0.25rem;">Camera Permission Required</h3>
+        <p style="font-size: 0.9rem; color: var(--gray-600); margin-top: 4px;">
+          Your browser blocked camera access. Please follow these quick steps:
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--gray-200); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+        <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.35rem;">📱 On iPhone (Safari):</div>
+        <ol style="font-size: 0.85rem; color: var(--gray-700); padding-left: 1.25rem; margin: 0; line-height: 1.5;">
+          <li>Tap the <strong>'AA'</strong> or <strong>page settings</strong> icon in the Safari bottom bar.</li>
+          <li>Tap <strong>'Website Settings'</strong>.</li>
+          <li>Set <strong>Camera</strong> to <strong>'Allow'</strong>.</li>
+          <li>Tap <strong>'Done'</strong> and refresh the page!</li>
+        </ol>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--gray-200); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.35rem;">🤖 On Android (Chrome):</div>
+        <ol style="font-size: 0.85rem; color: var(--gray-700); padding-left: 1.25rem; margin: 0; line-height: 1.5;">
+          <li>Tap the <strong>🔒 Lock icon</strong> or <strong>tune icon</strong> in the URL bar.</li>
+          <li>Tap <strong>'Permissions'</strong> $\rightarrow$ <strong>'Camera'</strong> $\rightarrow$ <strong>Allow</strong>.</li>
+          <li>Refresh the page!</li>
+        </ol>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <button class="btn btn-success btn-lg" onclick="document.getElementById('qrFileInput').click(); closeModal('cameraPermissionModal');">
+          📸 Snap Photo with Native Camera App
+        </button>
+        <button class="btn btn-outline" onclick="closeModal('cameraPermissionModal'); toggleCamera();">
+          🔄 Try Opening Camera Again
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const socket = io();
@@ -264,18 +306,48 @@
       }
     }
 
-    function showToast(msg, isError = false) {
+    let toastTimer = null;
+    function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.style.background = isError ? '#b91c1c' : '#15803d';
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+      clearTimeout(toastTimer);
+
+      let bg = '#2563eb';
+      let icon = 'ℹ️';
+      if (type === 'success' || type === true) {
+        bg = '#16a34a';
+        icon = '✅';
+      } else if (type === 'error' || type === false) {
+        bg = '#dc2626';
+        icon = '❌';
+      } else if (type === 'warning') {
+        bg = '#d97706';
+        icon = '⚠️';
+      }
+
+      toast.innerHTML = `<span style="font-size: 1.15rem; margin-right: 6px;">${icon}</span> ${msg}`;
+      toast.style.background = bg;
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      toast.style.opacity = '1';
+      
+      toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+      }, 4000);
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
     }
 
     // Process scanned ration number
     function submitRationScan(rationNo) {
       if (!rationNo) return;
       
+      showToast('Processing ' + rationNo + '...', 'info');
+
       fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -285,17 +357,21 @@
       .then(data => {
         if (!data.success) {
           playBeep(false);
-          showToast(data.message, true);
+          if (data.isDuplicate) {
+            showToast(data.message, 'warning');
+          } else {
+            showToast(data.message, 'error');
+          }
           return;
         }
 
         playBeep(true);
-        showToast(data.message, false);
+        showToast(data.message, 'success');
         document.getElementById('manualCardInput').value = '';
         document.getElementById('manualCardInput').focus();
       })
       .catch(err => {
-        showToast('Network error: ' + err.message, true);
+        showToast('Network error: ' + err.message, 'error');
       });
     }
 
@@ -398,6 +474,7 @@
     }
 
     async function startCamera(deviceId = null) {
+      const toggleBtn = document.getElementById('toggleCameraBtn');
       const video = document.getElementById('scannerVideo');
       const canvas = document.getElementById('scannerCanvas');
       const ctx = canvas.getContext('2d');
@@ -405,16 +482,20 @@
       const idleOverlay = document.getElementById('cameraIdleOverlay');
       const reticle = document.getElementById('targetReticle');
 
+      toggleBtn.innerText = '⏳ Opening Camera...';
+      statusEl.innerHTML = '⏳ <strong>Requesting camera permission...</strong> Tap "Allow" on your screen.';
+      showToast('Requesting camera permission...', 'info');
+
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toggleBtn.innerText = '▶️ Start Camera';
         statusEl.innerHTML = `
           <span style="color:#b91c1c;">❌ Live camera API blocked by browser over HTTP.</span><br>
           <small style="color:var(--gray-600);">Please use the <strong>"📸 Snap / File"</strong> button or enter Ration # below.</small>
         `;
-        showToast('Camera blocked on HTTP. Use "Snap / File" button or manual entry', true);
+        document.getElementById('cameraPermissionModal').style.display = 'flex';
+        showToast('Camera blocked by browser. Use "Snap / File" button', 'error');
         return;
       }
-
-      statusEl.innerText = '⏳ Requesting camera permission...';
 
       // 1. Try back/environment camera first, then user camera
       const constraintsList = [
@@ -439,29 +520,39 @@
 
       if (!stream) {
         console.error('All camera constraints failed:', lastErr);
+        toggleBtn.innerText = '▶️ Start Camera';
         statusEl.innerHTML = `
-          <span style="color:#b91c1c;">❌ Camera Access Denied: ${lastErr ? (lastErr.name || lastErr.message) : 'Unknown error'}</span><br>
-          <small style="color:var(--gray-600);">Please allow camera permission or tap <strong>"📸 Snap / File"</strong> to take a photo.</small>
+          <span style="color:#b91c1c; font-weight: bold;">❌ Camera Access Denied / Not Allowed</span><br>
+          <small style="color:var(--gray-600);">Follow the on-screen guide or tap <strong>"📸 Snap / File"</strong>.</small>
         `;
-        showToast('Camera permission denied or camera not found', true);
+        document.getElementById('cameraPermissionModal').style.display = 'flex';
+        showToast('Camera permission denied or camera blocked', 'error');
         return;
       }
 
-      cameraStream = stream;
-      video.srcObject = stream;
-      video.setAttribute('playsinline', 'true');
-      video.setAttribute('webkit-playsinline', 'true');
-      video.muted = true;
-      await video.play();
+      try {
+        cameraStream = stream;
+        video.srcObject = stream;
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
+        video.muted = true;
+        await video.play();
 
-      isCameraRunning = true;
-      video.style.display = 'block';
-      idleOverlay.style.display = 'none';
-      reticle.style.display = 'block';
+        isCameraRunning = true;
+        video.style.display = 'block';
+        idleOverlay.style.display = 'none';
+        reticle.style.display = 'block';
 
-      document.getElementById('toggleCameraBtn').innerText = '⏹️ Stop Camera';
-      document.getElementById('toggleCameraBtn').classList.replace('btn-primary', 'btn-danger');
-      statusEl.innerHTML = '🟢 <strong>Camera active & scanning!</strong> Align QR inside the green square.';
+        toggleBtn.innerText = '⏹️ Stop Camera';
+        toggleBtn.classList.replace('btn-primary', 'btn-danger');
+        statusEl.innerHTML = '🟢 <strong>Camera active & scanning!</strong> Align QR inside the green square.';
+        showToast('Camera active! Point at QR code', 'success');
+      } catch (playErr) {
+        console.error('Video play error:', playErr);
+        toggleBtn.innerText = '▶️ Start Camera';
+        showToast('Could not start video stream: ' + playErr.message, 'error');
+        return;
+      }
 
       // Initialize hardware BarcodeDetector if available on device
       let nativeBarcodeDetector = null;
