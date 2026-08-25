@@ -135,69 +135,113 @@
           </div>
         </div>
 
-        <!-- Scanner Card -->
+        <!-- Scanner Card with 4 Fast Entry Modes -->
         <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <h3 style="font-size: 1.15rem;">📷 Camera QR Scanner</h3>
-            <div style="display: flex; gap: 0.4rem;">
-              <button id="toggleCameraBtn" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="toggleCamera()">
-                ▶️ Start Camera
-              </button>
-              <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="document.getElementById('qrFileInput').click()">
-                📸 Snap / File
-              </button>
-              <input type="file" id="qrFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileScan(event)">
-            </div>
+          <!-- Mode Tabs -->
+          <div style="display: flex; gap: 0.35rem; margin-bottom: 1rem; border-bottom: 2px solid var(--gray-200); padding-bottom: 0.5rem; overflow-x: auto;">
+            <button class="tab-btn active" id="btnModeKeypad" onclick="setEntryMode('keypad')">🔢 Keypad (Fastest)</button>
+            <button class="tab-btn" id="btnModeSnap" onclick="setEntryMode('snap')">📸 Snap QR</button>
+            <button class="tab-btn" id="btnModeSearch" onclick="setEntryMode('search')">🔍 Search</button>
+            <button class="tab-btn" id="btnModeLive" onclick="setEntryMode('live')">📹 Live Cam</button>
           </div>
 
-          <div style="margin-bottom: 0.5rem; display: none;" id="cameraSelectWrapper">
-            <select id="cameraSelect" class="input-control" style="padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="changeCamera(this.value)">
-              <option value="">Detecting cameras...</option>
-            </select>
-          </div>
-
-          <div id="reader" class="scanner-box" style="position: relative; min-height: 260px; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-            <video id="scannerVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
-            <canvas id="scannerCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
-            
-            <div id="cameraIdleOverlay" style="text-align: center; color: white; padding: 2rem;">
-              <div style="font-size: 3rem; margin-bottom: 0.5rem;">📷</div>
-              <div style="font-weight: 700; font-size: 1.1rem;">Camera QR Scanner</div>
-              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Tap <strong>"▶️ Start Camera"</strong> to scan cards</div>
+          <!-- 1. TOUCH NUMBER PAD MODE (Fastest & 100% Reliable on all Phones) -->
+          <div id="modeKeypad">
+            <div style="background: #f8fafc; border: 2px solid var(--primary); border-radius: 12px; padding: 0.75rem; text-align: center; margin-bottom: 0.75rem;">
+              <div style="font-size: 0.75rem; color: var(--gray-600); font-weight: 700; letter-spacing: 1px;">ENTER RATION CARD NUMBER:</div>
+              <div id="keypadDisplay" style="font-size: 1.85rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; min-height: 2.2rem; display: flex; align-items: center; justify-content: center;">RC-</div>
+              <div id="keypadCardPreview" style="font-size: 0.9rem; font-weight: 600; color: #0284c7; min-height: 1.3rem;">Type number (e.g. 1 for RC-0001)</div>
             </div>
 
-            <!-- Target Reticle Box -->
-            <div id="targetReticle" style="display: none; position: absolute; width: 200px; height: 200px; border: 3px solid #22c55e; border-radius: 16px; box-shadow: 0 0 0 4000px rgba(0,0,0,0.4); pointer-events: none;">
-              <div style="position: absolute; width: 100%; height: 2px; background: #ef4444; top: 50%; box-shadow: 0 0 8px #ef4444;"></div>
+            <!-- Number Pad Grid -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-bottom: 0.75rem;">
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('1')">1</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('2')">2</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('3')">3</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('4')">4</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('5')">5</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('6')">6</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('7')">7</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('8')">8</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('9')">9</button>
+              <button class="btn btn-danger" style="height: 50px; font-size: 1.1rem; font-weight: 800;" onclick="pressKeypad('CLEAR')">⌫ Del</button>
+              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('0')">0</button>
+              <button class="btn btn-warning" style="height: 50px; font-size: 1.1rem; font-weight: 800;" onclick="pressKeypad('RESET')">Clear</button>
             </div>
-          </div>
-          
-          <div id="scanStatus" style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.5rem; text-align: center;">
-            Tap <strong>'▶️ Start Camera'</strong> or <strong>'📸 Snap / File'</strong> to scan QR.
+
+            <button class="btn btn-primary btn-lg btn-block" style="font-size: 1.1rem; padding: 0.75rem;" onclick="submitKeypad()">
+              ⚡ Issue Token Now
+            </button>
           </div>
 
-          <!-- Manual Entry Box with Auto-Suggestions -->
-          <div style="margin-top: 1.25rem; border-top: 1px solid var(--gray-200); padding-top: 1rem; position: relative;">
+          <!-- 2. SNAP PHOTO MODE (1-Tap Native Phone Camera) -->
+          <div id="modeSnap" style="display: none; text-align: center; padding: 1.25rem 0.5rem;">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">📸</div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">Snap Photo with Phone Camera</h3>
+            <p style="color: var(--gray-600); font-size: 0.85rem; margin-bottom: 1rem;">
+              Opens your phone's native camera app. Takes a photo of the card QR and decodes in 0.1 seconds!
+            </p>
+            <button class="btn btn-success btn-lg btn-block" style="padding: 0.85rem; font-size: 1.1rem;" onclick="document.getElementById('qrFileInput').click()">
+              📸 Open Camera & Snap QR
+            </button>
+            <input type="file" id="qrFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileScan(event)">
+          </div>
+
+          <!-- 3. SEARCH ROSTER MODE -->
+          <div id="modeSearch" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <label class="input-label" for="manualCardInput" style="margin-bottom: 0;">⌨️ Search & Quick Token Issue:</label>
-              <small style="color: var(--primary); font-weight: 600;">Type Name or RC#</small>
+              <label class="input-label" for="manualCardInput" style="margin-bottom: 0;">⌨️ Search by Name / RC#:</label>
             </div>
             
             <div style="display: flex; gap: 0.5rem; position: relative;">
-              <input type="text" id="manualCardInput" class="input-control" placeholder="Search by Ration No, English or Telugu name..." autocomplete="off" autofocus oninput="handleManualInput(this.value)">
+              <input type="text" id="manualCardInput" class="input-control" placeholder="Type Name, Telugu name, or RC#..." autocomplete="off" oninput="handleManualInput(this.value)">
               <button class="btn btn-primary" onclick="handleManualSubmit()">Issue</button>
             </div>
 
-            <!-- Live Auto-Suggestions Dropdown -->
-            <div id="suggestionsDropdown" style="display: none; position: absolute; left: 0; right: 0; top: 75px; background: white; border: 2px solid var(--primary); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 200; max-height: 220px; overflow-y: auto;"></div>
+            <div id="suggestionsDropdown" style="display: none; background: white; border: 2px solid var(--primary); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 200; max-height: 200px; overflow-y: auto; margin-top: 4px;"></div>
 
-            <!-- Quick Pick Chips for Instant Calling -->
             <div style="margin-top: 0.75rem;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; margin-bottom: 0.35rem;">Quick 1-Tap Issue:</div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; margin-bottom: 0.35rem;">Quick Select:</div>
               <div id="quickChipsContainer" style="display: flex; gap: 0.35rem; flex-wrap: wrap;"></div>
             </div>
           </div>
+
+          <!-- 4. LIVE WEBCAM STREAM MODE -->
+          <div id="modeLive" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <button id="toggleCameraBtn" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="toggleCamera()">
+                ▶️ Start Webcam
+              </button>
+            </div>
+
+            <div style="margin-bottom: 0.5rem; display: none;" id="cameraSelectWrapper">
+              <select id="cameraSelect" class="input-control" style="padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="changeCamera(this.value)">
+                <option value="">Detecting cameras...</option>
+              </select>
+            </div>
+
+            <div id="reader" class="scanner-box" style="position: relative; min-height: 220px; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <video id="scannerVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+              <canvas id="scannerCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
+              
+              <div id="cameraIdleOverlay" style="text-align: center; color: white; padding: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📹</div>
+                <div style="font-weight: 700;">Webcam Stream</div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">Tap "Start Webcam"</div>
+              </div>
+
+              <div id="targetReticle" style="display: none; position: absolute; width: 180px; height: 180px; border: 3px solid #22c55e; border-radius: 16px; box-shadow: 0 0 0 4000px rgba(0,0,0,0.4); pointer-events: none;">
+                <div style="position: absolute; width: 100%; height: 2px; background: #ef4444; top: 50%; box-shadow: 0 0 8px #ef4444;"></div>
+              </div>
+            </div>
+            
+            <div id="scanStatus" style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.5rem; text-align: center;">
+              Tap <strong>'▶️ Start Webcam'</strong> to scan.
+            </div>
+          </div>
+
         </div>
+      </div>
       </div>
 
       <!-- RIGHT COLUMN: QUEUE TABS & STATS -->
@@ -286,6 +330,90 @@
     let lastScanTime = 0;
     let currentQueueState = { waiting: [], completed: [], skipped: [], serving: null };
     let currentTab = 'waiting';
+
+    // ==========================================
+    // ENTRY MODES & TOUCH KEYPAD LOGIC
+    // ==========================================
+    let currentKeypadDigits = '';
+
+    function setEntryMode(mode) {
+      document.getElementById('modeKeypad').style.display = mode === 'keypad' ? 'block' : 'none';
+      document.getElementById('modeSnap').style.display = mode === 'snap' ? 'block' : 'none';
+      document.getElementById('modeSearch').style.display = mode === 'search' ? 'block' : 'none';
+      document.getElementById('modeLive').style.display = mode === 'live' ? 'block' : 'none';
+
+      document.getElementById('btnModeKeypad').classList.toggle('active', mode === 'keypad');
+      document.getElementById('btnModeSnap').classList.toggle('active', mode === 'snap');
+      document.getElementById('btnModeSearch').classList.toggle('active', mode === 'search');
+      document.getElementById('btnModeLive').classList.toggle('active', mode === 'live');
+
+      if (mode !== 'live' && isCameraRunning) {
+        stopCamera();
+      }
+    }
+
+    function pressKeypad(val) {
+      if (val === 'CLEAR') {
+        currentKeypadDigits = currentKeypadDigits.slice(0, -1);
+      } else if (val === 'RESET') {
+        currentKeypadDigits = '';
+      } else {
+        if (currentKeypadDigits.length < 6) {
+          currentKeypadDigits += val;
+        }
+      }
+      updateKeypadDisplay();
+    }
+
+    let keypadLookupTimer = null;
+    function updateKeypadDisplay() {
+      const displayEl = document.getElementById('keypadDisplay');
+      const previewEl = document.getElementById('keypadCardPreview');
+
+      if (!currentKeypadDigits) {
+        displayEl.innerText = 'RC-';
+        previewEl.innerText = 'Type number (e.g. 1 for RC-0001)';
+        return;
+      }
+
+      let fullRc = 'RC-' + currentKeypadDigits.padStart(4, '0');
+      displayEl.innerText = fullRc;
+      previewEl.innerText = 'Checking cardholder...';
+
+      clearTimeout(keypadLookupTimer);
+      keypadLookupTimer = setTimeout(() => {
+        fetch('/api/cards?q=' + encodeURIComponent(fullRc) + '&limit=1')
+          .then(res => res.json())
+          .then(data => {
+            if (data.cards && data.cards.length > 0) {
+              const card = data.cards[0];
+              previewEl.innerHTML = `✅ <strong>${card.nameEn}</strong> (${card.nameTe || ''}) • 📍 ${card.village}`;
+            } else {
+              fetch('/api/cards?q=' + encodeURIComponent(currentKeypadDigits) + '&limit=1')
+                .then(r => r.json())
+                .then(d2 => {
+                  if (d2.cards && d2.cards.length > 0) {
+                    const c = d2.cards[0];
+                    previewEl.innerHTML = `💡 Matches: <strong>${c.rationNo}</strong> - ${c.nameEn}`;
+                  } else {
+                    previewEl.innerText = `Card ${fullRc} not found in roster`;
+                  }
+                });
+            }
+          });
+      }, 150);
+    }
+
+    function submitKeypad() {
+      if (!currentKeypadDigits) {
+        showToast('Please type a card number on the keypad', 'warning');
+        return;
+      }
+      const fullRc = 'RC-' + currentKeypadDigits.padStart(4, '0');
+      submitRationScan(fullRc);
+      currentKeypadDigits = '';
+      updateKeypadDisplay();
+    }
 
     // Audio beep on scan
     function playBeep(success = true) {

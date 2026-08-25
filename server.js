@@ -579,6 +579,91 @@ app.post('/api/scan', (req, res) => {
   });
 });
 
+// Direct Phone Camera / Google Lens QR Scan Check-In (GET /scan/:rationNo)
+app.get('/scan/:rationNo', (req, res) => {
+  const rawRation = (req.params.rationNo || '').trim().toUpperCase();
+  const holder = cards.find(c => c.rationNo === rawRation);
+
+  if (!holder) {
+    return res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Card Not Found</title><link rel="stylesheet" href="/style.css"></head>
+      <body style="padding: 2rem 1rem; text-align: center; font-family: sans-serif; background: #f8fafc;">
+        <div style="max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+          <div style="font-size: 3rem;">❌</div>
+          <h2 style="color: #b91c1c; margin: 0.5rem 0;">Card Not Found</h2>
+          <p style="color: #64748b;">Ration Card <strong>${rawRation}</strong> is not registered in the system.</p>
+          <a href="/counter" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Go to Counter</a>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+
+  // Check if already in queue
+  let entry = queueState.queue.find(q => q.rationNo === rawRation);
+  let isNew = false;
+
+  if (!entry) {
+    isNew = true;
+    queueState.tokenNo += 1;
+    entry = {
+      tokenNo: queueState.tokenNo,
+      rationNo: holder.rationNo,
+      nameEn: holder.nameEn,
+      nameTe: holder.nameTe,
+      village: holder.village,
+      phone: holder.phone,
+      issuedAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
+      servedAt: null,
+      status: 'WAITING'
+    };
+
+    if (!queueState.currentToken) {
+      entry.status = 'SERVING';
+      entry.servedAt = entry.issuedAt;
+      queueState.currentToken = entry;
+      io.emit('token-announced', entry);
+    }
+
+    queueState.queue.push(entry);
+    saveJson(QUEUE_FILE, queueState);
+    io.emit('queue-updated', getQueueStateFormatted());
+  }
+
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Token #${entry.tokenNo} - ${holder.nameEn}</title>
+      <link rel="stylesheet" href="/style.css">
+    </head>
+    <body style="padding: 2rem 1rem; text-align: center; font-family: sans-serif; background: #0f172a; color: white;">
+      <div style="max-width: 420px; margin: 0 auto; background: white; color: #1e293b; padding: 2rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+        <div style="font-size: 0.85rem; font-weight: bold; color: #16a34a; text-transform: uppercase; letter-spacing: 1px;">
+          ${isNew ? '🎉 Token Issued Successfully' : 'ℹ️ You Are in Queue'}
+        </div>
+        <div style="font-size: 4rem; font-weight: 900; color: #1e40af; margin: 0.5rem 0; line-height: 1;">#${entry.tokenNo}</div>
+        <h2 style="margin: 0.25rem 0; font-size: 1.5rem;">${holder.nameEn}</h2>
+        <h3 style="margin: 0.25rem 0; color: #0284c7; font-size: 1.25rem;">${holder.nameTe}</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;">📍 ${holder.village} | 🪪 ${holder.rationNo}</p>
+        
+        <div style="margin-top: 1.5rem; padding: 0.75rem; background: #f1f5f9; border-radius: 12px; font-weight: 600;">
+          Status: <span style="color: ${entry.status === 'SERVING' ? '#eab308' : '#16a34a'};">${entry.status}</span>
+        </div>
+
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+          <a href="/counter" class="btn btn-outline">Counter View</a>
+          <a href="/display" class="btn btn-primary">Live Display ↗</a>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 // Counter: Call Next
 app.post('/api/queue/call-next', (req, res) => {
   if (queueState.currentToken) {
