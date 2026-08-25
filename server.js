@@ -509,20 +509,48 @@ app.get('/api/queue/state', (req, res) => {
   res.json(getQueueStateFormatted());
 });
 
-// Scan or Manual Entry to issue token
+// Scan or Manual Entry to issue token (Smart Matching by RC#, Digits, Name, or Phone)
 app.post('/api/scan', (req, res) => {
-  const rawRation = (req.body.rationNo || '').trim().toUpperCase();
-  if (!rawRation) {
-    return res.status(400).json({ success: false, message: 'Please enter or scan a ration card number' });
+  const rawInput = (req.body.rationNo || req.body.query || '').toString().trim();
+  if (!rawInput) {
+    return res.status(400).json({ success: false, message: 'Please enter a card number or name' });
   }
 
-  const holder = cards.find(c => c.rationNo === rawRation);
+  const clean = rawInput.toUpperCase();
+
+  // 1. Exact Ration Number Match (e.g. RC-0001)
+  let holder = cards.find(c => c.rationNo.toUpperCase() === clean);
+
+  // 2. Numeric / Padded Match (e.g. "1" -> "RC-0001", "15" -> "RC-0015")
+  if (!holder) {
+    const digitsOnly = rawInput.replace(/\D/g, '');
+    if (digitsOnly) {
+      const padded = 'RC-' + digitsOnly.padStart(4, '0');
+      holder = cards.find(c => c.rationNo.toUpperCase() === padded);
+      if (!holder) {
+        holder = cards.find(c => c.rationNo.endsWith(digitsOnly));
+      }
+    }
+  }
+
+  // 3. Name or Phone Partial Match
+  if (!holder) {
+    const queryLower = rawInput.toLowerCase();
+    holder = cards.find(c => 
+      c.nameEn.toLowerCase().includes(queryLower) || 
+      (c.nameTe && c.nameTe.toLowerCase().includes(queryLower)) ||
+      (c.phone && c.phone.includes(rawInput))
+    );
+  }
+
   if (!holder) {
     return res.status(404).json({
       success: false,
-      message: `Ration card "${rawRation}" not found in database. Please register in Admin.`
+      message: `Card "${rawInput}" not found in database. Please add in Admin.`
     });
   }
+
+  const rawRation = holder.rationNo;
 
   // Duplicate check
   const alreadyInQueue = queueState.queue.find(q => q.rationNo === rawRation);

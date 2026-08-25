@@ -365,7 +365,30 @@
       updateKeypadDisplay();
     }
 
-    let keypadLookupTimer = null;
+    let allCardsStore = [];
+    function loadAllCardsLocally() {
+      fetch('/api/cards?limit=1000')
+        .then(res => res.json())
+        .then(data => {
+          if (data.cards) {
+            allCardsStore = data.cards;
+            renderQuickChips(allCardsStore.slice(0, 10));
+          }
+        });
+    }
+    loadAllCardsLocally();
+
+    function renderQuickChips(cards) {
+      const container = document.getElementById('quickChipsContainer');
+      if (container && cards) {
+        container.innerHTML = cards.map(c => `
+          <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.nameTe || ''})">
+            ${c.rationNo} (${c.nameEn.split(' ')[0]})
+          </button>
+        `).join('');
+      }
+    }
+
     function updateKeypadDisplay() {
       const displayEl = document.getElementById('keypadDisplay');
       const previewEl = document.getElementById('keypadCardPreview');
@@ -378,30 +401,18 @@
 
       let fullRc = 'RC-' + currentKeypadDigits.padStart(4, '0');
       displayEl.innerText = fullRc;
-      previewEl.innerText = 'Checking cardholder...';
 
-      clearTimeout(keypadLookupTimer);
-      keypadLookupTimer = setTimeout(() => {
-        fetch('/api/cards?q=' + encodeURIComponent(fullRc) + '&limit=1')
-          .then(res => res.json())
-          .then(data => {
-            if (data.cards && data.cards.length > 0) {
-              const card = data.cards[0];
-              previewEl.innerHTML = `✅ <strong>${card.nameEn}</strong> (${card.nameTe || ''}) • 📍 ${card.village}`;
-            } else {
-              fetch('/api/cards?q=' + encodeURIComponent(currentKeypadDigits) + '&limit=1')
-                .then(r => r.json())
-                .then(d2 => {
-                  if (d2.cards && d2.cards.length > 0) {
-                    const c = d2.cards[0];
-                    previewEl.innerHTML = `💡 Matches: <strong>${c.rationNo}</strong> - ${c.nameEn}`;
-                  } else {
-                    previewEl.innerText = `Card ${fullRc} not found in roster`;
-                  }
-                });
-            }
-          });
-      }, 150);
+      // Instant search in memory
+      let match = allCardsStore.find(c => c.rationNo.toUpperCase() === fullRc);
+      if (!match) {
+        match = allCardsStore.find(c => c.rationNo.endsWith(currentKeypadDigits) || c.rationNo.includes(currentKeypadDigits));
+      }
+
+      if (match) {
+        previewEl.innerHTML = `✅ <strong>${match.nameEn}</strong> (${match.nameTe || ''}) • 📍 ${match.village}`;
+      } else {
+        previewEl.innerText = `Card ${fullRc} (Ready to issue)`;
+      }
     }
 
     function submitKeypad() {
@@ -479,7 +490,7 @@
       fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rationNo: rationNo.trim() })
+        body: JSON.stringify({ rationNo: rationNo.toString().trim() })
       })
       .then(res => res.json())
       .then(data => {
@@ -495,8 +506,8 @@
 
         playBeep(true);
         showToast(data.message, 'success');
-        document.getElementById('manualCardInput').value = '';
-        document.getElementById('manualCardInput').focus();
+        const manInp = document.getElementById('manualCardInput');
+        if (manInp) manInp.value = '';
       })
       .catch(err => {
         showToast('Network error: ' + err.message, 'error');
@@ -510,47 +521,49 @@
       }
     });
 
-    let searchTimer = null;
     function handleManualInput(val) {
-      clearTimeout(searchTimer);
       const dropdown = document.getElementById('suggestionsDropdown');
-      const q = (val || '').trim();
+      const q = (val || '').trim().toLowerCase();
 
       if (q.length === 0) {
         dropdown.style.display = 'none';
         return;
       }
 
-      searchTimer = setTimeout(() => {
-        fetch('/api/cards?q=' + encodeURIComponent(q) + '&limit=6')
-          .then(res => res.json())
-          .then(data => {
-            if (!data.cards || data.cards.length === 0) {
-              dropdown.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--gray-600); font-size: 0.9rem;">No matching cards found for "${q}"</div>`;
-              dropdown.style.display = 'block';
-              return;
-            }
+      // Instant local search in 0ms
+      let matches = allCardsStore.filter(c => 
+        (c.rationNo && c.rationNo.toLowerCase().includes(q)) ||
+        (c.nameEn && c.nameEn.toLowerCase().includes(q)) ||
+        (c.nameTe && c.nameTe.toLowerCase().includes(q)) ||
+        (c.village && c.village.toLowerCase().includes(q)) ||
+        (c.phone && c.phone.includes(q))
+      ).slice(0, 8);
 
-            dropdown.innerHTML = data.cards.map(c => `
-              <div onclick="selectSuggestedCard('${c.rationNo}')" style="padding: 0.65rem 1rem; border-bottom: 1px solid var(--gray-200); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='white'">
-                <div>
-                  <div style="font-weight: 700; color: var(--gray-800);">${c.nameEn} <span style="color: #0369a1; font-size: 0.9rem;">(${c.nameTe || ''})</span></div>
-                  <div style="font-size: 0.8rem; color: var(--gray-600);">${c.rationNo} • 📍 ${c.village || 'Main Village'}</div>
-                </div>
-                <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="event.stopPropagation(); selectSuggestedCard('${c.rationNo}')">
-                  ⚡ Issue
-                </button>
-              </div>
-            `).join('');
+      if (matches.length === 0) {
+        dropdown.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--gray-600); font-size: 0.9rem;">No matching cards found for "${val}"</div>`;
+        dropdown.style.display = 'block';
+        return;
+      }
 
-            dropdown.style.display = 'block';
-          });
-      }, 150);
+      dropdown.innerHTML = matches.map(c => `
+        <div onclick="selectSuggestedCard('${c.rationNo}')" style="padding: 0.65rem 1rem; border-bottom: 1px solid var(--gray-200); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='white'">
+          <div>
+            <div style="font-weight: 700; color: var(--gray-800);">${c.nameEn} <span style="color: #0369a1; font-size: 0.9rem;">(${c.nameTe || ''})</span></div>
+            <div style="font-size: 0.8rem; color: var(--gray-600);">${c.rationNo} • 📍 ${c.village || 'Main Village'}</div>
+          </div>
+          <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="event.stopPropagation(); selectSuggestedCard('${c.rationNo}')">
+            ⚡ Issue
+          </button>
+        </div>
+      `).join('');
+
+      dropdown.style.display = 'block';
     }
 
     function selectSuggestedCard(rationNo) {
       document.getElementById('suggestionsDropdown').style.display = 'none';
-      document.getElementById('manualCardInput').value = '';
+      const manInp = document.getElementById('manualCardInput');
+      if (manInp) manInp.value = '';
       submitRationScan(rationNo);
     }
 
