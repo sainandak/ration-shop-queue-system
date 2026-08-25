@@ -1,107 +1,2412 @@
 [
   {
-    "rationNo": "RC-0001",
-    "nameEn": "Ramesh Kumar",
-    "nameTe": "రమేష్ కుమార్",
-    "village": "Main Village",
-    "phone": "9876543210"
+    "sNo": 1,
+    "rationNo": "365370657769",
+    "cardType": "AFSC",
+    "nameEn": "Mandala Latha",
+    "nameTe": "మండల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7769"
   },
   {
-    "rationNo": "RC-0002",
-    "nameEn": "Suresh Kumar",
-    "nameTe": "సురేష్ కుమార్",
-    "village": "SC Colony",
-    "phone": "9876543211"
+    "sNo": 2,
+    "rationNo": "365370657770",
+    "cardType": "AFSC",
+    "nameEn": "Adla Balamma",
+    "nameTe": "అడ్ల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7770"
   },
   {
-    "rationNo": "RC-0003",
-    "nameEn": "Lakshmi Devi",
-    "nameTe": "లక్ష్మి దేవి",
-    "village": "Main Village",
-    "phone": "9876543212"
+    "sNo": 3,
+    "rationNo": "365370657771",
+    "cardType": "FSC",
+    "nameEn": "Aleti Narsamma",
+    "nameTe": "ఆలేటి నర్సమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7771"
   },
   {
-    "rationNo": "RC-0004",
-    "nameEn": "Anitha Reddy",
-    "nameTe": "అనిత రెడ్డి",
-    "village": "BC Colony",
-    "phone": "9876543213"
+    "sNo": 4,
+    "rationNo": "365370657772",
+    "cardType": "AFSC",
+    "nameEn": "Makthala Buchamma",
+    "nameTe": "మఖ్తలా బుచ్చమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7772"
   },
   {
-    "rationNo": "RC-0005",
-    "nameEn": "Venkatesh Rao",
-    "nameTe": "వెంకటేష్ రావు",
-    "village": "North Street",
-    "phone": "9876543214"
+    "sNo": 5,
+    "rationNo": "365370657773",
+    "cardType": "AFSC",
+    "nameEn": "Terati Rameswari",
+    "nameTe": "తేరటి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7773"
   },
   {
-    "rationNo": "RC-0006",
-    "nameEn": "Parvathi Bai",
-    "nameTe": "పార్వతి బాయి",
-    "village": "Old Village",
-    "phone": "9876543215"
+    "sNo": 6,
+    "rationNo": "365370657775",
+    "cardType": "FSC",
+    "nameEn": "Alegpalli Sumatamma",
+    "nameTe": "అలేగపల్లి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7775"
   },
   {
-    "rationNo": "RC-0007",
-    "nameEn": "Narasimha Murthy",
-    "nameTe": "నరసింహ మూర్తి",
-    "village": "Main Village",
-    "phone": "9876543216"
+    "sNo": 7,
+    "rationNo": "365370657777",
+    "cardType": "FSC",
+    "nameEn": "SURESH",
+    "nameTe": "సురేష్",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7777"
   },
   {
-    "rationNo": "RC-0008",
-    "nameEn": "Sita Raman",
-    "nameTe": "సీత రామన్",
-    "village": "Temple Street",
-    "phone": "9876543217"
+    "sNo": 8,
+    "rationNo": "365370657779",
+    "cardType": "FSC",
+    "nameEn": "Maldev Jayamma",
+    "nameTe": "మాల్దేవ్ జయమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7779"
   },
   {
-    "rationNo": "RC-0009",
-    "nameEn": "Govindappa",
-    "nameTe": "గోవిందప్ప",
-    "village": "SC Colony",
-    "phone": "9876543218"
+    "sNo": 9,
+    "rationNo": "365370657783",
+    "cardType": "FSC",
+    "nameEn": "Gudur Rani",
+    "nameTe": "గూడూరు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7783"
   },
   {
-    "rationNo": "RC-0010",
-    "nameEn": "Kavitha Rani",
-    "nameTe": "కవిత రాణి",
-    "village": "BC Colony",
-    "phone": "9876543219"
+    "sNo": 10,
+    "rationNo": "365370657784",
+    "cardType": "FSC",
+    "nameEn": "kavitha",
+    "nameTe": "కవిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7784"
   },
   {
-    "rationNo": "RC-0101",
-    "nameEn": "Anil Kumar",
-    "nameTe": "అనిల్ కుమార్",
-    "village": "East Colony",
-    "phone": "9988776655"
+    "sNo": 11,
+    "rationNo": "365370657785",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Komaramma / Umadevi / Rajeshwari / Beeresh",
+    "nameTe": "కొంగళ్ళ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7785"
   },
   {
-    "rationNo": "RC-0102",
-    "nameEn": "Sunitha Devi",
-    "nameTe": "సునీత దేవి",
-    "village": "West Colony",
-    "phone": "9988776656"
+    "sNo": 12,
+    "rationNo": "365370657787",
+    "cardType": "FSC",
+    "nameEn": "Terati Yadamma",
+    "nameTe": "తేరటి యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7787"
   },
   {
-    "rationNo": "RC-0501",
-    "nameEn": "Vijay Varma",
-    "nameTe": "విజయ్ వర్మ",
-    "village": "New Colony",
-    "phone": "9848022338"
+    "sNo": 13,
+    "rationNo": "365370657788",
+    "cardType": "FSC",
+    "nameEn": "MANEMMA",
+    "nameTe": "మాణెమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7788"
   },
   {
-    "rationNo": "RC-0502",
-    "nameEn": "Srinivas Reddy",
-    "nameTe": "శ్రీనివాస్ రెడ్డి",
-    "village": "Main Village",
-    "phone": "9848022339"
+    "sNo": 14,
+    "rationNo": "365370657789",
+    "cardType": "FSC",
+    "nameEn": "ANDALU",
+    "nameTe": "ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7789"
   },
   {
-    "rationNo": "RC-0503",
-    "nameEn": "Geetha Kumari",
-    "nameTe": "గీత కుమారి",
-    "village": "BC Colony",
-    "phone": "9848022340"
+    "sNo": 15,
+    "rationNo": "365370657790",
+    "cardType": "FSC",
+    "nameEn": "Gorenka Balamani",
+    "nameTe": "గోరెంక బాలమణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7790"
+  },
+  {
+    "sNo": 16,
+    "rationNo": "365370657791",
+    "cardType": "FSC",
+    "nameEn": "Gorenka Anjammma",
+    "nameTe": "గోరెంక అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7791"
+  },
+  {
+    "sNo": 17,
+    "rationNo": "365370657792",
+    "cardType": "FSC",
+    "nameEn": "Godasu Laxmamma",
+    "nameTe": "గోదాసు లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7792"
+  },
+  {
+    "sNo": 18,
+    "rationNo": "365370657794",
+    "cardType": "FSC",
+    "nameEn": "A Lalitha",
+    "nameTe": "లలిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7794"
+  },
+  {
+    "sNo": 19,
+    "rationNo": "365370657795",
+    "cardType": "FSC",
+    "nameEn": "Polamoni Manila",
+    "nameTe": "పోలమోని మనీలా",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7795"
+  },
+  {
+    "sNo": 20,
+    "rationNo": "365370657796",
+    "cardType": "AFSC",
+    "nameEn": "Gorenka Shamalamma",
+    "nameTe": "గోరెంక శ్యామలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7796"
+  },
+  {
+    "sNo": 21,
+    "rationNo": "365370657797",
+    "cardType": "AFSC",
+    "nameEn": "Vittepu Anandabai(4)",
+    "nameTe": "విత్తేపు ఆనందబాయి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7797"
+  },
+  {
+    "sNo": 22,
+    "rationNo": "365370657798",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Santosha",
+    "nameTe": "కొంగళ్ళ సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7798"
+  },
+  {
+    "sNo": 23,
+    "rationNo": "365370657799",
+    "cardType": "FSC",
+    "nameEn": "Utu Ramulamma",
+    "nameTe": "ఊటు రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7799"
+  },
+  {
+    "sNo": 24,
+    "rationNo": "365370657800",
+    "cardType": "FSC",
+    "nameEn": "Pandi Chendrakala",
+    "nameTe": "పాండి చంద్రకళ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7800"
+  },
+  {
+    "sNo": 25,
+    "rationNo": "365370657802",
+    "cardType": "FSC",
+    "nameEn": "Mandala Bagyamma",
+    "nameTe": "మండల భాగ్యమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7802"
+  },
+  {
+    "sNo": 26,
+    "rationNo": "365370657803",
+    "cardType": "FSC",
+    "nameEn": "NARSAMMA",
+    "nameTe": "నర్సమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7803"
+  },
+  {
+    "sNo": 27,
+    "rationNo": "365370657804",
+    "cardType": "FSC",
+    "nameEn": "Pandi Balamma",
+    "nameTe": "పాండి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7804"
+  },
+  {
+    "sNo": 28,
+    "rationNo": "365370657805",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Padma",
+    "nameTe": "కొంగళ్ళ పద్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7805"
+  },
+  {
+    "sNo": 29,
+    "rationNo": "365370657806",
+    "cardType": "FSC",
+    "nameEn": "Kongala Anjamma",
+    "nameTe": "కొంగల అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7806"
+  },
+  {
+    "sNo": 30,
+    "rationNo": "365370657809",
+    "cardType": "FSC",
+    "nameEn": "ATHINE ALIVELU",
+    "nameTe": "అత్తినె అలివేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7809"
+  },
+  {
+    "sNo": 31,
+    "rationNo": "365370657811",
+    "cardType": "FSC",
+    "nameEn": "Sindham Indramma",
+    "nameTe": "సింధం ఇంద్రమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7811"
+  },
+  {
+    "sNo": 32,
+    "rationNo": "365370657812",
+    "cardType": "FSC",
+    "nameEn": "Kanda Santhosha",
+    "nameTe": "కండ సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7812"
+  },
+  {
+    "sNo": 33,
+    "rationNo": "365370657813",
+    "cardType": "FSC",
+    "nameEn": "Muddam Yellamma",
+    "nameTe": "ముద్దం ఎల్లమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7813"
+  },
+  {
+    "sNo": 34,
+    "rationNo": "365370657814",
+    "cardType": "FSC",
+    "nameEn": "Eddohu Yadamma",
+    "nameTe": "ఎద్దోహు యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7814"
+  },
+  {
+    "sNo": 35,
+    "rationNo": "365370657815",
+    "cardType": "AFSC",
+    "nameEn": "Gorenkala Balamani",
+    "nameTe": "గోరెంకల బాలమణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7815"
+  },
+  {
+    "sNo": 36,
+    "rationNo": "365370657816",
+    "cardType": "FSC",
+    "nameEn": "MANDALA JANGAIAH",
+    "nameTe": "మండల జంగయ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7816"
+  },
+  {
+    "sNo": 37,
+    "rationNo": "365370657817",
+    "cardType": "FSC",
+    "nameEn": "MANDALA BALAMANI",
+    "nameTe": "మండల బాలమణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7817"
+  },
+  {
+    "sNo": 38,
+    "rationNo": "365370657818",
+    "cardType": "FSC",
+    "nameEn": "Mandala Ramulamma",
+    "nameTe": "మండల రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7818"
+  },
+  {
+    "sNo": 39,
+    "rationNo": "365370657819",
+    "cardType": "FSC",
+    "nameEn": "Mandala Amrutha",
+    "nameTe": "మండల అమృత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7819"
+  },
+  {
+    "sNo": 40,
+    "rationNo": "365370657820",
+    "cardType": "FSC",
+    "nameEn": "Mandala Manjula",
+    "nameTe": "మండల మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7820"
+  },
+  {
+    "sNo": 41,
+    "rationNo": "365370657821",
+    "cardType": "FSC",
+    "nameEn": "MANDALA SHAMANYHAMMA",
+    "nameTe": "మండల శ్యామలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7821"
+  },
+  {
+    "sNo": 42,
+    "rationNo": "365370657823",
+    "cardType": "FSC",
+    "nameEn": "Mandala Santhosha",
+    "nameTe": "మండల సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7823"
+  },
+  {
+    "sNo": 43,
+    "rationNo": "365370657825",
+    "cardType": "FSC",
+    "nameEn": "Sakilala Kistamma",
+    "nameTe": "సాకిలాల కిష్టమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7825"
+  },
+  {
+    "sNo": 44,
+    "rationNo": "365370657826",
+    "cardType": "FSC",
+    "nameEn": "Sakilal Poshamma",
+    "nameTe": "సాకిలాల్ పోషమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7826"
+  },
+  {
+    "sNo": 45,
+    "rationNo": "365370657827",
+    "cardType": "FSC",
+    "nameEn": "Bukkha Andalu",
+    "nameTe": "బుక్క ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7827"
+  },
+  {
+    "sNo": 46,
+    "rationNo": "365370657828",
+    "cardType": "FSC",
+    "nameEn": "Patla Sri Ramulu",
+    "nameTe": "పట్ల రాములు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7828"
+  },
+  {
+    "sNo": 47,
+    "rationNo": "365370657830",
+    "cardType": "FSC",
+    "nameEn": "Bukka Yadamma",
+    "nameTe": "బుక్క యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7830"
+  },
+  {
+    "sNo": 48,
+    "rationNo": "365370657831",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Sugunamma",
+    "nameTe": "కొంగళ్ళ సుగుణమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7831"
+  },
+  {
+    "sNo": 49,
+    "rationNo": "365370657832",
+    "cardType": "FSC",
+    "nameEn": "Kogala Lavanya",
+    "nameTe": "కోగాల లావణ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7832"
+  },
+  {
+    "sNo": 50,
+    "rationNo": "365370657833",
+    "cardType": "FSC",
+    "nameEn": "Gudur Padmamma",
+    "nameTe": "గూడూరు పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7833"
+  },
+  {
+    "sNo": 51,
+    "rationNo": "365370657834",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Anjamma",
+    "nameTe": "కొంగళ్ళ అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7834"
+  },
+  {
+    "sNo": 52,
+    "rationNo": "365370657835",
+    "cardType": "FSC",
+    "nameEn": "Sindam Bujjamma",
+    "nameTe": "సింధం బుజ్జమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7835"
+  },
+  {
+    "sNo": 53,
+    "rationNo": "365370657836",
+    "cardType": "FSC",
+    "nameEn": "M Andalu",
+    "nameTe": "ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7836"
+  },
+  {
+    "sNo": 54,
+    "rationNo": "365370657837",
+    "cardType": "FSC",
+    "nameEn": "Sukkapuram Nirmala",
+    "nameTe": "సుక్కాపురం నిర్మల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7837"
+  },
+  {
+    "sNo": 55,
+    "rationNo": "365370657838",
+    "cardType": "AFSC",
+    "nameEn": "RAAMULAMMA",
+    "nameTe": "RAAMULAMMA",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7838"
+  },
+  {
+    "sNo": 56,
+    "rationNo": "365370657841",
+    "cardType": "FSC",
+    "nameEn": "Pandi Kalamma",
+    "nameTe": "పాండి కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7841"
+  },
+  {
+    "sNo": 57,
+    "rationNo": "365370657842",
+    "cardType": "FSC",
+    "nameEn": "Kandha Shiva Rani",
+    "nameTe": "కండ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7842"
+  },
+  {
+    "sNo": 58,
+    "rationNo": "365370657843",
+    "cardType": "AFSC",
+    "nameEn": "Kanda Venkatamma",
+    "nameTe": "కండ వెంకటమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7843"
+  },
+  {
+    "sNo": 59,
+    "rationNo": "365370657844",
+    "cardType": "FSC",
+    "nameEn": "Vutu Ramulamma",
+    "nameTe": "వూటు రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7844"
+  },
+  {
+    "sNo": 60,
+    "rationNo": "365370657845",
+    "cardType": "FSC",
+    "nameEn": "RAJITHA",
+    "nameTe": "రజిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7845"
+  },
+  {
+    "sNo": 61,
+    "rationNo": "365370657846",
+    "cardType": "FSC",
+    "nameEn": "Vasthapuram Kaxmamma",
+    "nameTe": "వస్తాపురం",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7846"
+  },
+  {
+    "sNo": 62,
+    "rationNo": "365370657847",
+    "cardType": "FSC",
+    "nameEn": "Pandi Partamma",
+    "nameTe": "పాండి పార్తమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7847"
+  },
+  {
+    "sNo": 63,
+    "rationNo": "365370657848",
+    "cardType": "FSC",
+    "nameEn": "Mandala Alivelu",
+    "nameTe": "మండల అలివేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7848"
+  },
+  {
+    "sNo": 64,
+    "rationNo": "365370657849",
+    "cardType": "FSC",
+    "nameEn": "Pandi Jyothi",
+    "nameTe": "పాండి జ్యోతి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7849"
+  },
+  {
+    "sNo": 65,
+    "rationNo": "365370657851",
+    "cardType": "FSC",
+    "nameEn": "Kanda Anjamma",
+    "nameTe": "కండ అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7851"
+  },
+  {
+    "sNo": 66,
+    "rationNo": "365370657852",
+    "cardType": "FSC",
+    "nameEn": "Vutu Mallamma",
+    "nameTe": "వూటు మల్లమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7852"
+  },
+  {
+    "sNo": 67,
+    "rationNo": "365370657853",
+    "cardType": "FSC",
+    "nameEn": "Thummaluru Alivelu",
+    "nameTe": "తుమ్మలూరు అలివేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7853"
+  },
+  {
+    "sNo": 68,
+    "rationNo": "365370657854",
+    "cardType": "FSC",
+    "nameEn": "Borra Yadamma",
+    "nameTe": "బొర్ర యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7854"
+  },
+  {
+    "sNo": 69,
+    "rationNo": "365370657855",
+    "cardType": "FSC",
+    "nameEn": "Edla Kalamma",
+    "nameTe": "ఎడ్ల కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7855"
+  },
+  {
+    "sNo": 70,
+    "rationNo": "365370657856",
+    "cardType": "FSC",
+    "nameEn": "Borra Bhagyamma",
+    "nameTe": "బొర్ర భాగ్యమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7856"
+  },
+  {
+    "sNo": 71,
+    "rationNo": "365370657857",
+    "cardType": "FSC",
+    "nameEn": "Ootu Anitha",
+    "nameTe": "ఊటు అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7857"
+  },
+  {
+    "sNo": 72,
+    "rationNo": "365370657858",
+    "cardType": "FSC",
+    "nameEn": "Pandi Manjula",
+    "nameTe": "పాండి మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7858"
+  },
+  {
+    "sNo": 73,
+    "rationNo": "365370657859",
+    "cardType": "FSC",
+    "nameEn": "Utu Papamma",
+    "nameTe": "ఊటు పాపమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7859"
+  },
+  {
+    "sNo": 74,
+    "rationNo": "365370657860",
+    "cardType": "AFSC",
+    "nameEn": "Borra Dhanamma",
+    "nameTe": "బొర్ర ధనమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7860"
+  },
+  {
+    "sNo": 75,
+    "rationNo": "365370657861",
+    "cardType": "AFSC",
+    "nameEn": "Kanda Bugamma",
+    "nameTe": "కండ బుగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7861"
+  },
+  {
+    "sNo": 76,
+    "rationNo": "365370657862",
+    "cardType": "FSC",
+    "nameEn": "Surgi Vijaya Laxmi",
+    "nameTe": "సుర్గి విజయ లక్ష్మి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7862"
+  },
+  {
+    "sNo": 77,
+    "rationNo": "365370657870",
+    "cardType": "FSC",
+    "nameEn": "Varikuppala Sharadhamma",
+    "nameTe": "వరికుప్పల శారదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7870"
+  },
+  {
+    "sNo": 78,
+    "rationNo": "365370657871",
+    "cardType": "FSC",
+    "nameEn": "g jayasri",
+    "nameTe": "జయశ్రీ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7871"
+  },
+  {
+    "sNo": 79,
+    "rationNo": "365370657872",
+    "cardType": "FSC",
+    "nameEn": "Ravula Rajitha",
+    "nameTe": "రావుల రజిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7872"
+  },
+  {
+    "sNo": 80,
+    "rationNo": "365370657873",
+    "cardType": "AFSC",
+    "nameEn": "Varsu Krishtamma",
+    "nameTe": "వర్సు క్రిష్టమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7873"
+  },
+  {
+    "sNo": 81,
+    "rationNo": "365370657874",
+    "cardType": "FSC",
+    "nameEn": "Ravula Alivelu",
+    "nameTe": "రావుల అలివేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7874"
+  },
+  {
+    "sNo": 82,
+    "rationNo": "365370657875",
+    "cardType": "FSC",
+    "nameEn": "Derangula Santhosha",
+    "nameTe": "దేరంగుల సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7875"
+  },
+  {
+    "sNo": 83,
+    "rationNo": "365370657877",
+    "cardType": "FSC",
+    "nameEn": "Dende Ailamma",
+    "nameTe": "దెందే ఐలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7877"
+  },
+  {
+    "sNo": 84,
+    "rationNo": "365370657880",
+    "cardType": "FSC",
+    "nameEn": "Dende Andalu",
+    "nameTe": "దెందే ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7880"
+  },
+  {
+    "sNo": 85,
+    "rationNo": "365370657881",
+    "cardType": "FSC",
+    "nameEn": "Alegapally Jayamma",
+    "nameTe": "అలేగపల్లి జయమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7881"
+  },
+  {
+    "sNo": 86,
+    "rationNo": "365370657882",
+    "cardType": "FSC",
+    "nameEn": "Terati Maruthi",
+    "nameTe": "తేరటి మారుతి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7882"
+  },
+  {
+    "sNo": 87,
+    "rationNo": "365370657883",
+    "cardType": "AFSC",
+    "nameEn": "Derangula Jangamma",
+    "nameTe": "దేరంగుల జంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7883"
+  },
+  {
+    "sNo": 88,
+    "rationNo": "365370657886",
+    "cardType": "FSC",
+    "nameEn": "Kanda Anjamma",
+    "nameTe": "కండ అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7886"
+  },
+  {
+    "sNo": 89,
+    "rationNo": "365370657887",
+    "cardType": "FSC",
+    "nameEn": "Vutu Kalamma",
+    "nameTe": "వూటు కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7887"
+  },
+  {
+    "sNo": 90,
+    "rationNo": "365370657888",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Kalamma",
+    "nameTe": "కొంగళ్ళ కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7888"
+  },
+  {
+    "sNo": 91,
+    "rationNo": "365370657890",
+    "cardType": "FSC",
+    "nameEn": "Muda Vasantha",
+    "nameTe": "ముడ వసంత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7890"
+  },
+  {
+    "sNo": 92,
+    "rationNo": "365370657891",
+    "cardType": "FSC",
+    "nameEn": "Sampangi Laxmamma",
+    "nameTe": "సంపంగి లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7891"
+  },
+  {
+    "sNo": 93,
+    "rationNo": "365370657893",
+    "cardType": "FSC",
+    "nameEn": "Sampangi Andalu",
+    "nameTe": "సంపంగి ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7893"
+  },
+  {
+    "sNo": 94,
+    "rationNo": "365370657894",
+    "cardType": "FSC",
+    "nameEn": "Gorenka Padmamma",
+    "nameTe": "గోరెంక పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7894"
+  },
+  {
+    "sNo": 95,
+    "rationNo": "365370657896",
+    "cardType": "FSC",
+    "nameEn": "Gorenka Bhargavi",
+    "nameTe": "గోరెంక భార్గవి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7896"
+  },
+  {
+    "sNo": 96,
+    "rationNo": "365370657897",
+    "cardType": "FSC",
+    "nameEn": "Gadaguti Indramma",
+    "nameTe": "గడగుటి ఇంద్రమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7897"
+  },
+  {
+    "sNo": 97,
+    "rationNo": "365370657898",
+    "cardType": "FSC",
+    "nameEn": "Kavali Kalamma",
+    "nameTe": "కావలి కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7898"
+  },
+  {
+    "sNo": 98,
+    "rationNo": "365370657899",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Parvatamma",
+    "nameTe": "కొంగళ్ళ పార్వతమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7899"
+  },
+  {
+    "sNo": 99,
+    "rationNo": "365370657901",
+    "cardType": "FSC",
+    "nameEn": "Chindam Premalata",
+    "nameTe": "చిందం ప్రేమలత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7901"
+  },
+  {
+    "sNo": 100,
+    "rationNo": "365370657902",
+    "cardType": "FSC",
+    "nameEn": "Terati Indira",
+    "nameTe": "తేరటి ఇందిర",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7902"
+  },
+  {
+    "sNo": 101,
+    "rationNo": "365370657904",
+    "cardType": "FSC",
+    "nameEn": "Pagadala Yadamma",
+    "nameTe": "పగడాల యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7904"
+  },
+  {
+    "sNo": 102,
+    "rationNo": "365370657905",
+    "cardType": "FSC",
+    "nameEn": "Muddam Anjamma",
+    "nameTe": "ముద్దం అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7905"
+  },
+  {
+    "sNo": 103,
+    "rationNo": "365370657906",
+    "cardType": "FSC",
+    "nameEn": "Terati Yadmm",
+    "nameTe": "తేరటి యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7906"
+  },
+  {
+    "sNo": 104,
+    "rationNo": "365370657907",
+    "cardType": "FSC",
+    "nameEn": "Terati Yadamma",
+    "nameTe": "తేరటి యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7907"
+  },
+  {
+    "sNo": 105,
+    "rationNo": "365370657909",
+    "cardType": "FSC",
+    "nameEn": "Tereti Balamani",
+    "nameTe": "తేరటి బాలమణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7909"
+  },
+  {
+    "sNo": 106,
+    "rationNo": "365370657911",
+    "cardType": "FSC",
+    "nameEn": "Pola Kavitha",
+    "nameTe": "పోల కవిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7911"
+  },
+  {
+    "sNo": 107,
+    "rationNo": "365370657912",
+    "cardType": "FSC",
+    "nameEn": "P Anitha",
+    "nameTe": "అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7912"
+  },
+  {
+    "sNo": 108,
+    "rationNo": "365370657913",
+    "cardType": "FSC",
+    "nameEn": "Pandi Jangamma",
+    "nameTe": "పాండి జంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7913"
+  },
+  {
+    "sNo": 109,
+    "rationNo": "365370657914",
+    "cardType": "FSC",
+    "nameEn": "Terati Venkatamma",
+    "nameTe": "తేరటి వెంకటమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7914"
+  },
+  {
+    "sNo": 110,
+    "rationNo": "365370657915",
+    "cardType": "FSC",
+    "nameEn": "Guddeti Lakshmamma",
+    "nameTe": "గుద్దేటి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7915"
+  },
+  {
+    "sNo": 111,
+    "rationNo": "365370657916",
+    "cardType": "FSC",
+    "nameEn": "Pandi Andalu",
+    "nameTe": "పాండి ఆండాళ్ళు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7916"
+  },
+  {
+    "sNo": 112,
+    "rationNo": "365370657917",
+    "cardType": "FSC",
+    "nameEn": "Kanda Buchamma",
+    "nameTe": "కండ బుచ్చమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7917"
+  },
+  {
+    "sNo": 113,
+    "rationNo": "365370657918",
+    "cardType": "FSC",
+    "nameEn": "Kanda Anisha",
+    "nameTe": "కండ అనీష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7918"
+  },
+  {
+    "sNo": 114,
+    "rationNo": "365370657919",
+    "cardType": "FSC",
+    "nameEn": "Utu Yadayya",
+    "nameTe": "ఊటు యాదయ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7919"
+  },
+  {
+    "sNo": 115,
+    "rationNo": "365370657920",
+    "cardType": "FSC",
+    "nameEn": "Varsu Jangamma",
+    "nameTe": "వర్సు జంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7920"
+  },
+  {
+    "sNo": 116,
+    "rationNo": "365370657921",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Parvathamma",
+    "nameTe": "కొంగళ్ళ పార్వతమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7921"
+  },
+  {
+    "sNo": 117,
+    "rationNo": "365370657922",
+    "cardType": "FSC",
+    "nameEn": "Gampa Manjula",
+    "nameTe": "గంప మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7922"
+  },
+  {
+    "sNo": 118,
+    "rationNo": "365370657923",
+    "cardType": "FSC",
+    "nameEn": "Varsu Padma",
+    "nameTe": "వర్సు పద్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7923"
+  },
+  {
+    "sNo": 119,
+    "rationNo": "365370657925",
+    "cardType": "FSC",
+    "nameEn": "ORSU SRIDEVI",
+    "nameTe": "ఓర్సు శ్రీదేవి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7925"
+  },
+  {
+    "sNo": 120,
+    "rationNo": "365370657926",
+    "cardType": "FSC",
+    "nameEn": "Varsu Sudharshanamma",
+    "nameTe": "వర్సు సుదర్శనమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7926"
+  },
+  {
+    "sNo": 121,
+    "rationNo": "365370657927",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Mangamma",
+    "nameTe": "కొంగళ్ళ మంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7927"
+  },
+  {
+    "sNo": 122,
+    "rationNo": "365370657928",
+    "cardType": "FSC",
+    "nameEn": "Sappidi Vinitha",
+    "nameTe": "సప్పిడి వినిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7928"
+  },
+  {
+    "sNo": 123,
+    "rationNo": "365370657929",
+    "cardType": "FSC",
+    "nameEn": "Terati Pushpamma",
+    "nameTe": "తేరటి పుష్పమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7929"
+  },
+  {
+    "sNo": 124,
+    "rationNo": "365370657930",
+    "cardType": "FSC",
+    "nameEn": "Thalloju Sugunamma",
+    "nameTe": "తల్లోజు సుగుణమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7930"
+  },
+  {
+    "sNo": 125,
+    "rationNo": "365370657931",
+    "cardType": "FSC",
+    "nameEn": "Sathineni Swathi",
+    "nameTe": "సాతినేని స్వాతి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7931"
+  },
+  {
+    "sNo": 126,
+    "rationNo": "365370657937",
+    "cardType": "AFSC",
+    "nameEn": "Kongalla Mallamma",
+    "nameTe": "కొంగళ్ళ మల్లమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7937"
+  },
+  {
+    "sNo": 127,
+    "rationNo": "365370657938",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Laximamma",
+    "nameTe": "కొంగళ్ళ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7938"
+  },
+  {
+    "sNo": 128,
+    "rationNo": "365370657941",
+    "cardType": "FSC",
+    "nameEn": "G Venkatamma",
+    "nameTe": "వెంకటమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7941"
+  },
+  {
+    "sNo": 129,
+    "rationNo": "365370657942",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Vijaya",
+    "nameTe": "కొంగళ్ళ విజయ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7942"
+  },
+  {
+    "sNo": 130,
+    "rationNo": "365370657943",
+    "cardType": "FSC",
+    "nameEn": "Muddam Padmamma",
+    "nameTe": "ముద్దం పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7943"
+  },
+  {
+    "sNo": 131,
+    "rationNo": "365370657944",
+    "cardType": "FSC",
+    "nameEn": "MADDI BALAMANI",
+    "nameTe": "మద్ది బాలమణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7944"
+  },
+  {
+    "sNo": 132,
+    "rationNo": "365370657945",
+    "cardType": "FSC",
+    "nameEn": "Patla Shobha",
+    "nameTe": "పట్ల శోభ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7945"
+  },
+  {
+    "sNo": 133,
+    "rationNo": "365370657947",
+    "cardType": "FSC",
+    "nameEn": "Pandi Anitha",
+    "nameTe": "పాండి అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7947"
+  },
+  {
+    "sNo": 134,
+    "rationNo": "365370657948",
+    "cardType": "AFSC",
+    "nameEn": "Pandi Maisamma",
+    "nameTe": "పాండి మైసమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7948"
+  },
+  {
+    "sNo": 135,
+    "rationNo": "365370657949",
+    "cardType": "AFSC",
+    "nameEn": "Utu Bharathamma",
+    "nameTe": "ఊటు భారతమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7949"
+  },
+  {
+    "sNo": 136,
+    "rationNo": "365370657951",
+    "cardType": "AFSC",
+    "nameEn": "T Yadamma",
+    "nameTe": "యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7951"
+  },
+  {
+    "sNo": 137,
+    "rationNo": "365370657952",
+    "cardType": "AFSC",
+    "nameEn": "Gorenka Padmamma",
+    "nameTe": "గోరెంక పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7952"
+  },
+  {
+    "sNo": 138,
+    "rationNo": "365370657953",
+    "cardType": "AFSC",
+    "nameEn": "Lingamolla Sathamma",
+    "nameTe": "లింగమొల్ల సత్తమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7953"
+  },
+  {
+    "sNo": 139,
+    "rationNo": "365370657954",
+    "cardType": "FSC",
+    "nameEn": "KISTAMMA",
+    "nameTe": "కిష్టమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7954"
+  },
+  {
+    "sNo": 140,
+    "rationNo": "365370657960",
+    "cardType": "FSC",
+    "nameEn": "Durgam Padmamma",
+    "nameTe": "దుర్గం పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7960"
+  },
+  {
+    "sNo": 141,
+    "rationNo": "365370657961",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Manjula",
+    "nameTe": "కొంగళ్ళ మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7961"
+  },
+  {
+    "sNo": 142,
+    "rationNo": "365370657963",
+    "cardType": "FSC",
+    "nameEn": "Muda Jayamma",
+    "nameTe": "ముడ జయమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7963"
+  },
+  {
+    "sNo": 143,
+    "rationNo": "365370657964",
+    "cardType": "FSC",
+    "nameEn": "K Mallamma",
+    "nameTe": "మల్లమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7964"
+  },
+  {
+    "sNo": 144,
+    "rationNo": "365370657965",
+    "cardType": "FSC",
+    "nameEn": "Gaddaguti Pochamma",
+    "nameTe": "గడ్డగుటి పోచమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7965"
+  },
+  {
+    "sNo": 145,
+    "rationNo": "365370657968",
+    "cardType": "FSC",
+    "nameEn": "Muda Yadamma",
+    "nameTe": "ముడ యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7968"
+  },
+  {
+    "sNo": 146,
+    "rationNo": "365370657969",
+    "cardType": "FSC",
+    "nameEn": "Eligepally Anitha",
+    "nameTe": "ఎలిగపల్లి అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7969"
+  },
+  {
+    "sNo": 147,
+    "rationNo": "365370657971",
+    "cardType": "FSC",
+    "nameEn": "Varikuppala Eedamma",
+    "nameTe": "వరికుప్పల ఈడమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7971"
+  },
+  {
+    "sNo": 148,
+    "rationNo": "365370657972",
+    "cardType": "FSC",
+    "nameEn": "Purugula Jangamma",
+    "nameTe": "పురుగుల జంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7972"
+  },
+  {
+    "sNo": 149,
+    "rationNo": "365370657973",
+    "cardType": "FSC",
+    "nameEn": "Eligepally Shankaramma",
+    "nameTe": "ఎలిగపల్లి శంకరమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7973"
+  },
+  {
+    "sNo": 150,
+    "rationNo": "365370657974",
+    "cardType": "FSC",
+    "nameEn": "Tereti Maheshwari",
+    "nameTe": "తేరటి మహేశ్వరి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7974"
+  },
+  {
+    "sNo": 151,
+    "rationNo": "365370657975",
+    "cardType": "FSC",
+    "nameEn": "Elgapally Eedamma",
+    "nameTe": "ఎలిగపల్లి ఈడమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7975"
+  },
+  {
+    "sNo": 152,
+    "rationNo": "365370657977",
+    "cardType": "AFSC",
+    "nameEn": "Edla Alivelu",
+    "nameTe": "ఎడ్ల అలివేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7977"
+  },
+  {
+    "sNo": 153,
+    "rationNo": "365370657978",
+    "cardType": "AFSC",
+    "nameEn": "Thalloju Manjula",
+    "nameTe": "తల్లోజు మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7978"
+  },
+  {
+    "sNo": 154,
+    "rationNo": "365370657979",
+    "cardType": "FSC",
+    "nameEn": "Patla Santhosha",
+    "nameTe": "పట్ల సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7979"
+  },
+  {
+    "sNo": 155,
+    "rationNo": "365370657981",
+    "cardType": "FSC",
+    "nameEn": "Godasu Swapna",
+    "nameTe": "గోదాసు స్వప్న",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7981"
+  },
+  {
+    "sNo": 156,
+    "rationNo": "365370657982",
+    "cardType": "FSC",
+    "nameEn": "Mudham Manga",
+    "nameTe": "ముద్దం మంగ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7982"
+  },
+  {
+    "sNo": 157,
+    "rationNo": "365370657983",
+    "cardType": "FSC",
+    "nameEn": "Eligapally Jyothi",
+    "nameTe": "ఎలిగపల్లి జ్యోతి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7983"
+  },
+  {
+    "sNo": 158,
+    "rationNo": "365370657986",
+    "cardType": "FSC",
+    "nameEn": "Bukka Laxmi",
+    "nameTe": "బుక్క లక్ష్మి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7986"
+  },
+  {
+    "sNo": 159,
+    "rationNo": "365370657988",
+    "cardType": "FSC",
+    "nameEn": "Kanda Ramulamma",
+    "nameTe": "కండ రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7988"
+  },
+  {
+    "sNo": 160,
+    "rationNo": "365370657989",
+    "cardType": "FSC",
+    "nameEn": "Gadaguti Sunitha",
+    "nameTe": "గడగుటి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7989"
+  },
+  {
+    "sNo": 161,
+    "rationNo": "365370657990",
+    "cardType": "FSC",
+    "nameEn": "Utu Posaiah",
+    "nameTe": "ఊటు పోసయ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7990"
+  },
+  {
+    "sNo": 162,
+    "rationNo": "365370657991",
+    "cardType": "FSC",
+    "nameEn": "Edla Yadamma",
+    "nameTe": "ఎడ్ల యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7991"
+  },
+  {
+    "sNo": 163,
+    "rationNo": "365370657992",
+    "cardType": "FSC",
+    "nameEn": "MALLAMMA",
+    "nameTe": "మల్లమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7992"
+  },
+  {
+    "sNo": 164,
+    "rationNo": "365370657993",
+    "cardType": "FSC",
+    "nameEn": "Eligapally Sunitha",
+    "nameTe": "ఎలిగపల్లి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7993"
+  },
+  {
+    "sNo": 165,
+    "rationNo": "365370657994",
+    "cardType": "FSC",
+    "nameEn": "Sindham Manjula",
+    "nameTe": "సింధం మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7994"
+  },
+  {
+    "sNo": 166,
+    "rationNo": "365370657995",
+    "cardType": "FSC",
+    "nameEn": "Sakila Manjula",
+    "nameTe": "మంజుల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7995"
+  },
+  {
+    "sNo": 167,
+    "rationNo": "365370657996",
+    "cardType": "FSC",
+    "nameEn": "Mandala Jangamma",
+    "nameTe": "మండల జంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7996"
+  },
+  {
+    "sNo": 168,
+    "rationNo": "365370657997",
+    "cardType": "FSC",
+    "nameEn": "Edla Ravelu",
+    "nameTe": "ఎడ్ల రావేలు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7997"
+  },
+  {
+    "sNo": 169,
+    "rationNo": "365370657998",
+    "cardType": "FSC",
+    "nameEn": "Guduru Bharathamma",
+    "nameTe": "గూడూరు భారతమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7998"
+  },
+  {
+    "sNo": 170,
+    "rationNo": "365370657999",
+    "cardType": "FSC",
+    "nameEn": "Jenigala Venkatamma",
+    "nameTe": "జెనిగల వెంకటమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7999"
+  },
+  {
+    "sNo": 171,
+    "rationNo": "365370658000",
+    "cardType": "AFSC",
+    "nameEn": "Pothuraju Ramulamma",
+    "nameTe": "పోతురాజు రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8000"
+  },
+  {
+    "sNo": 172,
+    "rationNo": "365370658001",
+    "cardType": "FSC",
+    "nameEn": "Surgi Padma",
+    "nameTe": "సుర్గి పద్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8001"
+  },
+  {
+    "sNo": 173,
+    "rationNo": "365370658002",
+    "cardType": "AFSC",
+    "nameEn": "g anitha",
+    "nameTe": "అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8002"
+  },
+  {
+    "sNo": 174,
+    "rationNo": "365370658003",
+    "cardType": "FSC",
+    "nameEn": "Gorranka Hymavathi",
+    "nameTe": "గోర్రంక హైమావతి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8003"
+  },
+  {
+    "sNo": 175,
+    "rationNo": "365370658004",
+    "cardType": "FSC",
+    "nameEn": "Kanda Maisamma",
+    "nameTe": "కండ మైసమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8004"
+  },
+  {
+    "sNo": 176,
+    "rationNo": "365370658005",
+    "cardType": "FSC",
+    "nameEn": "Bukka Laxmamma",
+    "nameTe": "బుక్క లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8005"
+  },
+  {
+    "sNo": 177,
+    "rationNo": "365370658008",
+    "cardType": "FSC",
+    "nameEn": "Pandi Kalamma",
+    "nameTe": "పాండి కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8008"
+  },
+  {
+    "sNo": 178,
+    "rationNo": "365370658009",
+    "cardType": "FSC",
+    "nameEn": "Gaddagooti Kalpana",
+    "nameTe": "గడ్డగూటి కల్పన",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8009"
+  },
+  {
+    "sNo": 179,
+    "rationNo": "365370658010",
+    "cardType": "FSC",
+    "nameEn": "Kogalla Anjamma",
+    "nameTe": "కోగళ్ళ అంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8010"
+  },
+  {
+    "sNo": 180,
+    "rationNo": "365370658011",
+    "cardType": "FSC",
+    "nameEn": "Gorenka Jayamma",
+    "nameTe": "గోరెంక జయమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8011"
+  },
+  {
+    "sNo": 181,
+    "rationNo": "365370658012",
+    "cardType": "FSC",
+    "nameEn": "Anitha",
+    "nameTe": "అనిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8012"
+  },
+  {
+    "sNo": 182,
+    "rationNo": "365370658013",
+    "cardType": "FSC",
+    "nameEn": "G Padma",
+    "nameTe": "పద్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8013"
+  },
+  {
+    "sNo": 183,
+    "rationNo": "365370658015",
+    "cardType": "FSC",
+    "nameEn": "Varikuppala Laxmamma",
+    "nameTe": "వరికుప్పల లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8015"
+  },
+  {
+    "sNo": 184,
+    "rationNo": "365370658017",
+    "cardType": "FSC",
+    "nameEn": "Varikuppala Yadamma",
+    "nameTe": "వరికుప్పల యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8017"
+  },
+  {
+    "sNo": 185,
+    "rationNo": "365371585429",
+    "cardType": "FSC",
+    "nameEn": "g vijaya laxmi",
+    "nameTe": "విజయ లక్ష్మి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "5429"
+  },
+  {
+    "sNo": 186,
+    "rationNo": "365371588972",
+    "cardType": "FSC",
+    "nameEn": "mandala paramesh",
+    "nameTe": "మండల పరమేష్",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8972"
+  },
+  {
+    "sNo": 187,
+    "rationNo": "365371588974",
+    "cardType": "FSC",
+    "nameEn": "SAMPANGI LAXMAMMA",
+    "nameTe": "సంపంగి లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8974"
+  },
+  {
+    "sNo": 188,
+    "rationNo": "365371588975",
+    "cardType": "FSC",
+    "nameEn": "TERATI YADAMMA",
+    "nameTe": "తేరటి యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8975"
+  },
+  {
+    "sNo": 189,
+    "rationNo": "365371588977",
+    "cardType": "FSC",
+    "nameEn": "GADDAGUTI KALAMMA",
+    "nameTe": "గడ్డగుటి కాలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8977"
+  },
+  {
+    "sNo": 190,
+    "rationNo": "365371588978",
+    "cardType": "FSC",
+    "nameEn": "MANDALA SATHAMMA",
+    "nameTe": "మండల సత్తమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8978"
+  },
+  {
+    "sNo": 191,
+    "rationNo": "365371588979",
+    "cardType": "FSC",
+    "nameEn": "GADDAGUTI RAJITHA / Yadaiah / Gnanesh",
+    "nameTe": "గడ్డగుటి రజిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8979"
+  },
+  {
+    "sNo": 192,
+    "rationNo": "365371588980",
+    "cardType": "FSC",
+    "nameEn": "KONGALLA PRAMEELA",
+    "nameTe": "కొంగళ్ళ ప్రమీల",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8980"
+  },
+  {
+    "sNo": 193,
+    "rationNo": "365371588981",
+    "cardType": "FSC",
+    "nameEn": "Kongalla Bujjamma",
+    "nameTe": "కొంగళ్ళ బుజ్జమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8981"
+  },
+  {
+    "sNo": 194,
+    "rationNo": "365371588982",
+    "cardType": "FSC",
+    "nameEn": "PANDI BAGYAMMA",
+    "nameTe": "పాండి భాగ్యమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8982"
+  },
+  {
+    "sNo": 195,
+    "rationNo": "365371588983",
+    "cardType": "FSC",
+    "nameEn": "BUKKA LAXMAMMA",
+    "nameTe": "బుక్క లక్ష్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8983"
+  },
+  {
+    "sNo": 196,
+    "rationNo": "365371588984",
+    "cardType": "FSC",
+    "nameEn": "K GOPAMMA",
+    "nameTe": "గోపమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8984"
+  },
+  {
+    "sNo": 197,
+    "rationNo": "365371588985",
+    "cardType": "FSC",
+    "nameEn": "TERETI SUVARNA",
+    "nameTe": "తేరటి సువర్ణ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8985"
+  },
+  {
+    "sNo": 198,
+    "rationNo": "365371588986",
+    "cardType": "FSC",
+    "nameEn": "KATOJU MADHAVI",
+    "nameTe": "కాటోజు మాధవి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8986"
+  },
+  {
+    "sNo": 199,
+    "rationNo": "365371588988",
+    "cardType": "FSC",
+    "nameEn": "MANDALA VANI",
+    "nameTe": "మండల వాణి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8988"
+  },
+  {
+    "sNo": 200,
+    "rationNo": "365371590993",
+    "cardType": "FSC",
+    "nameEn": "ELGEPALLY PARVATHAMMA",
+    "nameTe": "ఎలిగపల్లి పార్వతమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0993"
+  },
+  {
+    "sNo": 201,
+    "rationNo": "365371590994",
+    "cardType": "FSC",
+    "nameEn": "MANDALA MAHESHWARI",
+    "nameTe": "మండల మహేశ్వరి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0994"
+  },
+  {
+    "sNo": 202,
+    "rationNo": "365371590995",
+    "cardType": "FSC",
+    "nameEn": "SAMPANGI SANTHOSHA",
+    "nameTe": "సంపంగి సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0995"
+  },
+  {
+    "sNo": 203,
+    "rationNo": "365371591114",
+    "cardType": "FSC",
+    "nameEn": "GORENKA PREMALATHA",
+    "nameTe": "గోరెంక ప్రేమలత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1114"
+  },
+  {
+    "sNo": 204,
+    "rationNo": "365371591115",
+    "cardType": "FSC",
+    "nameEn": "TEHERATI LALITHA",
+    "nameTe": "తేరటి లలిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1115"
+  },
+  {
+    "sNo": 205,
+    "rationNo": "365371605307",
+    "cardType": "FSC",
+    "nameEn": "Mandala Ramulamma",
+    "nameTe": "మండల రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "5307"
+  },
+  {
+    "sNo": 206,
+    "rationNo": "365371606300",
+    "cardType": "FSC",
+    "nameEn": "VARIKUPPALA SABITHA / Ramulu",
+    "nameTe": "వరికుప్పల సబిత రాములు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "6300"
+  },
+  {
+    "sNo": 207,
+    "rationNo": "365371606321",
+    "cardType": "FSC",
+    "nameEn": "SAMPANGI MAMATHA",
+    "nameTe": "సంపంగి మమత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "6321"
+  },
+  {
+    "sNo": 208,
+    "rationNo": "365371607204",
+    "cardType": "FSC",
+    "nameEn": "muddam srilatha",
+    "nameTe": "ముద్దం శ్రీలత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7204"
+  },
+  {
+    "sNo": 209,
+    "rationNo": "365371607208",
+    "cardType": "FSC",
+    "nameEn": "SATHINENI LAKSHMI",
+    "nameTe": "సాతినేని లక్ష్మి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7208"
+  },
+  {
+    "sNo": 210,
+    "rationNo": "365371607721",
+    "cardType": "FSC",
+    "nameEn": "SATHINENI VAIDEHI",
+    "nameTe": "సాతినేని వైదేహి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7721"
+  },
+  {
+    "sNo": 211,
+    "rationNo": "365371607900",
+    "cardType": "FSC",
+    "nameEn": "VISLAVATH CHITTI",
+    "nameTe": "విస్లావత్ చిట్టి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7900"
+  },
+  {
+    "sNo": 212,
+    "rationNo": "365371608199",
+    "cardType": "FSC",
+    "nameEn": "SAMPANGI SUPRIYA / Venkatesh / Revanth / SREEJASRI",
+    "nameTe": "సంపంగి సుప్రియ వెంకటేష్ రేవంత్ శ్రీజశ్రీ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8199"
+  },
+  {
+    "sNo": 213,
+    "rationNo": "365371608208",
+    "cardType": "FSC",
+    "nameEn": "SATTINANI LAXMINARASMMA / Ravi Kanth-KRISHNA KANTH REDDY",
+    "nameTe": "సత్తినేని లక్ష్మీనరసమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8208"
+  },
+  {
+    "sNo": 214,
+    "rationNo": "365371608209",
+    "cardType": "FSC",
+    "nameEn": "S RAMANJAMMA / Seetha Ram Reddy",
+    "nameTe": "రామాంజమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8209"
+  },
+  {
+    "sNo": 215,
+    "rationNo": "365371608210",
+    "cardType": "FSC",
+    "nameEn": "gorenkala alivelamma",
+    "nameTe": "గోరెంకల అలివేలమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8210"
+  },
+  {
+    "sNo": 216,
+    "rationNo": "365371608211",
+    "cardType": "FSC",
+    "nameEn": "kongalla balamma",
+    "nameTe": "కొంగళ్ళ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8211"
+  },
+  {
+    "sNo": 217,
+    "rationNo": "365371608214",
+    "cardType": "FSC",
+    "nameEn": "SATHINENI SABITHA / Krishna-Shiva Kumar Reddy",
+    "nameTe": "సాతినేని సబిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "8214"
+  },
+  {
+    "sNo": 218,
+    "rationNo": "365371610354",
+    "cardType": "FSC",
+    "nameEn": "TALLOJI KISTAMMA",
+    "nameTe": "తల్లోజి కిష్టమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0354"
+  },
+  {
+    "sNo": 219,
+    "rationNo": "365371610450",
+    "cardType": "FSC",
+    "nameEn": "DERANGULA TIRUPATAMMA / D PADMA",
+    "nameTe": "దేరంగుల తిరుపతమ్మ పద్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0450"
+  },
+  {
+    "sNo": 220,
+    "rationNo": "365371610936",
+    "cardType": "FSC",
+    "nameEn": "OOTU BALAMMA",
+    "nameTe": "ఊటు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0936"
+  },
+  {
+    "sNo": 221,
+    "rationNo": "365371610954",
+    "cardType": "FSC",
+    "nameEn": "PATTLA SATTAIAH",
+    "nameTe": "పట్ల సత్తయ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0954"
+  },
+  {
+    "sNo": 222,
+    "rationNo": "365371610972",
+    "cardType": "FSC",
+    "nameEn": "BASIREDDY PADMAMMA",
+    "nameTe": "బాసిరెడ్డి పద్మమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0972"
+  },
+  {
+    "sNo": 223,
+    "rationNo": "365371610997",
+    "cardType": "FSC",
+    "nameEn": "Souta Suramma",
+    "nameTe": "సౌత సూరమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0997"
+  },
+  {
+    "sNo": 224,
+    "rationNo": "365371611218",
+    "cardType": "FSC",
+    "nameEn": "mandala ramulamma",
+    "nameTe": "మండల రాములమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1218"
+  },
+  {
+    "sNo": 225,
+    "rationNo": "365371611222",
+    "cardType": "FSC",
+    "nameEn": "JAGU VANKATAMMA",
+    "nameTe": "జాగు వెంకటమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1222"
+  },
+  {
+    "sNo": 226,
+    "rationNo": "365371611226",
+    "cardType": "FSC",
+    "nameEn": "Bukka Narasamma / Channaiah / Chennakeshavulu",
+    "nameTe": "బుక్క నరసమ్మ చన్నయ్య చెన్నకేశవులు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1226"
+  },
+  {
+    "sNo": 227,
+    "rationNo": "365371614672",
+    "cardType": "FSC",
+    "nameEn": "ELIGEPALLY SATYAMMA / Ramulu",
+    "nameTe": "ఎలిగపల్లి సత్యమ్మ రాములు",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "4672"
+  },
+  {
+    "sNo": 228,
+    "rationNo": "365371615822",
+    "cardType": "FSC",
+    "nameEn": "Pagadala Yadamma",
+    "nameTe": "పగడాల యాదమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "5822"
+  },
+  {
+    "sNo": 229,
+    "rationNo": "365371631201",
+    "cardType": "FSC",
+    "nameEn": "KANKA KARTHIK / RITHIKA",
+    "nameTe": "కంక కార్తీక్ రితిక",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "1201"
+  },
+  {
+    "sNo": 230,
+    "rationNo": "365371632944",
+    "cardType": "FSC",
+    "nameEn": "SWARNALATHA",
+    "nameTe": "స్వర్ణలత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "2944"
+  },
+  {
+    "sNo": 231,
+    "rationNo": "365371633086",
+    "cardType": "FSC",
+    "nameEn": "SAKILALA HARIKA / VIHAN",
+    "nameTe": "సాకిలాల హారిక విహాన్",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "3086"
+  },
+  {
+    "sNo": 232,
+    "rationNo": "365371633853",
+    "cardType": "FSC",
+    "nameEn": "MAKTHALA VARNTEJ",
+    "nameTe": "మఖ్తలా వర్ణతేజ్",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "3853"
+  },
+  {
+    "sNo": 233,
+    "rationNo": "365371634032",
+    "cardType": "FSC",
+    "nameEn": "T ADHYASRI",
+    "nameTe": "ఆద్యాశ్రీ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "4032"
+  },
+  {
+    "sNo": 234,
+    "rationNo": "365371636216",
+    "cardType": "FSC",
+    "nameEn": "YELLAPALLI ANISHYADHAV / CHRIYANSHI",
+    "nameTe": "ఎల్లపల్లి అనీష్ యాదవ్ క్రియాన్షి",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "6216"
+  },
+  {
+    "sNo": 235,
+    "rationNo": "365371639213",
+    "cardType": "FSC",
+    "nameEn": "GUNDUMALLU HONEY / TULASI / HARSHITHA",
+    "nameTe": "గుండుమల్లు హనీ తులసి హర్షిత",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "9213"
+  },
+  {
+    "sNo": 236,
+    "rationNo": "365371649660",
+    "cardType": "FSC",
+    "nameEn": "TERATI BHANUSRI / SRINU",
+    "nameTe": "తేరటి భానుశ్రీ శ్రీను",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "9660"
+  },
+  {
+    "sNo": 237,
+    "rationNo": "365371649867",
+    "cardType": "FSC",
+    "nameEn": "SATTINENI CHANDRAMOHAN REDDY / ARUNAMMA",
+    "nameTe": "అరుణమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "9867"
+  },
+  {
+    "sNo": 238,
+    "rationNo": "365371650040",
+    "cardType": "FSC",
+    "nameEn": "MUDA RANGAMMA",
+    "nameTe": "ముడ రంగమ్మ",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "0040"
+  },
+  {
+    "sNo": 239,
+    "rationNo": "365371657955",
+    "cardType": "FSC",
+    "nameEn": "BUKKA LAKSHMAYYA",
+    "nameTe": "బుక్క లక్ష్మయ్య",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "7955"
+  },
+  {
+    "sNo": 240,
+    "rationNo": "365371662148",
+    "cardType": "FSC",
+    "nameEn": "T SATWHIK",
+    "nameTe": "సాత్విక్",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "2148"
+  },
+  {
+    "sNo": 241,
+    "rationNo": "365371666425",
+    "cardType": "FSC",
+    "nameEn": "SAKILALA SANTHOSHA",
+    "nameTe": "సాకిలాల సంతోష",
+    "village": "Fair Price Shop #03 Village",
+    "phone": "",
+    "last4": "6425"
   }
 ]

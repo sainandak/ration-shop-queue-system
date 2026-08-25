@@ -259,11 +259,14 @@
       <div class="name-english" id="personNameEn">Waiting for Next Token</div>
 
       <div class="meta-details">
-        <div class="meta-item">
-          📍 Village: <strong id="personVillage" style="color: white;">--</strong>
+        <div class="meta-item" id="itemSNo">
+          🔢 S.No: <strong id="personSNo" style="color: var(--gold-yellow);">--</strong>
+        </div>
+        <div class="meta-item" id="itemCardType">
+          📋 Type: <strong id="personCardType" style="color: #38bdf8;">FSC</strong>
         </div>
         <div class="meta-item">
-          🪪 Card: <strong id="personCardNo" style="color: var(--sky-blue);">--</strong>
+          🪪 Card: <strong id="personCardNo" style="color: white;">--</strong>
         </div>
       </div>
     </div>
@@ -390,9 +393,11 @@
       if (!speechSynth) return;
       speechSynth.cancel();
 
+      const last4 = data.last4 || (data.rationNo ? data.rationNo.slice(-4) : '');
+
       setTimeout(() => {
         // English Utterance
-        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}`);
+        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in ${last4}`);
         msgEn.lang = 'en-IN';
         if (englishVoice) msgEn.voice = englishVoice;
         msgEn.rate = 0.9;
@@ -400,7 +405,7 @@
 
         // Telugu Utterance
         const teluguText = data.nameTe ? data.nameTe : data.nameEn;
-        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}`);
+        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}, కార్డు నంబర్ ${last4}`);
         msgTe.lang = 'te-IN';
         if (teluguVoice) msgTe.voice = teluguVoice;
         msgTe.rate = 0.85;
@@ -428,8 +433,9 @@
       document.getElementById('tokenNum').innerText = '#' + data.tokenNo;
       document.getElementById('personNameTe').innerText = data.nameTe || data.nameEn;
       document.getElementById('personNameEn').innerText = data.nameEn;
-      document.getElementById('personVillage').innerText = data.village || '--';
-      document.getElementById('personCardNo').innerText = data.rationNo || '--';
+      document.getElementById('personSNo').innerText = data.sNo ? '#' + data.sNo : '--';
+      document.getElementById('personCardType').innerText = data.cardType || 'FSC';
+      document.getElementById('personCardNo').innerText = data.rationNo ? `${data.rationNo} (...${data.last4 || data.rationNo.slice(-4)})` : '--';
 
       triggerVisualAlert();
       makeAnnouncement(data);
@@ -441,13 +447,15 @@
         document.getElementById('tokenNum').innerText = '#' + state.serving.tokenNo;
         document.getElementById('personNameTe').innerText = state.serving.nameTe || state.serving.nameEn;
         document.getElementById('personNameEn').innerText = state.serving.nameEn;
-        document.getElementById('personVillage').innerText = state.serving.village || '--';
-        document.getElementById('personCardNo').innerText = state.serving.rationNo || '--';
+        document.getElementById('personSNo').innerText = state.serving.sNo ? '#' + state.serving.sNo : '--';
+        document.getElementById('personCardType').innerText = state.serving.cardType || 'FSC';
+        document.getElementById('personCardNo').innerText = state.serving.rationNo ? `${state.serving.rationNo} (...${state.serving.last4 || state.serving.rationNo.slice(-4)})` : '--';
       } else {
         document.getElementById('tokenNum').innerText = '--';
         document.getElementById('personNameTe').innerText = 'వేచి ఉండండి...';
         document.getElementById('personNameEn').innerText = 'Waiting for Next Token';
-        document.getElementById('personVillage').innerText = '--';
+        document.getElementById('personSNo').innerText = '--';
+        document.getElementById('personCardType').innerText = '--';
         document.getElementById('personCardNo').innerText = '--';
       }
 

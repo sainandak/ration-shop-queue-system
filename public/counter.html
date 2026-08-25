@@ -386,8 +386,8 @@
       const container = document.getElementById('quickChipsContainer');
       if (container && cards) {
         container.innerHTML = cards.map(c => `
-          <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.nameTe || ''})">
-            ${c.rationNo} (${c.nameEn.split(' ')[0]})
+          <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.cardType})">
+            #${c.sNo} ${c.nameEn.split(' ')[0]} (..${c.last4 || c.rationNo.slice(-4)})
           </button>
         `).join('');
       }
@@ -398,34 +398,38 @@
       const previewEl = document.getElementById('keypadCardPreview');
 
       if (!currentKeypadDigits) {
-        displayEl.innerText = 'RC-';
-        previewEl.innerText = 'Type number (e.g. 1 for RC-0001)';
+        displayEl.innerText = 'S.No / Last 4';
+        previewEl.innerText = 'Type S.No (1-241) or Last 4 digits';
         return;
       }
 
-      let fullRc = 'RC-' + currentKeypadDigits.padStart(4, '0');
-      displayEl.innerText = fullRc;
+      displayEl.innerText = currentKeypadDigits;
 
-      // Instant search in memory
-      let match = allCardsStore.find(c => c.rationNo.toUpperCase() === fullRc);
+      // 1. Check if S.No
+      let match = null;
+      if (currentKeypadDigits.length <= 3) {
+        const sNoNum = parseInt(currentKeypadDigits, 10);
+        match = allCardsStore.find(c => c.sNo === sNoNum);
+      }
+
+      // 2. Check if Last 4 digits or Ration No
       if (!match) {
-        match = allCardsStore.find(c => c.rationNo.endsWith(currentKeypadDigits) || c.rationNo.includes(currentKeypadDigits));
+        match = allCardsStore.find(c => (c.last4 && c.last4 === currentKeypadDigits) || c.rationNo.endsWith(currentKeypadDigits));
       }
 
       if (match) {
-        previewEl.innerHTML = `✅ <strong>${match.nameEn}</strong> (${match.nameTe || ''}) • 📍 ${match.village}`;
+        previewEl.innerHTML = `✅ [S.No #${match.sNo}] <strong>${match.nameEn}</strong> <span style="background: ${match.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">${match.cardType || 'FSC'}</span> • ...${match.last4 || match.rationNo.slice(-4)}`;
       } else {
-        previewEl.innerText = `Card ${fullRc} (Ready to issue)`;
+        previewEl.innerText = `Searching roster for "${currentKeypadDigits}"...`;
       }
     }
 
     function submitKeypad() {
       if (!currentKeypadDigits) {
-        showToast('Please type a card number on the keypad', 'warning');
+        showToast('Please type S.No (1-241) or Last 4 digits on the keypad', 'warning');
         return;
       }
-      const fullRc = 'RC-' + currentKeypadDigits.padStart(4, '0');
-      submitRationScan(fullRc);
+      submitRationScan(currentKeypadDigits);
       currentKeypadDigits = '';
       updateKeypadDisplay();
     }
@@ -536,11 +540,13 @@
 
       // Instant local search in 0ms
       let matches = allCardsStore.filter(c => 
+        (c.sNo && c.sNo.toString() === q) ||
+        (c.last4 && c.last4.includes(q)) ||
         (c.rationNo && c.rationNo.toLowerCase().includes(q)) ||
         (c.nameEn && c.nameEn.toLowerCase().includes(q)) ||
         (c.nameTe && c.nameTe.toLowerCase().includes(q)) ||
-        (c.village && c.village.toLowerCase().includes(q)) ||
-        (c.phone && c.phone.includes(q))
+        (c.cardType && c.cardType.toLowerCase().includes(q)) ||
+        (c.village && c.village.toLowerCase().includes(q))
       ).slice(0, 8);
 
       if (matches.length === 0) {
@@ -552,8 +558,14 @@
       dropdown.innerHTML = matches.map(c => `
         <div onclick="selectSuggestedCard('${c.rationNo}')" style="padding: 0.65rem 1rem; border-bottom: 1px solid var(--gray-200); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='white'">
           <div>
-            <div style="font-weight: 700; color: var(--gray-800);">${c.nameEn} <span style="color: #0369a1; font-size: 0.9rem;">(${c.nameTe || ''})</span></div>
-            <div style="font-size: 0.8rem; color: var(--gray-600);">${c.rationNo} • 📍 ${c.village || 'Main Village'}</div>
+            <div style="font-weight: 700; color: var(--gray-800);">
+              <span style="background: #e2e8f0; color: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">#${c.sNo}</span>
+              ${c.nameEn} 
+              <span style="background: ${c.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">${c.cardType || 'FSC'}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 2px;">
+              Card: <strong>${c.rationNo}</strong> (Ending: <strong style="color: var(--primary);">${c.last4 || c.rationNo.slice(-4)}</strong>)
+            </div>
           </div>
           <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="event.stopPropagation(); selectSuggestedCard('${c.rationNo}')">
             ⚡ Issue

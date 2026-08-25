@@ -509,31 +509,34 @@ app.get('/api/queue/state', (req, res) => {
   res.json(getQueueStateFormatted());
 });
 
-// Scan or Manual Entry to issue token (Smart Matching by RC#, Digits, Name, or Phone)
+// Scan or Manual Entry to issue token (Smart Matching by S.No 1-241, Last 4 digits, Full RC, Name, or Phone)
 app.post('/api/scan', (req, res) => {
   const rawInput = (req.body.rationNo || req.body.query || '').toString().trim();
   if (!rawInput) {
-    return res.status(400).json({ success: false, message: 'Please enter a card number or name' });
+    return res.status(400).json({ success: false, message: 'Please enter a card number, S.No, or name' });
   }
 
   const clean = rawInput.toUpperCase();
+  const digitsOnly = rawInput.replace(/\D/g, '');
 
-  // 1. Exact Ration Number Match (e.g. RC-0001)
-  let holder = cards.find(c => c.rationNo.toUpperCase() === clean);
-
-  // 2. Numeric / Padded Match (e.g. "1" -> "RC-0001", "15" -> "RC-0015")
-  if (!holder) {
-    const digitsOnly = rawInput.replace(/\D/g, '');
-    if (digitsOnly) {
-      const padded = 'RC-' + digitsOnly.padStart(4, '0');
-      holder = cards.find(c => c.rationNo.toUpperCase() === padded);
-      if (!holder) {
-        holder = cards.find(c => c.rationNo.endsWith(digitsOnly));
-      }
-    }
+  // 1. Match by Serial Number (e.g. S.No 1 to 241)
+  let holder = null;
+  if (digitsOnly && digitsOnly.length <= 3) {
+    const sNoNum = parseInt(digitsOnly, 10);
+    holder = cards.find(c => c.sNo === sNoNum);
   }
 
-  // 3. Name or Phone Partial Match
+  // 2. Exact Ration Number Match (e.g. 365370657769)
+  if (!holder) {
+    holder = cards.find(c => c.rationNo.toUpperCase() === clean);
+  }
+
+  // 3. Match by Last 4 Digits of Ration Card (e.g. 7769, 7818)
+  if (!holder && digitsOnly) {
+    holder = cards.find(c => c.rationNo.endsWith(digitsOnly) || (c.last4 && c.last4 === digitsOnly));
+  }
+
+  // 4. Name or Telugu Match
   if (!holder) {
     const queryLower = rawInput.toLowerCase();
     holder = cards.find(c => 
@@ -546,7 +549,7 @@ app.post('/api/scan', (req, res) => {
   if (!holder) {
     return res.status(404).json({
       success: false,
-      message: `Card "${rawInput}" not found in database. Please add in Admin.`
+      message: `Card/S.No "${rawInput}" not found in database.`
     });
   }
 
@@ -560,14 +563,17 @@ app.post('/api/scan', (req, res) => {
       isDuplicate: true,
       tokenNo: alreadyInQueue.tokenNo,
       status: alreadyInQueue.status,
-      message: `Card ${rawRation} (${holder.nameEn}) was already issued Token #${alreadyInQueue.tokenNo} [Status: ${alreadyInQueue.status}]`
+      message: `[S.No #${holder.sNo || '--'}] ${holder.nameEn} (Ending ...${holder.last4 || rawRation.slice(-4)}) was already issued Token #${alreadyInQueue.tokenNo} [Status: ${alreadyInQueue.status}]`
     });
   }
 
   queueState.tokenNo += 1;
   const newEntry = {
     tokenNo: queueState.tokenNo,
+    sNo: holder.sNo || null,
     rationNo: holder.rationNo,
+    cardType: holder.cardType || 'FSC',
+    last4: holder.last4 || holder.rationNo.slice(-4),
     nameEn: holder.nameEn,
     nameTe: holder.nameTe,
     village: holder.village,
@@ -591,7 +597,7 @@ app.post('/api/scan', (req, res) => {
       success: true,
       autoCalled: true,
       ...newEntry,
-      message: `Token #${newEntry.tokenNo} issued and called for ${holder.nameEn} / ${holder.nameTe}`
+      message: `Token #${newEntry.tokenNo} issued for [S.No #${holder.sNo}] ${holder.nameEn} (${holder.cardType} ...${newEntry.last4})`
     });
   }
 
@@ -603,7 +609,7 @@ app.post('/api/scan', (req, res) => {
     success: true,
     autoCalled: false,
     ...newEntry,
-    message: `Token #${newEntry.tokenNo} issued for ${holder.nameEn} / ${holder.nameTe}`
+    message: `Token #${newEntry.tokenNo} issued for [S.No #${holder.sNo}] ${holder.nameEn} (${holder.cardType} ...${newEntry.last4})`
   });
 });
 
