@@ -100,9 +100,12 @@
   <nav class="navbar">
     <a href="/" class="nav-brand">
       <span>🌾</span>
-      <span>Shop Counter</span>
+      <span>Shop Counter (#03)</span>
     </a>
     <div class="nav-links">
+      <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;" onclick="openAddModal()">
+        ➕ Add Beneficiary
+      </button>
       <a href="/" class="nav-link">Hub</a>
       <a href="/counter" class="nav-link active">Counter</a>
       <a href="/display" class="nav-link" target="_blank">Display ↗</a>
@@ -123,18 +126,21 @@
           <div class="serving-name-te" id="activeNameTe">కౌంటర్ ఖాళీగా ఉంది</div>
           <div class="serving-details" id="activeDetails">--</div>
 
-          <div class="btn-group-grid">
-            <button class="btn btn-warning" onclick="repeatAnnouncement()">
-              📢 Repeat Audio
-            </button>
-            <button class="btn btn-success" onclick="completeCurrent()">
+          <div class="btn-group-grid" style="grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn btn-success" onclick="completeCurrent()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
               ✅ Complete & Next
             </button>
-            <button class="btn btn-danger" onclick="skipCurrent()">
+            <button class="btn btn-outline" style="background: white; color: #b91c1c; border-color: #fca5a5; padding: 0.65rem 0.5rem; font-weight: 700;" onclick="exitCurrentOnly()">
+              🚪 Exit / Free Counter
+            </button>
+            <button class="btn btn-warning" onclick="repeatAnnouncement()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
+              📢 Repeat Audio
+            </button>
+            <button class="btn btn-danger" onclick="skipCurrent()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
               ⏸️ Skip Absent
             </button>
-            <button class="btn btn-primary" onclick="callNext()">
-              ⏭️ Call Next
+            <button class="btn btn-primary" style="grid-column: span 2; padding: 0.75rem; font-size: 1rem; font-weight: 800;" onclick="callNext()">
+              ⏭️ Call Next Beneficiary
             </button>
           </div>
         </div>
@@ -323,6 +329,56 @@
           🔄 Try Opening Camera Again
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Quick Add Beneficiary Modal -->
+  <div id="modalAddCard" class="modal-overlay">
+    <div class="modal" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 0.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--primary);">➕ Add Beneficiary & Issue Token</h3>
+        <button class="btn btn-outline" style="padding: 0.2rem 0.6rem; border: none; font-size: 1.2rem;" onclick="closeModal('modalAddCard')">✕</button>
+      </div>
+
+      <form id="addCardForm" onsubmit="event.preventDefault(); saveNewBeneficiary();">
+        <div style="margin-bottom: 0.75rem;">
+          <label class="input-label">Ration Card Number / RC# *</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="newRationNo" class="input-control" placeholder="e.g. 365371666426" required>
+            <button type="button" class="btn btn-outline" style="font-size: 0.8rem; white-space: nowrap;" onclick="autoFillNextRC()">⚡ Auto RC</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <div>
+            <label class="input-label">English Name *</label>
+            <input type="text" id="newNameEn" class="input-control" placeholder="e.g. Ramesh Kumar" required>
+          </div>
+          <div>
+            <label class="input-label">Telugu Name</label>
+            <input type="text" id="newNameTe" class="input-control" placeholder="e.g. రమేష్ కుమార్">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <div>
+            <label class="input-label">Card Type</label>
+            <select id="newCardType" class="input-control">
+              <option value="FSC" selected>FSC (Food Security White Card)</option>
+              <option value="AFSC">AFSC (Antyodaya Pink/Yellow Card)</option>
+            </select>
+          </div>
+          <div>
+            <label class="input-label">Village / Area</label>
+            <input type="text" id="newVillage" class="input-control" placeholder="Village name" value="Fair Price Shop #03 Village">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('modalAddCard')">Cancel</button>
+          <button type="submit" class="btn btn-success" style="flex: 2; font-weight: 700;">💾 Save & Issue Token Now</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -865,16 +921,83 @@
       reader.readAsDataURL(file);
     }
 
-    // Counter Action Controls
+    // ==========================================
+    // MANUAL CARD ADDITION & EXIT CONTROLS
+    // ==========================================
+    function openAddModal() {
+      autoFillNextRC();
+      document.getElementById('newNameEn').value = '';
+      document.getElementById('newNameTe').value = '';
+      document.getElementById('modalAddCard').style.display = 'flex';
+      setTimeout(() => document.getElementById('newNameEn').focus(), 150);
+    }
+
+    function autoFillNextRC() {
+      // Find highest S.No and highest numeric RC
+      let highestSNo = 0;
+      allCardsStore.forEach(c => {
+        if (c.sNo && c.sNo > highestSNo) highestSNo = c.sNo;
+      });
+      
+      const nextSNo = highestSNo + 1;
+      const baseNum = 365371666425;
+      const nextRC = (baseNum + nextSNo - 241).toString();
+      
+      document.getElementById('newRationNo').value = nextRC;
+    }
+
+    function saveNewBeneficiary() {
+      const rationNo = document.getElementById('newRationNo').value.trim();
+      const nameEn = document.getElementById('newNameEn').value.trim();
+      const nameTe = document.getElementById('newNameTe').value.trim() || nameEn;
+      const cardType = document.getElementById('newCardType').value;
+      const village = document.getElementById('newVillage').value.trim() || 'Fair Price Shop #03 Village';
+
+      if (!rationNo || !nameEn) {
+        showToast('Please enter Ration Card No and English Name', 'error');
+        return;
+      }
+
+      showToast('Saving cardholder...', 'info');
+
+      fetch('/api/cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rationNo, nameEn, nameTe, cardType, village })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          showToast('❌ Error: ' + data.message, 'error');
+          return;
+        }
+
+        closeModal('modalAddCard');
+        loadAllCardsLocally();
+
+        // Immediately issue token for this new beneficiary
+        submitRationScan(rationNo);
+      })
+      .catch(err => {
+        showToast('Failed to save: ' + err.message, 'error');
+      });
+    }
+
+    // Counter Action Controls with Rich Status Feedback
     function callNext() {
       fetch('/api/queue/call-next', { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data.currentToken) {
-            showToast('Now Serving Token #' + data.currentToken.tokenNo);
+            playBeep(true);
+            showToast(`📢 Now Calling Token #${data.currentToken.tokenNo} (${data.currentToken.nameEn})`, 'success');
           } else {
-            showToast('No more waiting cards in queue');
+            playBeep(false);
+            showToast('ℹ️ No waiting beneficiaries in queue', 'info');
           }
+        })
+        .catch(err => {
+          showToast('Network error calling next: ' + err.message, 'error');
         });
     }
 
@@ -883,10 +1006,15 @@
         .then(res => res.json())
         .then(data => {
           if (!data.success) {
-            showToast(data.message, true);
+            playBeep(false);
+            showToast('⚠️ ' + data.message, 'warning');
           } else {
-            showToast('📢 Re-announcing on outside display');
+            playBeep(true);
+            showToast(`📢 Re-announcing Token #${data.token.tokenNo} on outside display`, 'success');
           }
+        })
+        .catch(err => {
+          showToast('Error: ' + err.message, 'error');
         });
     }
 
@@ -898,7 +1026,39 @@
       })
       .then(res => res.json())
       .then(data => {
-        showToast('Completed. ' + (data.nextToken ? ('Next: Token #' + data.nextToken.tokenNo) : 'Queue clear!'));
+        if (!data.success) {
+          showToast('⚠️ ' + data.message, 'warning');
+          return;
+        }
+        playBeep(true);
+        if (data.nextToken) {
+          showToast(`✅ Previous customer done. Now Calling Token #${data.nextToken.tokenNo}`, 'success');
+        } else {
+          showToast('✅ Customer completed & exited. All tokens done!', 'success');
+        }
+      })
+      .catch(err => {
+        showToast('Error: ' + err.message, 'error');
+      });
+    }
+
+    function exitCurrentOnly() {
+      fetch('/api/queue/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callNext: false })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          showToast('⚠️ ' + data.message, 'warning');
+          return;
+        }
+        playBeep(true);
+        showToast('🚪 Customer exited. Counter is now free / idle.', 'success');
+      })
+      .catch(err => {
+        showToast('Error: ' + err.message, 'error');
       });
     }
 
@@ -910,7 +1070,15 @@
       })
       .then(res => res.json())
       .then(data => {
-        showToast('Token skipped.');
+        if (!data.success) {
+          showToast('⚠️ ' + data.message, 'warning');
+          return;
+        }
+        playBeep(false);
+        showToast('⏸️ Token marked as SKIPPED (Absent)', 'warning');
+      })
+      .catch(err => {
+        showToast('Error: ' + err.message, 'error');
       });
     }
 
@@ -923,10 +1091,15 @@
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          showToast('Calling Token #' + tokenNo);
+          playBeep(true);
+          showToast('📢 Calling Token #' + tokenNo + ' (' + data.currentToken.nameEn + ')', 'success');
         } else {
-          showToast(data.message, true);
+          playBeep(false);
+          showToast(data.message, 'error');
         }
+      })
+      .catch(err => {
+        showToast('Error: ' + err.message, 'error');
       });
     }
 
