@@ -174,18 +174,18 @@
         return;
       }
 
-      grid.innerHTML = cards.map(c => 
+      grid.innerHTML = cards.map(c => `
         <div class="qr-card">
-          <img class="qr-img" src="" alt="">
+          <img class="qr-img" src="${c.qrDataUrl}" alt="${c.rationNo}">
           <div class="qr-details">
-            <div class="shop-tag"></div>
-            <div class="rc-number"></div>
-            <div class="holder-en"></div>
-            <div class="holder-te"></div>
-            <div class="village-tag">📍 </div>
+            <div class="shop-tag">${shopName || 'Fair Price Shop'}</div>
+            <div class="rc-number">${c.rationNo}</div>
+            <div class="holder-en">${c.nameEn}</div>
+            <div class="holder-te">${c.nameTe || ''}</div>
+            <div class="village-tag">📍 ${c.village || 'Main Village'}</div>
           </div>
         </div>
-      ).join('');
+      `).join('');
     }
 
     fetchPrintData();

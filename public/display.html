@@ -1,26 +1,26 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="te">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Public Display - Ration Token System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Live Display - Ration Token System</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     :root {
       --bg-color: #030712;
-      --card-bg: #111827;
-      --text-white: #f9fafb;
+      --card-bg: #0f172a;
+      --text-white: #f8fafc;
       --gold-yellow: #facc15;
       --sky-blue: #38bdf8;
       --green-glow: #22c55e;
-      --border-color: #1f2937;
+      --border-color: #1e293b;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
@@ -30,36 +30,37 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow-x: hidden;
       user-select: none;
+      overflow-x: hidden;
     }
 
-    /* Top Bar */
+    /* Top Navigation Header */
     header {
-      padding: 1rem 2rem;
-      background: rgba(17, 24, 39, 0.9);
+      padding: 0.75rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
       border-bottom: 2px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .shop-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
     .shop-title {
-      font-size: 1.6rem;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
       font-weight: 800;
       color: var(--text-white);
-      letter-spacing: 0.5px;
     }
 
     .header-actions {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       align-items: center;
     }
 
@@ -67,14 +68,14 @@
       background: #dc2626;
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
+      padding: 0.5rem 1rem;
       border-radius: 9999px;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       animation: pulse 2s infinite;
       box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
     }
@@ -92,135 +93,137 @@
     }
 
     .clock {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--sky-blue);
       font-family: monospace;
     }
 
-    /* Main Serving Display */
+    /* Main Serving Card Area */
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem;
       text-align: center;
     }
 
     .serving-container {
       background: var(--card-bg);
-      border: 3px solid #374151;
-      border-radius: 24px;
-      padding: 2.5rem 3.5rem;
-      max-width: 1000px;
+      border: 3px solid #334155;
+      border-radius: 20px;
+      padding: clamp(1.25rem, 4vw, 2.5rem);
+      max-width: 900px;
       width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
       position: relative;
-      overflow: hidden;
+      transition: all 0.3s ease;
     }
 
     .serving-badge {
       display: inline-block;
       background: #1e3a8a;
       color: #93c5fd;
-      padding: 0.5rem 1.5rem;
+      padding: 0.4rem 1.25rem;
       border-radius: 9999px;
-      font-size: 1.25rem;
+      font-size: clamp(0.85rem, 2vw, 1.15rem);
       font-weight: 800;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       border: 1px solid #3b82f6;
     }
 
     .token-number {
-      font-size: clamp(4.5rem, 12vw, 8.5rem);
+      font-size: clamp(4rem, 16vw, 8.5rem);
       font-weight: 900;
       color: var(--gold-yellow);
-      text-shadow: 0 0 40px rgba(250, 204, 21, 0.45);
+      text-shadow: 0 0 35px rgba(250, 204, 21, 0.4);
       line-height: 1;
-      margin: 0.5rem 0 1rem 0;
+      margin: 0.25rem 0 0.5rem 0;
       letter-spacing: -2px;
     }
 
     .name-telugu {
-      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-size: clamp(1.8rem, 6vw, 3.8rem);
       font-weight: 800;
       color: var(--text-white);
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
       line-height: 1.2;
     }
 
     .name-english {
-      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-size: clamp(1.35rem, 4.5vw, 2.5rem);
       font-weight: 700;
       color: var(--sky-blue);
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
       line-height: 1.2;
     }
 
     .meta-details {
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      color: #9ca3af;
-      margin-top: 1.25rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+      color: #94a3b8;
+      margin-top: 1rem;
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
 
     .meta-item {
-      background: #1f2937;
-      padding: 0.4rem 1rem;
+      background: #1e293b;
+      padding: 0.35rem 0.85rem;
       border-radius: 8px;
-      border: 1px solid #374151;
+      border: 1px solid #334155;
     }
 
-    /* Bottom Upcoming Queue Bar */
+    /* Bottom Queue Bar */
     footer {
-      background: rgba(17, 24, 39, 0.95);
+      background: rgba(15, 23, 42, 0.98);
       border-top: 2px solid var(--border-color);
-      padding: 1rem 2rem;
+      padding: 0.75rem 1.25rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 1rem;
     }
 
     @media (max-width: 768px) {
-      footer { grid-template-columns: 1fr; }
-      .serving-container { padding: 1.5rem; }
+      footer {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
     }
 
     .queue-box {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
       overflow-x: auto;
     }
 
     .queue-label {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
-      color: #9ca3af;
+      color: #94a3b8;
       white-space: nowrap;
     }
 
     .queue-chips {
       display: flex;
-      gap: 0.6rem;
+      gap: 0.5rem;
       overflow-x: auto;
     }
 
     .chip {
-      background: #1f2937;
-      border: 1px solid #374151;
-      padding: 0.35rem 0.85rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 0.3rem 0.75rem;
       border-radius: 9999px;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.9rem;
       white-space: nowrap;
     }
 
@@ -232,12 +235,12 @@
 
   <header>
     <div class="shop-header">
-      <span style="font-size: 1.8rem;">🌾</span>
+      <span style="font-size: 1.5rem;">🌾</span>
       <div class="shop-title" id="shopNameDisplay">Sri Lakshmi Fair Price Shop</div>
     </div>
     <div class="header-actions">
       <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
-        🔊 <span id="audioBtnText">Enable Voice Audio / ఆడియో ఆన్</span>
+        🔊 <span id="audioBtnText">Enable Voice / ఆడియో ఆన్</span>
       </button>
       <div class="clock" id="liveClock">--:--:--</div>
     </div>
@@ -249,24 +252,29 @@
       
       <div class="token-number" id="tokenNum">--</div>
       <div class="name-telugu" id="personNameTe">వేచి ఉండండి...</div>
-      <div class="name-english" id="personNameEn">Please Wait...</div>
+      <div class="name-english" id="personNameEn">Waiting for Next Token</div>
 
       <div class="meta-details">
-        <div class="meta-item">📍 గ్రామము / Village: <strong id="personVillage" style="color: white;">--</strong></div>
-        <div class="meta-item">💳 రేషన్ కార్డ్ / Card: <strong id="personCardNo" style="color: white;">--</strong></div>
+        <div class="meta-item">
+          📍 Village: <strong id="personVillage" style="color: white;">--</strong>
+        </div>
+        <div class="meta-item">
+          🪪 Card: <strong id="personCardNo" style="color: var(--sky-blue);">--</strong>
+        </div>
       </div>
     </div>
   </main>
 
   <footer>
     <div class="queue-box">
-      <div class="queue-label">🔜 Next Waiting:</div>
+      <span class="queue-label">⏳ Next Waiting:</span>
       <div class="queue-chips" id="upcomingChips">
         <span class="chip">Queue empty</span>
       </div>
     </div>
+
     <div class="queue-box">
-      <div class="queue-label">✅ Recently Served:</div>
+      <span class="queue-label">✅ Recently Served:</span>
       <div class="queue-chips" id="servedChips">
         <span class="chip">None yet</span>
       </div>
@@ -280,23 +288,21 @@
     let teluguVoice = null;
     let englishVoice = null;
 
-    // Clock
+    // Digital Live Clock
     function updateClock() {
       const now = new Date();
-      document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', { hour12: true });
+      document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+      });
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Voice Selection & Setup
+    // Voice Engine setup
     function loadVoices() {
       if (!speechSynth) return;
       const voices = speechSynth.getVoices();
-      
-      // Look for Telugu voices
-      teluguVoice = voices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te') || v.name.toLowerCase().includes('telugu'));
-      
-      // Look for Indian English or standard English
+      teluguVoice = voices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te')) || null;
       englishVoice = voices.find(v => v.lang === 'en-IN') ||
                      voices.find(v => v.lang.startsWith('en')) ||
                      voices[0];
@@ -306,7 +312,7 @@
       loadVoices();
     }
 
-    // High quality 2-tone chime bell using Web Audio API
+    // 2-tone Chime Bell with Web Audio API
     function playChime() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -316,7 +322,7 @@
 
         const now = audioCtx.currentTime;
 
-        // Tone 1: High Bell (659.25 Hz - E5)
+        // Tone 1: High Bell (E5 - 659.25 Hz)
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.type = 'sine';
@@ -328,7 +334,7 @@
         osc1.start(now);
         osc1.stop(now + 0.8);
 
-        // Tone 2: Harmonious Bell (880 Hz - A5)
+        // Tone 2: Harmonious Bell (A5 - 880 Hz)
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
         osc2.type = 'sine';
@@ -348,7 +354,6 @@
       audioUnlocked = true;
       playChime();
       
-      // Test utterance to prime Web Speech
       if (speechSynth) {
         const dummy = new SpeechSynthesisUtterance('Audio enabled');
         dummy.volume = 0.2;
@@ -357,25 +362,21 @@
 
       const btn = document.getElementById('audioToggleBtn');
       btn.classList.add('enabled');
-      document.getElementById('audioBtnText').innerText = '🔊 Audio Ready / ఆడియో ఆన్ లో ఉంది';
+      document.getElementById('audioBtnText').innerText = '🔊 Audio Active / ఆన్ లో ఉంది';
     }
 
     // Bilingual Voice Announcement
     function makeAnnouncement(data) {
       if (!audioUnlocked) return;
 
-      // 1. Play attention chime
       playChime();
 
       if (!speechSynth) return;
-      speechSynth.cancel(); // Stop any pending voice
+      speechSynth.cancel();
 
-      // Wait 700ms after chime before speaking
       setTimeout(() => {
         // English Utterance
-        const msgEn = new SpeechSynthesisUtterance(
-          Token number , 
-        );
+        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}`);
         msgEn.lang = 'en-IN';
         if (englishVoice) msgEn.voice = englishVoice;
         msgEn.rate = 0.9;
@@ -383,34 +384,30 @@
 
         // Telugu Utterance
         const teluguText = data.nameTe ? data.nameTe : data.nameEn;
-        const msgTe = new SpeechSynthesisUtterance(
-          టోకెన్ సంఖ్య , 
-        );
+        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}`);
         msgTe.lang = 'te-IN';
         if (teluguVoice) msgTe.voice = teluguVoice;
         msgTe.rate = 0.85;
         msgTe.pitch = 1.0;
 
-        // Speak English first, then Telugu
         speechSynth.speak(msgEn);
         speechSynth.speak(msgTe);
       }, 700);
     }
 
-    // Flash animation on token change
+    // Visual Flash Animation
     function triggerVisualAlert() {
       const box = document.getElementById('displayBox');
       box.style.borderColor = '#facc15';
       box.style.transform = 'scale(1.02)';
-      box.style.transition = 'all 0.3s ease';
 
       setTimeout(() => {
-        box.style.borderColor = '#374151';
+        box.style.borderColor = '#334155';
         box.style.transform = 'scale(1)';
       }, 600);
     }
 
-    // Socket Event: New or repeated token announced
+    // Real-time Token Announced
     socket.on('token-announced', (data) => {
       document.getElementById('tokenNum').innerText = '#' + data.tokenNo;
       document.getElementById('personNameTe').innerText = data.nameTe || data.nameEn;
@@ -422,7 +419,7 @@
       makeAnnouncement(data);
     });
 
-    // Socket Event: Full Queue updated
+    // Real-time Full Queue Updated
     socket.on('queue-updated', (state) => {
       if (state.serving) {
         document.getElementById('tokenNum').innerText = '#' + state.serving.tokenNo;
@@ -433,28 +430,28 @@
       } else {
         document.getElementById('tokenNum').innerText = '--';
         document.getElementById('personNameTe').innerText = 'వేచి ఉండండి...';
-        document.getElementById('personNameEn').innerText = 'Counter Idle';
+        document.getElementById('personNameEn').innerText = 'Waiting for Next Token';
         document.getElementById('personVillage').innerText = '--';
         document.getElementById('personCardNo').innerText = '--';
       }
 
-      // Render Upcoming (next 4)
-      const upcoming = state.waiting.slice(0, 4);
+      // Upcoming chips
+      const upcoming = state.waiting.slice(0, 5);
       const upcomingContainer = document.getElementById('upcomingChips');
       if (upcoming.length > 0) {
         upcomingContainer.innerHTML = upcoming.map(u => 
-          <span class="chip chip-upcoming"># </span>
+          `<span class="chip chip-upcoming">#${u.tokenNo} (${u.nameEn.split(' ')[0]})</span>`
         ).join('');
       } else {
         upcomingContainer.innerHTML = '<span class="chip">Queue empty</span>';
       }
 
-      // Render Served (last 3 completed)
-      const completed = state.completed.slice(-3).reverse();
+      // Served chips
+      const completed = state.completed.slice(-4).reverse();
       const servedContainer = document.getElementById('servedChips');
       if (completed.length > 0) {
         servedContainer.innerHTML = completed.map(c => 
-          <span class="chip chip-done"># </span>
+          `<span class="chip chip-done">#${c.tokenNo} (${c.nameEn.split(' ')[0]})</span>`
         ).join('');
       } else {
         servedContainer.innerHTML = '<span class="chip">None yet</span>';
@@ -463,7 +460,7 @@
 
     socket.on('settings-updated', (s) => {
       if (s.shopName) {
-        document.getElementById('shopNameDisplay').innerText = s.shopName + (s.village ?  () : '');
+        document.getElementById('shopNameDisplay').innerText = s.shopName + (s.village ? ` (${s.village})` : '');
       }
     });
 
@@ -477,7 +474,7 @@
       document.getElementById('servedChips').innerHTML = '<span class="chip">None yet</span>';
     });
 
-    // Auto prompt on first user click anywhere to enable audio
+    // Auto unlock audio on first tap
     document.addEventListener('click', () => {
       if (!audioUnlocked) enableAudio();
     }, { once: true });
