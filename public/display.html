@@ -384,7 +384,7 @@
       document.getElementById('audioBtnText').innerText = '🔊 Audio Active / ఆన్ లో ఉంది';
     }
 
-    // Bilingual Voice Announcement
+    // Bilingual Voice Announcement (Speaks Last 5 Digits of Ration Card)
     function makeAnnouncement(data) {
       if (!audioUnlocked) return;
 
@@ -393,11 +393,12 @@
       if (!speechSynth) return;
       speechSynth.cancel();
 
-      const last4 = data.last4 || (data.rationNo ? data.rationNo.slice(-4) : '');
+      const digits = (data.rationNo || '').replace(/\D/g, '');
+      const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
 
       setTimeout(() => {
         // English Utterance
-        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in ${last4}`);
+        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in ${last5}`);
         msgEn.lang = 'en-IN';
         if (englishVoice) msgEn.voice = englishVoice;
         msgEn.rate = 0.9;
@@ -405,7 +406,7 @@
 
         // Telugu Utterance
         const teluguText = data.nameTe ? data.nameTe : data.nameEn;
-        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}, కార్డు నంబర్ ${last4}`);
+        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}, కార్డు నంబర్ ${last5}`);
         msgTe.lang = 'te-IN';
         if (teluguVoice) msgTe.voice = teluguVoice;
         msgTe.rate = 0.85;
@@ -430,12 +431,15 @@
 
     // Real-time Token Announced
     socket.on('token-announced', (data) => {
+      const digits = (data.rationNo || '').replace(/\D/g, '');
+      const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
+
       document.getElementById('tokenNum').innerText = '#' + data.tokenNo;
       document.getElementById('personNameTe').innerText = data.nameTe || data.nameEn;
       document.getElementById('personNameEn').innerText = data.nameEn;
       document.getElementById('personSNo').innerText = data.sNo ? '#' + data.sNo : '--';
       document.getElementById('personCardType').innerText = data.cardType || 'FSC';
-      document.getElementById('personCardNo').innerText = data.rationNo ? `${data.rationNo} (...${data.last4 || data.rationNo.slice(-4)})` : '--';
+      document.getElementById('personCardNo').innerText = data.rationNo ? `${data.rationNo} (...${last5})` : '--';
 
       triggerVisualAlert();
       makeAnnouncement(data);
@@ -444,12 +448,15 @@
     // Real-time Full Queue Updated
     socket.on('queue-updated', (state) => {
       if (state.serving) {
+        const digits = (state.serving.rationNo || '').replace(/\D/g, '');
+        const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
+
         document.getElementById('tokenNum').innerText = '#' + state.serving.tokenNo;
         document.getElementById('personNameTe').innerText = state.serving.nameTe || state.serving.nameEn;
         document.getElementById('personNameEn').innerText = state.serving.nameEn;
         document.getElementById('personSNo').innerText = state.serving.sNo ? '#' + state.serving.sNo : '--';
         document.getElementById('personCardType').innerText = state.serving.cardType || 'FSC';
-        document.getElementById('personCardNo').innerText = state.serving.rationNo ? `${state.serving.rationNo} (...${state.serving.last4 || state.serving.rationNo.slice(-4)})` : '--';
+        document.getElementById('personCardNo').innerText = state.serving.rationNo ? `${state.serving.rationNo} (...${last5})` : '--';
       } else {
         document.getElementById('tokenNum').innerText = '--';
         document.getElementById('personNameTe').innerText = 'వేచి ఉండండి...';

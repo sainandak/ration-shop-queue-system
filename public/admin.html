@@ -251,6 +251,84 @@
 
     </div>
 
+    <!-- MONTHLY RATION DISTRIBUTION & PENDING TRACKER -->
+    <div class="card" style="border-top: 4px solid var(--primary);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; color: var(--primary);">📊 Monthly Ration Distribution Tracker (Fair Price Shop #03)</h3>
+          <div style="font-size: 0.85rem; color: var(--gray-600);">Real-time tracking of visited cardholders vs pending families for this month</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="/api/reports/pending-csv" class="btn btn-outline" style="font-weight: 700; color: #b91c1c; border-color: #fca5a5; background: #fef2f2;">
+            📥 Download Pending List (CSV)
+          </a>
+          <a href="/api/reports/today-excel" class="btn btn-success" style="font-weight: 700;">
+            📥 Download Distributed Excel
+          </a>
+        </div>
+      </div>
+
+      <!-- Stat Badges Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="background: #f8fafc; border: 1px solid var(--gray-200); border-radius: 10px; padding: 0.75rem; text-align: center;">
+          <div style="font-size: 0.75rem; color: var(--gray-600); font-weight: 700;">TOTAL ROSTER</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: var(--primary);" id="statTotalCards">241</div>
+          <div style="font-size: 0.75rem; color: var(--gray-500);">215 FSC • 26 AFSC</div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.75rem; text-align: center;">
+          <div style="font-size: 0.75rem; color: #166534; font-weight: 700;">DISTRIBUTED / ISSUED</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #15803d;" id="statIssuedCards">0</div>
+          <div style="font-size: 0.75rem; color: #166534;" id="statIssuedPercent">0% Completed</div>
+        </div>
+
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 0.75rem; text-align: center;">
+          <div style="font-size: 0.75rem; color: #991b1b; font-weight: 700;">PENDING / NOT VISITED</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #dc2626;" id="statPendingCards">241</div>
+          <div style="font-size: 0.75rem; color: #991b1b;" id="statPendingPercent">100% Pending</div>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 0.75rem; text-align: center;">
+          <div style="font-size: 0.75rem; color: #92400e; font-weight: 700;">SKIPPED / ABSENT TODAY</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #d97706;" id="statSkippedCards">0</div>
+          <div style="font-size: 0.75rem; color: #92400e;">Needs Recall</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div style="background: #e2e8f0; border-radius: 9999px; height: 12px; overflow: hidden; margin-bottom: 0.5rem;">
+        <div id="distributionProgressBar" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <!-- SKIPPED / ABSENT BENEFICIARIES MANAGER CARD -->
+    <div class="card" id="skippedCardContainer" style="border-left: 4px solid #f59e0b;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.15rem; color: #b45309;">⏸️ Skipped / Absent Cardholders (<span id="skippedCountHeader">0</span>)</h3>
+          <div style="font-size: 0.85rem; color: var(--gray-600);">Beneficiaries who were absent when called. 1-click recall them back into the active queue when they arrive.</div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Token #</th>
+              <th>S.No</th>
+              <th>Cardholder Name</th>
+              <th>Card No & Type</th>
+              <th>Time Skipped</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="skippedTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--gray-600); padding: 1.5rem;">No skipped beneficiaries today.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- QUICK QR DOWNLOAD & REPORTS ACTION BAR -->
     <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -420,8 +498,76 @@
           renderCardsTable(data.cards);
         });
       loadSuggestions();
+      fetchMonthlyStats();
     }
     loadCards();
+
+    function fetchMonthlyStats() {
+      fetch('/api/reports/monthly-stats')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('statTotalCards').innerText = data.totalCards;
+          document.getElementById('statIssuedCards').innerText = data.issuedCount;
+          document.getElementById('statIssuedPercent').innerText = `${data.issuedPercentage}% Completed`;
+          document.getElementById('statPendingCards').innerText = data.pendingCount;
+          document.getElementById('statPendingPercent').innerText = `${data.pendingPercentage}% Pending`;
+          document.getElementById('statSkippedCards').innerText = data.skippedCount;
+          document.getElementById('skippedCountHeader').innerText = data.skippedCount;
+
+          const bar = document.getElementById('distributionProgressBar');
+          if (bar) bar.style.width = data.issuedPercentage + '%';
+
+          renderSkippedTable(data.skipped || []);
+        });
+    }
+
+    function renderSkippedTable(list) {
+      const tbody = document.getElementById('skippedTableBody');
+      if (!tbody) return;
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray-600); padding: 1.5rem;">No skipped beneficiaries today.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => `
+        <tr>
+          <td><strong style="color: var(--primary); font-size: 1.1rem;">#${item.tokenNo}</strong></td>
+          <td><span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">#${item.sNo || '--'}</span></td>
+          <td>
+            <strong>${item.nameEn}</strong>
+            <div style="font-size: 0.85rem; color: #0284c7;">${item.nameTe || ''}</div>
+          </td>
+          <td>
+            ${item.rationNo}
+            <span style="background: ${item.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">${item.cardType || 'FSC'}</span>
+          </td>
+          <td><small style="color: var(--gray-600);">${item.skippedAt || '--'}</small></td>
+          <td style="text-align: right;">
+            <button class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; font-weight: 700;" onclick="recallSkippedToken(${item.tokenNo})">
+              🔄 Recall to Queue
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function recallSkippedToken(tokenNo) {
+      fetch('/api/queue/recall-skipped', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tokenNo })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showNotification(data.message);
+          fetchMonthlyStats();
+        } else {
+          showNotification(data.message, true);
+        }
+      });
+    }
 
     let suggestedNextRc = '';
     function loadSuggestions() {

@@ -864,8 +864,100 @@ app.post('/api/queue/reset', (req, res) => {
 });
 
 // ==========================================
-// REPORTS EXPORT APIS
+// MONTHLY TRACKING & PENDING REPORT APIS
 // ==========================================
+
+app.get('/api/reports/monthly-stats', (req, res) => {
+  const issuedRations = new Set();
+  
+  // From active queue
+  queueState.queue.forEach(q => {
+    if (q.status === 'COMPLETED' || q.status === 'SERVING' || q.status === 'WAITING') {
+      issuedRations.add(q.rationNo);
+    }
+  });
+
+  // From archive history
+  if (queueState.history) {
+    queueState.history.forEach(h => {
+      if (h.records) {
+        h.records.forEach(r => {
+          if (r.status === 'COMPLETED' || r.status === 'SERVING') {
+            issuedRations.add(r.rationNo);
+          }
+        });
+      }
+    });
+  }
+
+  const issuedList = cards.filter(c => issuedRations.has(c.rationNo));
+  const pendingList = cards.filter(c => !issuedRations.has(c.rationNo));
+  const skippedList = queueState.queue.filter(q => q.status === 'SKIPPED');
+
+  const fscTotal = cards.filter(c => (c.cardType || 'FSC') === 'FSC').length;
+  const afscTotal = cards.filter(c => c.cardType === 'AFSC').length;
+
+  const fscIssued = issuedList.filter(c => (c.cardType || 'FSC') === 'FSC').length;
+  const afscIssued = issuedList.filter(c => c.cardType === 'AFSC').length;
+
+  res.json({
+    totalCards: cards.length,
+    issuedCount: issuedList.length,
+    pendingCount: pendingList.length,
+    skippedCount: skippedList.length,
+    fscTotal,
+    afscTotal,
+    fscIssued,
+    afscIssued,
+    issuedPercentage: cards.length > 0 ? ((issuedList.length / cards.length) * 100).toFixed(1) : 0,
+    pendingPercentage: cards.length > 0 ? ((pendingList.length / cards.length) * 100).toFixed(1) : 0,
+    skipped: skippedList,
+    pending: pendingList.slice(0, 100) // Paginated preview
+  });
+});
+
+// Download Pending Cardholders List (for Gram Panchayat / Ward follow-up)
+app.get('/api/reports/pending-csv', (req, res) => {
+  const issuedRations = new Set();
+  queueState.queue.forEach(q => {
+    if (q.status === 'COMPLETED' || q.status === 'SERVING' || q.status === 'WAITING') {
+      issuedRations.add(q.rationNo);
+    }
+  });
+  if (queueState.history) {
+    queueState.history.forEach(h => {
+      if (h.records) h.records.forEach(r => issuedRations.add(r.rationNo));
+    });
+  }
+
+  const pendingList = cards.filter(c => !issuedRations.has(c.rationNo));
+  let csv = 'S.No,Ration Card No,Card Type,Cardholder Name (English),Telugu Name,Village,Status\n';
+  pendingList.forEach(p => {
+    csv += `"${p.sNo || ''}","${p.rationNo}","${p.cardType || 'FSC'}","${p.nameEn}","${p.nameTe || ''}","${p.village || ''}","PENDING (NOT YET VISITED)"\n`;
+  });
+
+  const monthName = new Date().toLocaleString('en-IN', { month: 'long', year: 'numeric' }).replace(/\s+/g, '_');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="Pending_Ration_Cards_${monthName}.csv"`);
+  res.send('\uFEFF' + csv);
+});
+
+// Recall Skipped Beneficiary back to Waiting Queue
+app.post('/api/queue/recall-skipped', (req, res) => {
+  const tokenNo = parseInt(req.body.tokenNo);
+  const entry = queueState.queue.find(q => q.tokenNo === tokenNo);
+  if (!entry) {
+    return res.status(404).json({ success: false, message: 'Token not found in queue' });
+  }
+
+  entry.status = 'WAITING';
+  entry.recalledAt = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+  saveJson(QUEUE_FILE, queueState);
+  io.emit('queue-updated', getQueueStateFormatted());
+
+  res.json({ success: true, message: `Token #${tokenNo} (${entry.nameEn}) moved back to Waiting queue!` });
+});
 
 app.get('/api/reports/today-csv', (req, res) => {
   const todayDate = new Date().toISOString().split('T')[0];
