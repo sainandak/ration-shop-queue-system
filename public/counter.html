@@ -786,26 +786,26 @@
       const list = currentQueueState[currentTab] || [];
 
       if (list.length === 0) {
-        tbody.innerHTML = <tr><td colspan="5" style="text-align: center; color: var(--gray-600); padding: 2rem;">No  tokens</td></tr>;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600); padding: 2rem;">No ${currentTab} tokens</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(item => 
+      tbody.innerHTML = list.map(item => `
         <tr>
-          <td><strong style="font-size: 1.1rem; color: var(--primary);">#</strong></td>
+          <td><strong style="font-size: 1.1rem; color: var(--primary);">#${item.tokenNo}</strong></td>
           <td>
-            <div style="font-weight: 600;"></div>
-            <div style="font-size: 0.85rem; color: var(--gray-600);"> ()</div>
+            <div style="font-weight: 600;">${item.nameEn}</div>
+            <div style="font-size: 0.85rem; color: var(--gray-600);">${item.nameTe || ''} (${item.rationNo})</div>
           </td>
-          <td></td>
-          <td><small></small></td>
+          <td>${item.village || '--'}</td>
+          <td><small>${item.issuedAt || '--'}</small></td>
           <td>
-            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="callSpecific()">
-              
+            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="callSpecific(${item.tokenNo})">
+              ${item.status === 'WAITING' ? '📢 Call' : '🔄 Recall'}
             </button>
           </td>
         </tr>
-      ).join('');
+      `).join('');
     }
 
     // Socket.io Real-time update listener
@@ -817,7 +817,7 @@
         document.getElementById('activeToken').innerText = '#' + data.serving.tokenNo;
         document.getElementById('activeNameEn').innerText = data.serving.nameEn;
         document.getElementById('activeNameTe').innerText = data.serving.nameTe;
-        document.getElementById('activeDetails').innerText = Card:  | Village: ;
+        document.getElementById('activeDetails').innerText = `Card: ${data.serving.rationNo} | Village: ${data.serving.village}`;
       } else {
         document.getElementById('activeToken').innerText = '--';
         document.getElementById('activeNameEn').innerText = 'No Active Token';
@@ -834,7 +834,7 @@
     });
 
     socket.on('reset-done', () => {
-      showToast('Queue was reset by Admin');
+      showToast('Queue was reset by Admin', 'info');
     });
   </script>
 </body>
