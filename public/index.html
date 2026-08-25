@@ -63,8 +63,8 @@
       <p style="opacity: 0.9; font-size: 1.05rem;">Bilingual Voice Announcements (Telugu + English) | Live QR Scanner | Zero Waiting Chaos</p>
       
       <div style="margin-top: 1.25rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
-        📶 <strong>Server Wi-Fi Address:</strong> <span id="wifiIp">Loading...</span>
-        <div style="font-size: 0.85rem; opacity: 0.85; margin-top: 4px;">Connect all phones/tablets to the same Wi-Fi/Hotspot, then scan the QR codes below.</div>
+        🌐 <strong id="serverLabel">Server Address:</strong> <span id="wifiIp">Loading...</span>
+        <div id="wifiSub" style="font-size: 0.85rem; opacity: 0.85; margin-top: 4px;">Connect all phones/tablets to this link, or scan the QR codes below.</div>
       </div>
     </div>
 
@@ -134,7 +134,13 @@
     fetch('/api/network-info')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('wifiIp').innerText = data.baseUrl;
+        if (data.isCloud) {
+          document.getElementById('serverLabel').innerText = 'Cloud Live Server:';
+          document.getElementById('wifiIp').innerHTML = `<strong>${data.liveUrl}</strong> <span style="background: rgba(34, 197, 94, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 4px;">🟢 Online</span>`;
+          document.getElementById('wifiSub').innerText = '✨ Accessible anywhere from any phone or computer over 4G/5G/Wi-Fi!';
+        } else {
+          document.getElementById('wifiIp').innerText = data.baseUrl;
+        }
         document.getElementById('qrCounter').src = data.qrcodes.counter;
         document.getElementById('qrDisplay').src = data.qrcodes.display;
         document.getElementById('qrHome').src = data.qrcodes.home;
