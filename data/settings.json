@@ -1,0 +1,12 @@
+{
+  "shopName": "Sri Lakshmi Fair Price Shop (#042)",
+  "village": "Village Center",
+  "adminPin": "1234",
+  "autoAnnounceOnScan": true,
+  "chimeEnabled": true,
+  "speechRate": 0.9,
+  "languages": [
+    "en-IN",
+    "te-IN"
+  ]
+}

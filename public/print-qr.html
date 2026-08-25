@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batch QR Code Print Sheet - Ration Cards</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      padding: 20px;
+    }
+
+    .no-print-toolbar {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #1e40af; color: white; }
+    .btn-outline { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
+
+    /* Printable Grid on A4 */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .qr-card {
+      background: white;
+      border: 2px dashed #94a3b8;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      page-break-inside: avoid;
+    }
+
+    .qr-img {
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+    }
+
+    .qr-details {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .shop-tag {
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .rc-number {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1e3a8a;
+      letter-spacing: 0.5px;
+    }
+
+    .holder-en {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .holder-te {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .village-tag {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    /* Print Specific Rules */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .no-print-toolbar {
+        display: none !important;
+      }
+      .qr-grid {
+        max-width: 100%;
+        gap: 10px;
+      }
+      .qr-card {
+        border: 1.5px dashed #475569;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Non-printable Top Control Bar -->
+  <div class="no-print-toolbar">
+    <div>
+      <h2 style="font-size: 1.25rem; color: #1e3a8a;">🖨️ Batch Printable QR Cards</h2>
+      <div style="font-size: 0.85rem; color: #64748b;">Ready to print on standard A4 paper. Cut along dashed lines to distribute to ration cardholders.</div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+      <input type="text" id="filterInput" placeholder="Filter by name / village..." style="padding: 0.5rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;" oninput="fetchPrintData()">
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print Cards (Ctrl+P)</button>
+      <a href="/admin" class="btn btn-outline">Back to Admin</a>
+    </div>
+  </div>
+
+  <div class="qr-grid" id="cardsGrid">
+    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Loading printable QR cards...</div>
+  </div>
+
+  <script>
+    let printData = [];
+
+    function fetchPrintData() {
+      const q = document.getElementById('filterInput').value.trim();
+      fetch('/api/cards/qr-data?q=' + encodeURIComponent(q))
+        .then(res => res.json())
+        .then(data => {
+          printData = data.cards;
+          renderGrid(data.cards, data.shopName);
+        });
+    }
+
+    function renderGrid(cards, shopName) {
+      const grid = document.getElementById('cardsGrid');
+      if (cards.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">No cards to display</div>';
+        return;
+      }
+
+      grid.innerHTML = cards.map(c => 
+        <div class="qr-card">
+          <img class="qr-img" src="" alt="">
+          <div class="qr-details">
+            <div class="shop-tag"></div>
+            <div class="rc-number"></div>
+            <div class="holder-en"></div>
+            <div class="holder-te"></div>
+            <div class="village-tag">📍 </div>
+          </div>
+        </div>
+      ).join('');
+    }
+
+    fetchPrintData();
+  </script>
+</body>
+</html>

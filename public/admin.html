@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardholder Management & Excel - Ration Queue</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- SheetJS for instant in-browser Excel/CSV reading and preview -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    .upload-zone {
+      border: 2px dashed var(--primary);
+      background: var(--primary-light);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      background: #dbeafe;
+      border-color: #1d4ed8;
+      transform: scale(1.01);
+    }
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--gray-200);
+      margin-bottom: 1.25rem;
+    }
+    .tab-btn {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--gray-600);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .preview-box {
+      background: #f8fafc;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    .qr-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 4px;
+      border: 1px solid var(--gray-300);
+      vertical-align: middle;
+      cursor: pointer;
+      background: white;
+      padding: 2px;
+      transition: transform 0.15s;
+    }
+    .qr-thumb:hover {
+      transform: scale(1.35);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+    .success-qr-card {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.25rem;
+      display: none;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <span>🌾</span>
+      <span>Admin & Card Database</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Hub</a>
+      <a href="/counter" class="nav-link">Counter</a>
+      <a href="/display" class="nav-link" target="_blank">Display ↗</a>
+      <a href="/admin" class="nav-link active">Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- TAB SELECTOR FOR CARD ENTRY METHODS -->
+    <div class="card" style="padding-bottom: 1rem;">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchMethod('excel')" id="tabExcel">📊 Excel / CSV Upload</button>
+        <button class="tab-btn" onclick="switchMethod('manual')" id="tabManual">➕ Add Card Manually</button>
+        <button class="tab-btn" onclick="switchMethod('paste')" id="tabPaste">📋 Quick Paste Roster</button>
+      </div>
+
+      <!-- 1. EXCEL / CSV UPLOAD SECTION -->
+      <div id="sectionExcel">
+        <h3 style="margin-bottom: 0.35rem;">Upload Excel or CSV File (300+ Cards)</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 1rem;">
+          Drag and drop your spreadsheet file below. The system automatically reads columns for <strong>Ration No, English Name, Telugu Name, Village, and Phone</strong>.
+        </p>
+
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('excelFileInput').click()">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
+          <strong style="font-size: 1.1rem; color: var(--primary);">Click or Drag & Drop Excel (.xlsx, .xls) or CSV file here</strong>
+          <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 6px;">Supports Telugu Unicode text natively</div>
+          <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleFileSelect(event)">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; flex-wrap: wrap;">
+          <a href="/api/cards/template" class="btn btn-outline" style="font-size: 0.88rem;">
+            📄 Download Sample Excel Template
+          </a>
+          <a href="/print-qr" target="_blank" class="btn btn-primary" style="font-size: 0.88rem;">
+            🖨️ Batch Print QR Sheets (A4)
+          </a>
+        </div>
+
+        <!-- Live Preview before Import -->
+        <div id="previewContainer" class="preview-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <strong id="previewTitle" style="color: var(--primary);">Found 0 Cards in File</strong>
+            <button class="btn btn-success" id="confirmImportBtn" onclick="confirmImport()">
+              ✅ Confirm & Save into Database
+            </button>
+          </div>
+          <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ration No</th>
+                  <th>English Name</th>
+                  <th>Telugu Name</th>
+                  <th>Village</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody id="previewTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MANUAL ADD FORM SECTION -->
+      <div id="sectionManual" style="display: none;">
+        <h3 style="margin-bottom: 0.35rem;">➕ Add Single Cardholder Manually</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 1rem;">
+          Enter individual ration card details to save directly into the system.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div class="input-group" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="input-label" style="margin-bottom: 0;">Ration Card No *</label>
+              <span id="nextRcBtn" style="font-size: 0.75rem; color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline;" onclick="useSuggestedRc()">⚡ Auto-fill Next</span>
+            </div>
+            <input type="text" id="manRationNo" class="input-control" placeholder="e.g. RC-0016">
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label class="input-label">Name in English *</label>
+            <input type="text" id="manNameEn" class="input-control" placeholder="e.g. Ramesh Kumar">
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label class="input-label">Name in Telugu (తెలుగు)</label>
+            <input type="text" id="manNameTe" class="input-control" placeholder="e.g. రమేష్ కుమార్">
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label class="input-label">Village / Colony</label>
+            <input type="text" id="manVillage" class="input-control" placeholder="Select or type village..." list="villageDatalist">
+            <datalist id="villageDatalist"></datalist>
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label class="input-label">Phone Number</label>
+            <input type="text" id="manPhone" class="input-control" placeholder="e.g. 9876543210">
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <button class="btn btn-primary btn-lg" onclick="saveManualCard()">
+            💾 Save Cardholder & Generate QR
+          </button>
+        </div>
+
+        <!-- Instant Success Card with QR -->
+        <div id="newCardSuccessBox" class="success-qr-card">
+          <img id="newCardQrImg" style="width: 110px; height: 110px; border-radius: 8px; border: 1px solid #bbf7d0; background: white; padding: 4px;" alt="QR Code">
+          <div style="flex: 1;">
+            <div style="color: var(--success); font-weight: 800; font-size: 1.05rem;">🎉 Card Saved & QR Code Generated!</div>
+            <div style="font-size: 1.15rem; font-weight: 700; margin-top: 2px;" id="newCardSummary">--</div>
+            <div style="font-size: 0.9rem; color: var(--gray-600); margin-top: 2px;" id="newCardDetails">--</div>
+            
+            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <a id="newCardDownloadBtn" class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" download>
+                ⬇️ Download QR Image (PNG)
+              </a>
+              <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="openSingleCardModal(lastAddedRationNo)">
+                🖨️ View & Print Pass
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. QUICK PASTE SECTION -->
+      <div id="sectionPaste" style="display: none;">
+        <h3 style="margin-bottom: 0.35rem;">📋 Quick Paste Roster from Excel / Notepad</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 0.75rem;">
+          Copy rows from Excel or Notepad (Tab or comma separated) and paste them here directly:
+        </p>
+
+        <textarea id="pasteInput" class="input-control" style="height: 140px; font-family: monospace; font-size: 0.85rem;" placeholder="RC-0001	Ramesh Kumar	రమేష్ కుమార్	Main Village	9876543210&#10;RC-0002	Suresh Kumar	సురేష్ కుమార్	SC Colony	9876543211"></textarea>
+
+        <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 0.85rem; color: var(--gray-600);">Format: RationNo [Tab/Comma] EnglishName [Tab/Comma] TeluguName [Tab/Comma] Village</div>
+          <button class="btn btn-primary" onclick="handlePasteImport()">Import Pasted Lines</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QUICK QR DOWNLOAD & REPORTS ACTION BAR -->
+    <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="font-size: 1.25rem;">📦 Batch QR Code & Report Exports</h3>
+          <div style="font-size: 0.9rem; opacity: 0.9;">Download all QR code images or print ready-to-cut A4 sheets for villagers</div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <a href="/print-qr" target="_blank" class="btn btn-warning" style="color: #0f172a; font-weight: 700;">
+            🖨️ Printable A4 Sheet Generator
+          </a>
+          <a href="/api/cards/download-zip" class="btn btn-success">
+            📦 Download All QRs (.ZIP)
+          </a>
+          <a href="/api/reports/today-excel" class="btn btn-outline" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.4);">
+            📥 Daily Excel Report
+          </a>
+          <button class="btn btn-danger" onclick="openResetModal()">
+            🔄 Reset Day (PIN: 1234)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDHOLDER DIRECTORY TABLE WITH QR CODE THUMBNAILS & DOWNLOADS -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="font-size: 1.25rem;">👥 Registered Cardholders (<span id="totalCardsCount">0</span>)</h3>
+          <div style="font-size: 0.85rem; color: var(--gray-600);">Click QR thumbnail to preview card or tap ⬇️ to download image</div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; flex: 1; max-width: 450px;">
+          <input type="text" id="searchInput" class="input-control" placeholder="Search by name, card no, village..." oninput="handleSearch()">
+          <button class="btn btn-primary" onclick="switchMethod('manual')">+ Add</button>
+        </div>
+      </div>
+
+      <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 60px;">QR</th>
+              <th>Ration No</th>
+              <th>English Name</th>
+              <th>Telugu Name (తెలుగు)</th>
+              <th>Village / Ward</th>
+              <th>Phone</th>
+              <th style="text-align: right;">Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody id="cardsTableBody">
+            <tr><td colspan="7" style="text-align: center; padding: 2rem;">Loading cardholders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SINGLE CARD PREVIEW & PRINT MODAL -->
+  <div id="singleCardModal" class="modal">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Ration Card QR Pass</h3>
+      <div style="font-size: 0.8rem; color: var(--gray-600); margin-bottom: 1rem;">Official Beneficiary Verification QR</div>
+
+      <div style="border: 2px dashed #94a3b8; border-radius: 12px; padding: 1.25rem; background: #f8fafc; margin-bottom: 1.25rem;">
+        <img id="modalQrImg" style="width: 160px; height: 160px; margin: 0 auto; display: block; border-radius: 8px; background: white; padding: 4px; border: 1px solid var(--gray-300);" alt="QR Code">
+        
+        <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); margin-top: 0.75rem;" id="modalRationNo">--</div>
+        <div style="font-size: 1.15rem; font-weight: 700; color: var(--gray-800); margin-top: 2px;" id="modalNameEn">--</div>
+        <div style="font-size: 1.1rem; font-weight: 700; color: #0369a1; margin-top: 2px;" id="modalNameTe">--</div>
+        <div style="font-size: 0.9rem; color: var(--gray-600); margin-top: 4px;" id="modalVillage">--</div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+        <a id="modalDownloadLink" class="btn btn-success" download>
+          ⬇️ Download QR Image
+        </a>
+        <button class="btn btn-outline" onclick="closeModal('singleCardModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT CARD MODAL -->
+  <div id="cardModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;" id="cardModalTitle">Edit Ration Card</h3>
+      
+      <div class="input-group">
+        <label class="input-label">Ration Card No *</label>
+        <input type="text" id="editRationNo" class="input-control" disabled>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Name in English *</label>
+        <input type="text" id="editNameEn" class="input-control">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Name in Telugu (తెలుగు పేరు)</label>
+        <input type="text" id="editNameTe" class="input-control">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Village / Colony</label>
+        <input type="text" id="editVillage" class="input-control">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Phone Number</label>
+        <input type="text" id="editPhone" class="input-control">
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button class="btn btn-outline" onclick="closeModal('cardModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditCard()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PIN MODAL -->
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <h3 style="color: var(--danger); margin-bottom: 0.5rem;">⚠️ Reset Daily Queue</h3>
+      <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 1rem;">
+        This will archive today's queue and reset token counter back to 1.
+      </p>
+
+      <div class="input-group">
+        <label class="input-label">Enter Admin PIN (Default: 1234)</label>
+        <input type="password" id="resetPinInput" class="input-control" placeholder="Enter PIN" maxlength="10">
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button class="btn btn-outline" onclick="closeModal('resetModal')">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmResetDay()">Confirm Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allCards = [];
+    let parsedCardsForImport = [];
+
+    function switchMethod(method) {
+      document.getElementById('tabExcel').classList.toggle('active', method === 'excel');
+      document.getElementById('tabManual').classList.toggle('active', method === 'manual');
+      document.getElementById('tabPaste').classList.toggle('active', method === 'paste');
+
+      document.getElementById('sectionExcel').style.display = (method === 'excel') ? 'block' : 'none';
+      document.getElementById('sectionManual').style.display = (method === 'manual') ? 'block' : 'none';
+      document.getElementById('sectionPaste').style.display = (method === 'paste') ? 'block' : 'none';
+
+      if (method === 'manual') {
+        document.getElementById('manRationNo').focus();
+      }
+    }
+
+    function loadCards(query = '') {
+      fetch('/api/cards?q=' + encodeURIComponent(query))
+        .then(res => res.json())
+        .then(data => {
+          allCards = data.cards;
+          document.getElementById('totalCardsCount').innerText = data.total;
+          renderCardsTable(data.cards);
+        });
+      loadSuggestions();
+    }
+    loadCards();
+
+    let suggestedNextRc = '';
+    function loadSuggestions() {
+      fetch('/api/cards/suggestions')
+        .then(res => res.json())
+        .then(data => {
+          suggestedNextRc = data.nextRationNo;
+          const nextBtn = document.getElementById('nextRcBtn');
+          if (nextBtn) nextBtn.innerText = `⚡ Auto-fill: ${data.nextRationNo}`;
+
+          const datalist = document.getElementById('villageDatalist');
+          if (datalist && data.villages) {
+            datalist.innerHTML = data.villages.map(v => `<option value="${v}">`).join('');
+          }
+        });
+    }
+
+    function useSuggestedRc() {
+      if (suggestedNextRc) {
+        document.getElementById('manRationNo').value = suggestedNextRc;
+        document.getElementById('manNameEn').focus();
+      }
+    }
+
+    let lastAddedRationNo = '';
+
+    function renderCardsTable(cards) {
+      const tbody = document.getElementById('cardsTableBody');
+      if (cards.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--gray-600);">No cards found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = cards.map(c => `
+        <tr>
+          <td>
+            <img class="qr-thumb" src="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" alt="QR" onclick="openSingleCardModal('${c.rationNo}')" title="Click to preview & print pass">
+          </td>
+          <td><strong style="color: var(--primary); font-size: 1.05rem;">${c.rationNo}</strong></td>
+          <td><strong>${c.nameEn}</strong></td>
+          <td><strong style="color: #0369a1;">${c.nameTe || '--'}</strong></td>
+          <td>${c.village || '--'}</td>
+          <td>${c.phone || '--'}</td>
+          <td style="text-align: right;">
+            <div style="display: inline-flex; gap: 0.35rem;">
+              <a href="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem;" title="Download PNG" download>
+                ⬇️ QR
+              </a>
+              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openSingleCardModal('${c.rationNo}')" title="View Pass">
+                👁️ View
+              </button>
+              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openEditModal('${c.rationNo}')">
+                ✏️
+              </button>
+              <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteCard('${c.rationNo}')">
+                ✕
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    let searchTimeout;
+    function handleSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const q = document.getElementById('searchInput').value.trim();
+        loadCards(q);
+      }, 200);
+    }
+
+    // ==========================================
+    // 1. EXCEL / CSV DRAG & DROP & PARSING
+    // ==========================================
+    const dropZone = document.getElementById('dropZone');
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        parseExcelFile(files[0]);
+      }
+    });
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        parseExcelFile(e.target.files[0]);
+      }
+    }
+
+    function parseExcelFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+
+          if (!jsonData || jsonData.length === 0) {
+            alert('File appears to be empty.');
+            return;
+          }
+
+          // Clean & match columns flexibly
+          parsedCardsForImport = [];
+          jsonData.forEach(row => {
+            const findKey = (patterns) => {
+              for (const k of Object.keys(row)) {
+                const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                for (const p of patterns) {
+                  if (cleanK === p || cleanK.includes(p)) return row[k];
+                }
+              }
+              return '';
+            };
+
+            const rationNo = (findKey(['rationno', 'rationnumber', 'cardno', 'rcno', 'ration', 'id', 'slno']) || '').toString().trim().toUpperCase();
+            const nameEn = (findKey(['nameenglish', 'nameen', 'englishname', 'name', 'holdername', 'beneficiary']) || '').toString().trim();
+            const nameTe = (findKey(['nametelugu', 'namete', 'teluguname', 'telugu']) || nameEn).toString().trim();
+            const village = (findKey(['village', 'area', 'colony', 'ward', 'address']) || 'Main Village').toString().trim();
+            const phone = (findKey(['phone', 'mobile', 'contact']) || '').toString().trim();
+
+            if (rationNo && nameEn) {
+              parsedCardsForImport.push({ rationNo, nameEn, nameTe, village, phone });
+            }
+          });
+
+          if (parsedCardsForImport.length === 0) {
+            alert('Could not find valid card rows with Ration Number and Name. Please check column headers.');
+            return;
+          }
+
+          // Show Preview Box
+          document.getElementById('previewContainer').style.display = 'block';
+          document.getElementById('previewTitle').innerText = `Found ${parsedCardsForImport.length} Cards in "${file.name}"`;
+          
+          const previewTbody = document.getElementById('previewTableBody');
+          const sampleRows = parsedCardsForImport.slice(0, 10);
+          previewTbody.innerHTML = sampleRows.map(r => `
+            <tr>
+              <td><strong>${r.rationNo}</strong></td>
+              <td>${r.nameEn}</td>
+              <td style="color:#0369a1;">${r.nameTe}</td>
+              <td>${r.village}</td>
+              <td>${r.phone || '--'}</td>
+            </tr>
+          `).join('') + (parsedCardsForImport.length > 10 ? `<tr><td colspan="5" style="text-align:center; color: var(--gray-600);">... and ${parsedCardsForImport.length - 10} more cards ready to import</td></tr>` : '');
+
+        } catch (err) {
+          alert('Error reading spreadsheet: ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function confirmImport() {
+      if (parsedCardsForImport.length === 0) return;
+
+      document.getElementById('confirmImportBtn').disabled = true;
+      document.getElementById('confirmImportBtn').innerText = 'Saving...';
+
+      fetch('/api/cards/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cards: parsedCardsForImport })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('confirmImportBtn').disabled = false;
+        document.getElementById('confirmImportBtn').innerText = '✅ Confirm & Save into Database';
+        
+        if (data.success) {
+          alert(data.message);
+          document.getElementById('previewContainer').style.display = 'none';
+          document.getElementById('excelFileInput').value = '';
+          parsedCardsForImport = [];
+          loadCards();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(err => {
+        document.getElementById('confirmImportBtn').disabled = false;
+        alert('Network Error: ' + err.message);
+      });
+    }
+
+    // ==========================================
+    // 2. MANUAL CARD SAVE
+    // ==========================================
+    function saveManualCard() {
+      const rationNo = document.getElementById('manRationNo').value.trim();
+      const nameEn = document.getElementById('manNameEn').value.trim();
+      const nameTe = document.getElementById('manNameTe').value.trim();
+      const village = document.getElementById('manVillage').value.trim();
+      const phone = document.getElementById('manPhone').value.trim();
+
+      if (!rationNo || !nameEn) {
+        alert('Please enter Ration Card Number and English Name');
+        return;
+      }
+
+      fetch('/api/cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rationNo, nameEn, nameTe, village, phone })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          lastAddedRationNo = data.card.rationNo;
+
+          // Display Instant Success Card with QR
+          document.getElementById('newCardQrImg').src = data.card.qrDataUrl || `/api/cards/${encodeURIComponent(data.card.rationNo)}/qr.png`;
+          document.getElementById('newCardSummary').innerText = `${data.card.rationNo} - ${data.card.nameEn} / ${data.card.nameTe}`;
+          document.getElementById('newCardDetails').innerText = `📍 Village: ${data.card.village} | 📞 Phone: ${data.card.phone || '--'}`;
+          document.getElementById('newCardDownloadBtn').href = `/api/cards/${encodeURIComponent(data.card.rationNo)}/qr.png`;
+          document.getElementById('newCardSuccessBox').style.display = 'flex';
+
+          // Reset inputs
+          document.getElementById('manRationNo').value = '';
+          document.getElementById('manNameEn').value = '';
+          document.getElementById('manNameTe').value = '';
+          document.getElementById('manVillage').value = '';
+          document.getElementById('manPhone').value = '';
+          document.getElementById('manRationNo').focus();
+          loadCards();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      });
+    }
+
+    // SINGLE CARD MODAL
+    function openSingleCardModal(rationNo) {
+      if (!rationNo) return;
+      const c = allCards.find(card => card.rationNo === rationNo);
+      if (!c) return;
+
+      document.getElementById('modalQrImg').src = `/api/cards/${encodeURIComponent(c.rationNo)}/qr.png`;
+      document.getElementById('modalRationNo').innerText = c.rationNo;
+      document.getElementById('modalNameEn').innerText = c.nameEn;
+      document.getElementById('modalNameTe').innerText = c.nameTe || '';
+      document.getElementById('modalVillage').innerText = `📍 ${c.village || 'Main Village'} ${c.phone ? (' | 📞 ' + c.phone) : ''}`;
+      document.getElementById('modalDownloadLink').href = `/api/cards/${encodeURIComponent(c.rationNo)}/qr.png`;
+
+      document.getElementById('singleCardModal').style.display = 'flex';
+    }
+
+    // ==========================================
+    // 3. QUICK PASTE IMPORT
+    // ==========================================
+    function handlePasteImport() {
+      const rawText = document.getElementById('pasteInput').value.trim();
+      if (!rawText) {
+        alert('Please paste some data first');
+        return;
+      }
+
+      const lines = rawText.split('\n');
+      const cardsToImport = [];
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        // Split by tab, comma, or semicolon
+        const parts = trimmed.includes('\t') ? trimmed.split('\t') : trimmed.split(',');
+        if (parts.length >= 2) {
+          const rationNo = parts[0].trim().toUpperCase();
+          const nameEn = parts[1].trim();
+          const nameTe = (parts[2] || nameEn).trim();
+          const village = (parts[3] || 'Main Village').trim();
+          const phone = (parts[4] || '').trim();
+
+          if (rationNo && nameEn) {
+            cardsToImport.push({ rationNo, nameEn, nameTe, village, phone });
+          }
+        }
+      });
+
+      if (cardsToImport.length === 0) {
+        alert('Could not parse valid card lines. Ensure each line has at least Ration Number and English Name separated by Tab or comma.');
+        return;
+      }
+
+      fetch('/api/cards/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cards: cardsToImport })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          document.getElementById('pasteInput').value = '';
+          loadCards();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      });
+    }
+
+    // Edit Modal
+    function openEditModal(rationNo) {
+      const c = allCards.find(card => card.rationNo === rationNo);
+      if (!c) return;
+
+      document.getElementById('editRationNo').value = c.rationNo;
+      document.getElementById('editNameEn').value = c.nameEn;
+      document.getElementById('editNameTe').value = c.nameTe || '';
+      document.getElementById('editVillage').value = c.village || '';
+      document.getElementById('editPhone').value = c.phone || '';
+      document.getElementById('cardModal').style.display = 'flex';
+    }
+
+    function saveEditCard() {
+      const rationNo = document.getElementById('editRationNo').value;
+      const nameEn = document.getElementById('editNameEn').value.trim();
+      const nameTe = document.getElementById('editNameTe').value.trim();
+      const village = document.getElementById('editVillage').value.trim();
+      const phone = document.getElementById('editPhone').value.trim();
+
+      fetch('/api/cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rationNo, nameEn, nameTe, village, phone })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          closeModal('cardModal');
+          loadCards(document.getElementById('searchInput').value);
+        } else {
+          alert(data.message);
+        }
+      });
+    }
+
+    function deleteCard(rationNo) {
+      if (!confirm(`Are you sure you want to delete card ${rationNo}?`)) return;
+
+      fetch('/api/cards/' + encodeURIComponent(rationNo), { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            loadCards(document.getElementById('searchInput').value);
+          } else {
+            alert(data.message);
+          }
+        });
+    }
+
+    // Reset Day
+    function openResetModal() {
+      document.getElementById('resetPinInput').value = '';
+      document.getElementById('resetModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('resetPinInput').focus(), 100);
+    }
+
+    function confirmResetDay() {
+      const pin = document.getElementById('resetPinInput').value.trim();
+      if (!pin) return alert('Enter Admin PIN');
+
+      fetch('/api/queue/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          closeModal('resetModal');
+          alert('Queue reset successfully! Token number starts from 1.');
+        } else {
+          alert(data.message);
+        }
+      });
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+  </script>
+</body>
+</html>

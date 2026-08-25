@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Counter & Scanner - Ration Queue</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Local Offline QR Decoder Engines -->
+  <script src="/js/jsQR.js"></script>
+  <script src="/js/html5-qrcode.min.js"></script>
+  <style>
+    .scanner-box {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #000;
+      min-height: 250px;
+      position: relative;
+    }
+    .serving-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      color: white;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 1.5rem;
+    }
+    .serving-token {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #fde047;
+      line-height: 1;
+      margin: 0.5rem 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .serving-name-en {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .serving-name-te {
+      font-size: 1.4rem;
+      color: #93c5fd;
+      margin-top: 0.25rem;
+    }
+    .serving-details {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-top: 0.5rem;
+    }
+    .btn-group-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 480px) {
+      .serving-token { font-size: 2.8rem; }
+      .serving-name-en { font-size: 1.3rem; }
+      .serving-name-te { font-size: 1.2rem; }
+    }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <span>🌾</span>
+      <span>Shop Counter</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Hub</a>
+      <a href="/counter" class="nav-link active">Counter</a>
+      <a href="/display" class="nav-link" target="_blank">Display ↗</a>
+      <a href="/admin" class="nav-link">Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="grid-2">
+
+      <!-- LEFT COLUMN: CAMERA SCANNER & SCAN CONTROLS -->
+      <div>
+        <!-- Active Serving Box -->
+        <div class="serving-card">
+          <div style="text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; opacity: 0.9;">Now Serving at Counter</div>
+          <div class="serving-token" id="activeToken">--</div>
+          <div class="serving-name-en" id="activeNameEn">No Active Token</div>
+          <div class="serving-name-te" id="activeNameTe">కౌంటర్ ఖాళీగా ఉంది</div>
+          <div class="serving-details" id="activeDetails">--</div>
+
+          <div class="btn-group-grid">
+            <button class="btn btn-warning" onclick="repeatAnnouncement()">
+              📢 Repeat Audio
+            </button>
+            <button class="btn btn-success" onclick="completeCurrent()">
+              ✅ Complete & Next
+            </button>
+            <button class="btn btn-danger" onclick="skipCurrent()">
+              ⏸️ Skip Absent
+            </button>
+            <button class="btn btn-primary" onclick="callNext()">
+              ⏭️ Call Next
+            </button>
+          </div>
+        </div>
+
+        <!-- Scanner Card -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-size: 1.15rem;">📷 Camera QR Scanner</h3>
+            <div style="display: flex; gap: 0.4rem;">
+              <button id="toggleCameraBtn" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="toggleCamera()">
+                ▶️ Start Camera
+              </button>
+              <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="document.getElementById('qrFileInput').click()">
+                📸 Snap / File
+              </button>
+              <input type="file" id="qrFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileScan(event)">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.5rem; display: none;" id="cameraSelectWrapper">
+            <select id="cameraSelect" class="input-control" style="padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="changeCamera(this.value)">
+              <option value="">Detecting cameras...</option>
+            </select>
+          </div>
+
+          <div id="reader" class="scanner-box" style="position: relative; min-height: 260px; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            <video id="scannerVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+            <canvas id="scannerCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
+            
+            <div id="cameraIdleOverlay" style="text-align: center; color: white; padding: 2rem;">
+              <div style="font-size: 3rem; margin-bottom: 0.5rem;">📷</div>
+              <div style="font-weight: 700; font-size: 1.1rem;">Camera QR Scanner</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Tap <strong>"▶️ Start Camera"</strong> to scan cards</div>
+            </div>
+
+            <!-- Target Reticle Box -->
+            <div id="targetReticle" style="display: none; position: absolute; width: 200px; height: 200px; border: 3px solid #22c55e; border-radius: 16px; box-shadow: 0 0 0 4000px rgba(0,0,0,0.4); pointer-events: none;">
+              <div style="position: absolute; width: 100%; height: 2px; background: #ef4444; top: 50%; box-shadow: 0 0 8px #ef4444;"></div>
+            </div>
+          </div>
+          
+          <div id="scanStatus" style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.5rem; text-align: center;">
+            Tap <strong>'▶️ Start Camera'</strong> or <strong>'📸 Snap / File'</strong> to scan QR.
+          </div>
+
+          <!-- Manual Entry Box with Auto-Suggestions -->
+          <div style="margin-top: 1.25rem; border-top: 1px solid var(--gray-200); padding-top: 1rem; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="input-label" for="manualCardInput" style="margin-bottom: 0;">⌨️ Search & Quick Token Issue:</label>
+              <small style="color: var(--primary); font-weight: 600;">Type Name or RC#</small>
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem; position: relative;">
+              <input type="text" id="manualCardInput" class="input-control" placeholder="Search by Ration No, English or Telugu name..." autocomplete="off" autofocus oninput="handleManualInput(this.value)">
+              <button class="btn btn-primary" onclick="handleManualSubmit()">Issue</button>
+            </div>
+
+            <!-- Live Auto-Suggestions Dropdown -->
+            <div id="suggestionsDropdown" style="display: none; position: absolute; left: 0; right: 0; top: 75px; background: white; border: 2px solid var(--primary); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 200; max-height: 220px; overflow-y: auto;"></div>
+
+            <!-- Quick Pick Chips for Instant Calling -->
+            <div style="margin-top: 0.75rem;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; margin-bottom: 0.35rem;">Quick 1-Tap Issue:</div>
+              <div id="quickChipsContainer" style="display: flex; gap: 0.35rem; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: QUEUE TABS & STATS -->
+      <div>
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem;">📋 Today's Queue</h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="tab-btn active" onclick="switchTab('waiting')" id="tabWaiting">Waiting (<span id="countWaiting">0</span>)</button>
+              <button class="tab-btn" onclick="switchTab('completed')" id="tabCompleted">Done (<span id="countCompleted">0</span>)</button>
+              <button class="tab-btn" onclick="switchTab('skipped')" id="tabSkipped">Skipped (<span id="countSkipped">0</span>)</button>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Cardholder</th>
+                  <th>Village</th>
+                  <th>Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="queueTableBody">
+                <tr><td colspan="5" style="text-align: center; color: var(--gray-600); padding: 2rem;">No items in queue</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const socket = io();
+    let html5QrCode = null;
+    let isCameraRunning = false;
+    let lastScannedCode = '';
+    let lastScanTime = 0;
+    let currentQueueState = { waiting: [], completed: [], skipped: [], serving: null };
+    let currentTab = 'waiting';
+
+    // Audio beep on scan
+    function playBeep(success = true) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = success ? 'sine' : 'sawtooth';
+        osc.frequency.setValueAtTime(success ? 880 : 300, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (success ? 0.15 : 0.3));
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + (success ? 0.15 : 0.3));
+      } catch (e) {
+        console.error('AudioContext error:', e);
+      }
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.background = isError ? '#b91c1c' : '#15803d';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    // Process scanned ration number
+    function submitRationScan(rationNo) {
+      if (!rationNo) return;
+      
+      fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rationNo: rationNo.trim() })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          playBeep(false);
+          showToast(data.message, true);
+          return;
+        }
+
+        playBeep(true);
+        showToast(data.message, false);
+        document.getElementById('manualCardInput').value = '';
+        document.getElementById('manualCardInput').focus();
+      })
+      .catch(err => {
+        showToast('Network error: ' + err.message, true);
+      });
+    }
+
+    // Enter key support for manual input
+    document.getElementById('manualCardInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleManualSubmit();
+      }
+    });
+
+    let searchTimer = null;
+    function handleManualInput(val) {
+      clearTimeout(searchTimer);
+      const dropdown = document.getElementById('suggestionsDropdown');
+      const q = (val || '').trim();
+
+      if (q.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      searchTimer = setTimeout(() => {
+        fetch('/api/cards?q=' + encodeURIComponent(q) + '&limit=6')
+          .then(res => res.json())
+          .then(data => {
+            if (!data.cards || data.cards.length === 0) {
+              dropdown.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--gray-600); font-size: 0.9rem;">No matching cards found for "${q}"</div>`;
+              dropdown.style.display = 'block';
+              return;
+            }
+
+            dropdown.innerHTML = data.cards.map(c => `
+              <div onclick="selectSuggestedCard('${c.rationNo}')" style="padding: 0.65rem 1rem; border-bottom: 1px solid var(--gray-200); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='white'">
+                <div>
+                  <div style="font-weight: 700; color: var(--gray-800);">${c.nameEn} <span style="color: #0369a1; font-size: 0.9rem;">(${c.nameTe || ''})</span></div>
+                  <div style="font-size: 0.8rem; color: var(--gray-600);">${c.rationNo} • 📍 ${c.village || 'Main Village'}</div>
+                </div>
+                <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="event.stopPropagation(); selectSuggestedCard('${c.rationNo}')">
+                  ⚡ Issue
+                </button>
+              </div>
+            `).join('');
+
+            dropdown.style.display = 'block';
+          });
+      }, 150);
+    }
+
+    function selectSuggestedCard(rationNo) {
+      document.getElementById('suggestionsDropdown').style.display = 'none';
+      document.getElementById('manualCardInput').value = '';
+      submitRationScan(rationNo);
+    }
+
+    // Close suggestions on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#manualCardInput') && !e.target.closest('#suggestionsDropdown')) {
+        const d = document.getElementById('suggestionsDropdown');
+        if (d) d.style.display = 'none';
+      }
+    });
+
+    function loadQuickChips() {
+      fetch('/api/cards?limit=8')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('quickChipsContainer');
+          if (container && data.cards) {
+            container.innerHTML = data.cards.map(c => `
+              <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.nameTe || ''})">
+                ${c.rationNo} (${c.nameEn.split(' ')[0]})
+              </button>
+            `).join('');
+          }
+        });
+    }
+    loadQuickChips();
+
+    function handleManualSubmit() {
+      const val = document.getElementById('manualCardInput').value.trim();
+      if (!val) return;
+      document.getElementById('suggestionsDropdown').style.display = 'none';
+      submitRationScan(val);
+    }
+
+    // ==========================================
+    // NATIVE HIGH-SPEED jsQR CAMERA SCANNER
+    // ==========================================
+    let cameraStream = null;
+    let scanAnimationId = null;
+    let availableCameras = [];
+    let currentCameraIndex = 0;
+
+    function toggleCamera() {
+      if (isCameraRunning) {
+        stopCamera();
+      } else {
+        startCamera();
+      }
+    }
+
+    async function startCamera(deviceId = null) {
+      const video = document.getElementById('scannerVideo');
+      const canvas = document.getElementById('scannerCanvas');
+      const ctx = canvas.getContext('2d');
+      const statusEl = document.getElementById('scanStatus');
+      const idleOverlay = document.getElementById('cameraIdleOverlay');
+      const reticle = document.getElementById('targetReticle');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusEl.innerHTML = `
+          <span style="color:#b91c1c;">❌ Live camera API blocked by browser over HTTP.</span><br>
+          <small style="color:var(--gray-600);">Please use the <strong>"📸 Snap / File"</strong> button or enter Ration # below.</small>
+        `;
+        showToast('Camera blocked on HTTP. Use "Snap / File" button or manual entry', true);
+        return;
+      }
+
+      statusEl.innerText = '⏳ Requesting camera permission...';
+
+      // 1. Try back/environment camera first, then user camera
+      const constraintsList = [
+        deviceId ? { video: { deviceId: { exact: deviceId } } } : null,
+        { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: 'environment' } },
+        { video: { facingMode: 'user' } },
+        { video: true }
+      ].filter(Boolean);
+
+      let stream = null;
+      let lastErr = null;
+
+      for (const constraint of constraintsList) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraint);
+          if (stream) break;
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+
+      if (!stream) {
+        console.error('All camera constraints failed:', lastErr);
+        statusEl.innerHTML = `
+          <span style="color:#b91c1c;">❌ Camera Access Denied: ${lastErr ? (lastErr.name || lastErr.message) : 'Unknown error'}</span><br>
+          <small style="color:var(--gray-600);">Please allow camera permission or tap <strong>"📸 Snap / File"</strong> to take a photo.</small>
+        `;
+        showToast('Camera permission denied or camera not found', true);
+        return;
+      }
+
+      cameraStream = stream;
+      video.srcObject = stream;
+      video.setAttribute('playsinline', true);
+      await video.play();
+
+      isCameraRunning = true;
+      video.style.display = 'block';
+      idleOverlay.style.display = 'none';
+      reticle.style.display = 'block';
+
+      document.getElementById('toggleCameraBtn').innerText = '⏹️ Stop Camera';
+      document.getElementById('toggleCameraBtn').classList.replace('btn-primary', 'btn-danger');
+      statusEl.innerHTML = '🟢 <strong>Camera active & scanning!</strong> Align QR inside the green square.';
+
+      // Enumerate cameras for switching
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        availableCameras = devices.filter(d => d.kind === 'videoinput');
+        if (availableCameras.length > 1) {
+          const select = document.getElementById('cameraSelect');
+          select.innerHTML = availableCameras.map((cam, idx) => `
+            <option value="${cam.deviceId}">${cam.label || ('Camera ' + (idx + 1))}</option>
+          `).join('');
+          document.getElementById('cameraSelectWrapper').style.display = 'block';
+        }
+      } catch (e) {}
+
+      // Start continuous frame-by-frame decoding loop
+      function scanFrame() {
+        if (!isCameraRunning) return;
+
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          
+          if (window.jsQR) {
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: 'dontInvert'
+            });
+
+            if (code && code.data) {
+              const now = Date.now();
+              if (code.data !== lastScannedCode || (now - lastScanTime) > 2500) {
+                lastScannedCode = code.data;
+                lastScanTime = now;
+
+                // Visual flash reticle
+                reticle.style.borderColor = '#eab308';
+                setTimeout(() => { reticle.style.borderColor = '#22c55e'; }, 400);
+
+                submitRationScan(code.data);
+              }
+            }
+          }
+        }
+
+        scanAnimationId = requestAnimationFrame(scanFrame);
+      }
+
+      scanAnimationId = requestAnimationFrame(scanFrame);
+    }
+
+    function stopCamera() {
+      isCameraRunning = false;
+      if (scanAnimationId) {
+        cancelAnimationFrame(scanAnimationId);
+        scanAnimationId = null;
+      }
+
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+
+      const video = document.getElementById('scannerVideo');
+      const idleOverlay = document.getElementById('cameraIdleOverlay');
+      const reticle = document.getElementById('targetReticle');
+
+      if (video) {
+        video.srcObject = null;
+        video.style.display = 'none';
+      }
+      if (idleOverlay) idleOverlay.style.display = 'block';
+      if (reticle) reticle.style.display = 'none';
+
+      document.getElementById('toggleCameraBtn').innerText = '▶️ Start Camera';
+      document.getElementById('toggleCameraBtn').classList.replace('btn-danger', 'btn-primary');
+      document.getElementById('scanStatus').innerHTML = 'Camera stopped. Tap <strong>"▶️ Start Camera"</strong> to scan.';
+    }
+
+    function changeCamera(deviceId) {
+      if (isCameraRunning) {
+        stopCamera();
+        startCamera(deviceId);
+      }
+    }
+
+    // Photo / File Snapshot Scanner (100% Reliable across all browsers & HTTP)
+    function handleFileScan(e) {
+      if (!e.target.files || e.target.files.length === 0) return;
+      const file = e.target.files[0];
+      const statusEl = document.getElementById('scanStatus');
+      statusEl.innerText = '⏳ Scanning photo...';
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = img.width;
+          offCanvas.height = img.height;
+          const offCtx = offCanvas.getContext('2d');
+          offCtx.drawImage(img, 0, 0);
+
+          const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+          
+          if (window.jsQR) {
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code && code.data) {
+              submitRationScan(code.data);
+              e.target.value = '';
+              return;
+            }
+          }
+
+          // Fallback to Html5Qrcode.scanFile if jsQR misses
+          if (window.Html5Qrcode) {
+            const h5 = new Html5Qrcode('reader');
+            h5.scanFile(file, true)
+              .then(decodedText => {
+                submitRationScan(decodedText);
+                e.target.value = '';
+              })
+              .catch(err => {
+                showToast('Could not find QR code in image. Please try closer.', true);
+                statusEl.innerText = '❌ No QR code detected in image.';
+                e.target.value = '';
+              });
+          } else {
+            showToast('Could not detect QR code in image.', true);
+            statusEl.innerText = '❌ No QR code detected in image.';
+            e.target.value = '';
+          }
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Counter Action Controls
+    function callNext() {
+      fetch('/api/queue/call-next', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.currentToken) {
+            showToast('Now Serving Token #' + data.currentToken.tokenNo);
+          } else {
+            showToast('No more waiting cards in queue');
+          }
+        });
+    }
+
+    function repeatAnnouncement() {
+      fetch('/api/queue/repeat', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            showToast(data.message, true);
+          } else {
+            showToast('📢 Re-announcing on outside display');
+          }
+        });
+    }
+
+    function completeCurrent() {
+      fetch('/api/queue/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callNext: true })
+      })
+      .then(res => res.json())
+      .then(data => {
+        showToast('Completed. ' + (data.nextToken ? ('Next: Token #' + data.nextToken.tokenNo) : 'Queue clear!'));
+      });
+    }
+
+    function skipCurrent() {
+      fetch('/api/queue/skip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callNext: true })
+      })
+      .then(res => res.json())
+      .then(data => {
+        showToast('Token skipped.');
+      });
+    }
+
+    function callSpecific(tokenNo) {
+      fetch('/api/queue/call-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tokenNo })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showToast('Calling Token #' + tokenNo);
+        } else {
+          showToast(data.message, true);
+        }
+      });
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabWaiting').classList.toggle('active', tab === 'waiting');
+      document.getElementById('tabCompleted').classList.toggle('active', tab === 'completed');
+      document.getElementById('tabSkipped').classList.toggle('active', tab === 'skipped');
+      renderQueueTable();
+    }
+
+    function renderQueueTable() {
+      const tbody = document.getElementById('queueTableBody');
+      const list = currentQueueState[currentTab] || [];
+
+      if (list.length === 0) {
+        tbody.innerHTML = <tr><td colspan="5" style="text-align: center; color: var(--gray-600); padding: 2rem;">No  tokens</td></tr>;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => 
+        <tr>
+          <td><strong style="font-size: 1.1rem; color: var(--primary);">#</strong></td>
+          <td>
+            <div style="font-weight: 600;"></div>
+            <div style="font-size: 0.85rem; color: var(--gray-600);"> ()</div>
+          </td>
+          <td></td>
+          <td><small></small></td>
+          <td>
+            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="callSpecific()">
+              
+            </button>
+          </td>
+        </tr>
+      ).join('');
+    }
+
+    // Socket.io Real-time update listener
+    socket.on('queue-updated', data => {
+      currentQueueState = data;
+      
+      // Update Serving Panel
+      if (data.serving) {
+        document.getElementById('activeToken').innerText = '#' + data.serving.tokenNo;
+        document.getElementById('activeNameEn').innerText = data.serving.nameEn;
+        document.getElementById('activeNameTe').innerText = data.serving.nameTe;
+        document.getElementById('activeDetails').innerText = Card:  | Village: ;
+      } else {
+        document.getElementById('activeToken').innerText = '--';
+        document.getElementById('activeNameEn').innerText = 'No Active Token';
+        document.getElementById('activeNameTe').innerText = 'కౌంటర్ ఖాళీగా ఉంది';
+        document.getElementById('activeDetails').innerText = 'Scan a card or tap "Call Next"';
+      }
+
+      // Update Counts
+      document.getElementById('countWaiting').innerText = data.waitingCount;
+      document.getElementById('countCompleted').innerText = data.completedCount;
+      document.getElementById('countSkipped').innerText = data.skippedCount;
+
+      renderQueueTable();
+    });
+
+    socket.on('reset-done', () => {
+      showToast('Queue was reset by Admin');
+    });
+  </script>
+</body>
+</html>

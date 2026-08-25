@@ -1,0 +1,107 @@
+[
+  {
+    "rationNo": "RC-0001",
+    "nameEn": "Ramesh Kumar",
+    "nameTe": "రమేష్ కుమార్",
+    "village": "Main Village",
+    "phone": "9876543210"
+  },
+  {
+    "rationNo": "RC-0002",
+    "nameEn": "Suresh Kumar",
+    "nameTe": "సురేష్ కుమార్",
+    "village": "SC Colony",
+    "phone": "9876543211"
+  },
+  {
+    "rationNo": "RC-0003",
+    "nameEn": "Lakshmi Devi",
+    "nameTe": "లక్ష్మి దేవి",
+    "village": "Main Village",
+    "phone": "9876543212"
+  },
+  {
+    "rationNo": "RC-0004",
+    "nameEn": "Anitha Reddy",
+    "nameTe": "అనిత రెడ్డి",
+    "village": "BC Colony",
+    "phone": "9876543213"
+  },
+  {
+    "rationNo": "RC-0005",
+    "nameEn": "Venkatesh Rao",
+    "nameTe": "వెంకటేష్ రావు",
+    "village": "North Street",
+    "phone": "9876543214"
+  },
+  {
+    "rationNo": "RC-0006",
+    "nameEn": "Parvathi Bai",
+    "nameTe": "పార్వతి బాయి",
+    "village": "Old Village",
+    "phone": "9876543215"
+  },
+  {
+    "rationNo": "RC-0007",
+    "nameEn": "Narasimha Murthy",
+    "nameTe": "నరసింహ మూర్తి",
+    "village": "Main Village",
+    "phone": "9876543216"
+  },
+  {
+    "rationNo": "RC-0008",
+    "nameEn": "Sita Raman",
+    "nameTe": "సీత రామన్",
+    "village": "Temple Street",
+    "phone": "9876543217"
+  },
+  {
+    "rationNo": "RC-0009",
+    "nameEn": "Govindappa",
+    "nameTe": "గోవిందప్ప",
+    "village": "SC Colony",
+    "phone": "9876543218"
+  },
+  {
+    "rationNo": "RC-0010",
+    "nameEn": "Kavitha Rani",
+    "nameTe": "కవిత రాణి",
+    "village": "BC Colony",
+    "phone": "9876543219"
+  },
+  {
+    "rationNo": "RC-0101",
+    "nameEn": "Anil Kumar",
+    "nameTe": "అనిల్ కుమార్",
+    "village": "East Colony",
+    "phone": "9988776655"
+  },
+  {
+    "rationNo": "RC-0102",
+    "nameEn": "Sunitha Devi",
+    "nameTe": "సునీత దేవి",
+    "village": "West Colony",
+    "phone": "9988776656"
+  },
+  {
+    "rationNo": "RC-0501",
+    "nameEn": "Vijay Varma",
+    "nameTe": "విజయ్ వర్మ",
+    "village": "New Colony",
+    "phone": "9848022338"
+  },
+  {
+    "rationNo": "RC-0502",
+    "nameEn": "Srinivas Reddy",
+    "nameTe": "శ్రీనివాస్ రెడ్డి",
+    "village": "Main Village",
+    "phone": "9848022339"
+  },
+  {
+    "rationNo": "RC-0503",
+    "nameEn": "Geetha Kumari",
+    "nameTe": "గీత కుమారి",
+    "village": "BC Colony",
+    "phone": "9848022340"
+  }
+]

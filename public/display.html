@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Display - Ration Token System</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    :root {
+      --bg-color: #030712;
+      --card-bg: #111827;
+      --text-white: #f9fafb;
+      --gold-yellow: #facc15;
+      --sky-blue: #38bdf8;
+      --green-glow: #22c55e;
+      --border-color: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Top Bar */
+    header {
+      padding: 1rem 2rem;
+      background: rgba(17, 24, 39, 0.9);
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shop-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .shop-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .audio-btn {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+    }
+
+    .audio-btn.enabled {
+      background: #15803d;
+      animation: none;
+      box-shadow: 0 0 15px rgba(21, 128, 61, 0.4);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .clock {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--sky-blue);
+      font-family: monospace;
+    }
+
+    /* Main Serving Display */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .serving-container {
+      background: var(--card-bg);
+      border: 3px solid #374151;
+      border-radius: 24px;
+      padding: 2.5rem 3.5rem;
+      max-width: 1000px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .serving-badge {
+      display: inline-block;
+      background: #1e3a8a;
+      color: #93c5fd;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      border: 1px solid #3b82f6;
+    }
+
+    .token-number {
+      font-size: clamp(4.5rem, 12vw, 8.5rem);
+      font-weight: 900;
+      color: var(--gold-yellow);
+      text-shadow: 0 0 40px rgba(250, 204, 21, 0.45);
+      line-height: 1;
+      margin: 0.5rem 0 1rem 0;
+      letter-spacing: -2px;
+    }
+
+    .name-telugu {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800;
+      color: var(--text-white);
+      margin-top: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .name-english {
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--sky-blue);
+      margin-top: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .meta-details {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: #9ca3af;
+      margin-top: 1.25rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      background: #1f2937;
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #374151;
+    }
+
+    /* Bottom Upcoming Queue Bar */
+    footer {
+      background: rgba(17, 24, 39, 0.95);
+      border-top: 2px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      footer { grid-template-columns: 1fr; }
+      .serving-container { padding: 1.5rem; }
+    }
+
+    .queue-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      overflow-x: auto;
+    }
+
+    .queue-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    .queue-chips {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+    }
+
+    .chip {
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+
+    .chip-upcoming { color: var(--gold-yellow); border-color: rgba(250, 204, 21, 0.4); }
+    .chip-done { color: var(--green-glow); opacity: 0.8; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="shop-header">
+      <span style="font-size: 1.8rem;">🌾</span>
+      <div class="shop-title" id="shopNameDisplay">Sri Lakshmi Fair Price Shop</div>
+    </div>
+    <div class="header-actions">
+      <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
+        🔊 <span id="audioBtnText">Enable Voice Audio / ఆడియో ఆన్</span>
+      </button>
+      <div class="clock" id="liveClock">--:--:--</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="serving-container" id="displayBox">
+      <div class="serving-badge">NOW SERVING / ఇప్పుడు పిలుస్తున్న టోకెన్</div>
+      
+      <div class="token-number" id="tokenNum">--</div>
+      <div class="name-telugu" id="personNameTe">వేచి ఉండండి...</div>
+      <div class="name-english" id="personNameEn">Please Wait...</div>
+
+      <div class="meta-details">
+        <div class="meta-item">📍 గ్రామము / Village: <strong id="personVillage" style="color: white;">--</strong></div>
+        <div class="meta-item">💳 రేషన్ కార్డ్ / Card: <strong id="personCardNo" style="color: white;">--</strong></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="queue-box">
+      <div class="queue-label">🔜 Next Waiting:</div>
+      <div class="queue-chips" id="upcomingChips">
+        <span class="chip">Queue empty</span>
+      </div>
+    </div>
+    <div class="queue-box">
+      <div class="queue-label">✅ Recently Served:</div>
+      <div class="queue-chips" id="servedChips">
+        <span class="chip">None yet</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const socket = io();
+    let audioUnlocked = false;
+    let speechSynth = window.speechSynthesis;
+    let teluguVoice = null;
+    let englishVoice = null;
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', { hour12: true });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Voice Selection & Setup
+    function loadVoices() {
+      if (!speechSynth) return;
+      const voices = speechSynth.getVoices();
+      
+      // Look for Telugu voices
+      teluguVoice = voices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te') || v.name.toLowerCase().includes('telugu'));
+      
+      // Look for Indian English or standard English
+      englishVoice = voices.find(v => v.lang === 'en-IN') ||
+                     voices.find(v => v.lang.startsWith('en')) ||
+                     voices[0];
+    }
+    if (speechSynth) {
+      speechSynth.onvoiceschanged = loadVoices;
+      loadVoices();
+    }
+
+    // High quality 2-tone chime bell using Web Audio API
+    function playChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const now = audioCtx.currentTime;
+
+        // Tone 1: High Bell (659.25 Hz - E5)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.8);
+
+        // Tone 2: Harmonious Bell (880 Hz - A5)
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.25);
+        gain2.gain.setValueAtTime(0.35, now + 0.25);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.25);
+        osc2.stop(now + 1.2);
+      } catch (e) {
+        console.error('Audio chime error:', e);
+      }
+    }
+
+    function enableAudio() {
+      audioUnlocked = true;
+      playChime();
+      
+      // Test utterance to prime Web Speech
+      if (speechSynth) {
+        const dummy = new SpeechSynthesisUtterance('Audio enabled');
+        dummy.volume = 0.2;
+        speechSynth.speak(dummy);
+      }
+
+      const btn = document.getElementById('audioToggleBtn');
+      btn.classList.add('enabled');
+      document.getElementById('audioBtnText').innerText = '🔊 Audio Ready / ఆడియో ఆన్ లో ఉంది';
+    }
+
+    // Bilingual Voice Announcement
+    function makeAnnouncement(data) {
+      if (!audioUnlocked) return;
+
+      // 1. Play attention chime
+      playChime();
+
+      if (!speechSynth) return;
+      speechSynth.cancel(); // Stop any pending voice
+
+      // Wait 700ms after chime before speaking
+      setTimeout(() => {
+        // English Utterance
+        const msgEn = new SpeechSynthesisUtterance(
+          Token number , 
+        );
+        msgEn.lang = 'en-IN';
+        if (englishVoice) msgEn.voice = englishVoice;
+        msgEn.rate = 0.9;
+        msgEn.pitch = 1.0;
+
+        // Telugu Utterance
+        const teluguText = data.nameTe ? data.nameTe : data.nameEn;
+        const msgTe = new SpeechSynthesisUtterance(
+          టోకెన్ సంఖ్య , 
+        );
+        msgTe.lang = 'te-IN';
+        if (teluguVoice) msgTe.voice = teluguVoice;
+        msgTe.rate = 0.85;
+        msgTe.pitch = 1.0;
+
+        // Speak English first, then Telugu
+        speechSynth.speak(msgEn);
+        speechSynth.speak(msgTe);
+      }, 700);
+    }
+
+    // Flash animation on token change
+    function triggerVisualAlert() {
+      const box = document.getElementById('displayBox');
+      box.style.borderColor = '#facc15';
+      box.style.transform = 'scale(1.02)';
+      box.style.transition = 'all 0.3s ease';
+
+      setTimeout(() => {
+        box.style.borderColor = '#374151';
+        box.style.transform = 'scale(1)';
+      }, 600);
+    }
+
+    // Socket Event: New or repeated token announced
+    socket.on('token-announced', (data) => {
+      document.getElementById('tokenNum').innerText = '#' + data.tokenNo;
+      document.getElementById('personNameTe').innerText = data.nameTe || data.nameEn;
+      document.getElementById('personNameEn').innerText = data.nameEn;
+      document.getElementById('personVillage').innerText = data.village || '--';
+      document.getElementById('personCardNo').innerText = data.rationNo || '--';
+
+      triggerVisualAlert();
+      makeAnnouncement(data);
+    });
+
+    // Socket Event: Full Queue updated
+    socket.on('queue-updated', (state) => {
+      if (state.serving) {
+        document.getElementById('tokenNum').innerText = '#' + state.serving.tokenNo;
+        document.getElementById('personNameTe').innerText = state.serving.nameTe || state.serving.nameEn;
+        document.getElementById('personNameEn').innerText = state.serving.nameEn;
+        document.getElementById('personVillage').innerText = state.serving.village || '--';
+        document.getElementById('personCardNo').innerText = state.serving.rationNo || '--';
+      } else {
+        document.getElementById('tokenNum').innerText = '--';
+        document.getElementById('personNameTe').innerText = 'వేచి ఉండండి...';
+        document.getElementById('personNameEn').innerText = 'Counter Idle';
+        document.getElementById('personVillage').innerText = '--';
+        document.getElementById('personCardNo').innerText = '--';
+      }
+
+      // Render Upcoming (next 4)
+      const upcoming = state.waiting.slice(0, 4);
+      const upcomingContainer = document.getElementById('upcomingChips');
+      if (upcoming.length > 0) {
+        upcomingContainer.innerHTML = upcoming.map(u => 
+          <span class="chip chip-upcoming"># </span>
+        ).join('');
+      } else {
+        upcomingContainer.innerHTML = '<span class="chip">Queue empty</span>';
+      }
+
+      // Render Served (last 3 completed)
+      const completed = state.completed.slice(-3).reverse();
+      const servedContainer = document.getElementById('servedChips');
+      if (completed.length > 0) {
+        servedContainer.innerHTML = completed.map(c => 
+          <span class="chip chip-done"># </span>
+        ).join('');
+      } else {
+        servedContainer.innerHTML = '<span class="chip">None yet</span>';
+      }
+    });
+
+    socket.on('settings-updated', (s) => {
+      if (s.shopName) {
+        document.getElementById('shopNameDisplay').innerText = s.shopName + (s.village ?  () : '');
+      }
+    });
+
+    socket.on('reset-done', () => {
+      document.getElementById('tokenNum').innerText = '--';
+      document.getElementById('personNameTe').innerText = 'రోజు రీసెట్ చేయబడింది';
+      document.getElementById('personNameEn').innerText = 'Day Reset Complete';
+      document.getElementById('personVillage').innerText = '--';
+      document.getElementById('personCardNo').innerText = '--';
+      document.getElementById('upcomingChips').innerHTML = '<span class="chip">Queue empty</span>';
+      document.getElementById('servedChips').innerHTML = '<span class="chip">None yet</span>';
+    });
+
+    // Auto prompt on first user click anywhere to enable audio
+    document.addEventListener('click', () => {
+      if (!audioUnlocked) enableAudio();
+    }, { once: true });
+  </script>
+</body>
+</html>

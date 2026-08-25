@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Ration Queue System - Hub</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .device-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      border: 2px solid var(--gray-200);
+      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .device-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+    .device-card img.qr {
+      width: 180px;
+      height: 180px;
+      margin: 1rem auto;
+      display: block;
+      border-radius: 8px;
+      border: 1px solid var(--gray-300);
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <span>🌾</span>
+      <span id="shopTitle">Smart Ration Queue System</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link active">Hub</a>
+      <a href="/counter" class="nav-link">Counter / Scanner</a>
+      <a href="/display" class="nav-link">Outside Display</a>
+      <a href="/admin" class="nav-link">Admin & Records</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white;">
+      <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="bannerShop">Smart Ration Card Queue & Token Management</h1>
+      <p style="opacity: 0.9; font-size: 1.05rem;">Bilingual Voice Announcements (Telugu + English) | Live QR Scanner | Zero Waiting Chaos</p>
+      
+      <div style="margin-top: 1.25rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
+        📶 <strong>Server Wi-Fi Address:</strong> <span id="wifiIp">Loading...</span>
+        <div style="font-size: 0.85rem; opacity: 0.85; margin-top: 4px;">Connect all phones/tablets to the same Wi-Fi/Hotspot, then scan the QR codes below.</div>
+      </div>
+    </div>
+
+    <!-- Live Queue Counters -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-value" id="statIssued">0</div>
+        <div class="stat-label">Total Issued</div>
+      </div>
+      <div class="stat-box" style="border-top: 4px solid var(--warning);">
+        <div class="stat-value" id="statServing" style="color: var(--warning);">--</div>
+        <div class="stat-label">Now Serving</div>
+      </div>
+      <div class="stat-box" style="border-top: 4px solid var(--primary);">
+        <div class="stat-value" id="statWaiting">0</div>
+        <div class="stat-label">Waiting in Line</div>
+      </div>
+      <div class="stat-box" style="border-top: 4px solid var(--success);">
+        <div class="stat-value" id="statCompleted" style="color: var(--success);">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-box" style="border-top: 4px solid var(--danger);">
+        <div class="stat-value" id="statSkipped" style="color: var(--danger);">0</div>
+        <div class="stat-label">Skipped</div>
+      </div>
+    </div>
+
+    <!-- Device Pairing Cards -->
+    <h2 style="font-size: 1.3rem; margin-bottom: 0.5rem;">📱 Connect Devices via QR Code</h2>
+    <p style="color: var(--gray-600); margin-bottom: 1rem;">Scan with any phone camera or tap the button to open directly.</p>
+
+    <div class="hub-grid">
+      <!-- Inside Shop Device -->
+      <div class="device-card">
+        <div style="font-size: 2.5rem;">📱</div>
+        <h3 style="margin-top: 0.5rem;">Inside Shop Phone</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Camera QR Scanner & Next Token Controls for Counter Staff</p>
+        <img id="qrCounter" class="qr" alt="Scanner QR">
+        <a href="/counter" class="btn btn-primary btn-block">Open Counter Scanner</a>
+      </div>
+
+      <!-- Outside Display Device -->
+      <div class="device-card">
+        <div style="font-size: 2.5rem;">📺</div>
+        <h3 style="margin-top: 0.5rem;">Outside Tablet / TV</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Big Screen Display with Telugu & English Voice + Speaker Audio</p>
+        <img id="qrDisplay" class="qr" alt="Display QR">
+        <a href="/display" class="btn btn-success btn-block" target="_blank">Open Outside Display</a>
+      </div>
+
+      <!-- Admin & Setup -->
+      <div class="device-card">
+        <div style="font-size: 2.5rem;">⚙️</div>
+        <h3 style="margin-top: 0.5rem;">Admin & Records</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Upload Excel Roster (300+ Cards), Batch Print QR Codes & Reports</p>
+        <img id="qrHome" class="qr" alt="Admin QR">
+        <a href="/admin" class="btn btn-outline btn-block">Open Admin Dashboard</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const socket = io();
+
+    // Fetch Network & QR codes
+    fetch('/api/network-info')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('wifiIp').innerText = data.baseUrl;
+        document.getElementById('qrCounter').src = data.qrcodes.counter;
+        document.getElementById('qrDisplay').src = data.qrcodes.display;
+        document.getElementById('qrHome').src = data.qrcodes.home;
+      });
+
+    // Update queue stats in real time
+    socket.on('queue-updated', data => {
+      document.getElementById('statIssued').innerText = data.totalIssued;
+      document.getElementById('statServing').innerText = data.serving ? ('#' + data.serving.tokenNo) : '--';
+      document.getElementById('statWaiting').innerText = data.waitingCount;
+      document.getElementById('statCompleted').innerText = data.completedCount;
+      document.getElementById('statSkipped').innerText = data.skippedCount;
+    });
+
+    socket.on('settings-updated', s => {
+      if (s.shopName) {
+        document.getElementById('shopTitle').innerText = s.shopName;
+        document.getElementById('bannerShop').innerText = s.shopName + ' - Token Management';
+      }
+    });
+  </script>
+</body>
+</html>
