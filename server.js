@@ -919,6 +919,10 @@ app.post('/api/queue/reset', (req, res) => {
     });
   }
 
+  if (req.body.clearHistory === true) {
+    queueState.history = [];
+  }
+
   queueState.tokenNo = 0;
   queueState.currentToken = null;
   queueState.queue = [];
