@@ -1,7 +1,7 @@
 {
   "shopName": "Fair Price Shop (#03)",
-  "village": "Village Center",
-  "adminPin": "1234",
+  "village": "",
+  "adminPinHash": "7f9c8a2d51e64b30a9f1c7d302bd48a1:52786bc51371704bb65e85ae149655cac645472ac2a2338ab596b133f5c19c3696cd68cb6abf29e5763b98897c4c158b85a63e74fccf070ad3b7cf4c9aad58e5",
   "autoAnnounceOnScan": true,
   "chimeEnabled": true,
   "speechRate": 0.9,

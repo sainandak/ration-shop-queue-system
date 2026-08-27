@@ -155,6 +155,9 @@
   </div>
 
   <script>
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
     let printData = [];
 
     function fetchPrintData() {
@@ -176,13 +179,13 @@
 
       grid.innerHTML = cards.map(c => `
         <div class="qr-card">
-          <img class="qr-img" src="${c.qrDataUrl}" alt="${c.rationNo}">
+          <img class="qr-img" src="${c.qrDataUrl}" alt="${escapeHtml(c.rationNo)}">
           <div class="qr-details">
-            <div class="shop-tag">${shopName || 'Fair Price Shop'}</div>
-            <div class="rc-number">${c.rationNo}</div>
-            <div class="holder-en">${c.nameEn}</div>
-            <div class="holder-te">${c.nameTe || ''}</div>
-            <div class="village-tag">📍 ${c.village || 'Main Village'}</div>
+            <div class="shop-tag">${escapeHtml(shopName || 'Fair Price Shop')}</div>
+            <div class="rc-number">${escapeHtml(c.rationNo)}</div>
+            <div class="holder-en">${escapeHtml(c.nameEn)}</div>
+            <div class="holder-te">${escapeHtml(c.nameTe || '')}</div>
+            <div class="village-tag">${escapeHtml(c.village || 'Main Village')}</div>
           </div>
         </div>
       `).join('');

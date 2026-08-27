@@ -2408,5 +2408,40 @@
     "village": "Fair Price Shop #03 Village",
     "phone": "",
     "last4": "6425"
+  },
+  {
+    "rationNo": "RC-0501",
+    "nameEn": "Vijay Varma",
+    "nameTe": "విజయ్ వర్మ",
+    "village": "New Colony",
+    "phone": "9848022338"
+  },
+  {
+    "rationNo": "RC-0502",
+    "nameEn": "Srinivas Reddy",
+    "nameTe": "శ్రీనివాస్ రెడ్డి",
+    "village": "Main Village",
+    "phone": "9848022339"
+  },
+  {
+    "rationNo": "RC-0503",
+    "nameEn": "Geetha Kumari",
+    "nameTe": "గీత కుమారి",
+    "village": "BC Colony",
+    "phone": "9848022340"
+  },
+  {
+    "rationNo": "RC-0101",
+    "nameEn": "Anil Kumar",
+    "nameTe": "అనిల్ కుమార్",
+    "village": "East Colony",
+    "phone": "9988776655"
+  },
+  {
+    "rationNo": "RC-0102",
+    "nameEn": "Sunitha Devi",
+    "nameTe": "సునీత దేవి",
+    "village": "West Colony",
+    "phone": "9988776656"
   }
 ]

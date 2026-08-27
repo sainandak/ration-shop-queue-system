@@ -40,9 +40,10 @@ function request(url, options = {}, body = null) {
 
 async function testFeatures() {
   const BASE = 'http://localhost:3000';
+  const staffOptions = { method: 'POST', headers: { 'X-Admin-Pin': '1234' } };
 
   // 1. Test Manual Add Single Card
-  const manRes = await request(BASE + '/api/cards', { method: 'POST' }, {
+  const manRes = await request(BASE + '/api/cards', staffOptions, {
     rationNo: 'RC-0501',
     nameEn: 'Vijay Varma',
     nameTe: 'విజయ్ వర్మ',
@@ -52,7 +53,7 @@ async function testFeatures() {
   console.log('✅ Manual Add Single Card:', manRes.data.success ? 'PASS' : 'FAIL', manRes.data.message);
 
   // 2. Test Bulk Cards API
-  const bulkRes = await request(BASE + '/api/cards/bulk', { method: 'POST' }, {
+  const bulkRes = await request(BASE + '/api/cards/bulk', staffOptions, {
     cards: [
       { rationNo: 'RC-0502', nameEn: 'Srinivas Reddy', nameTe: 'శ్రీనివాస్ రెడ్డి', village: 'Main Village', phone: '9848022339' },
       { rationNo: 'RC-0503', nameEn: 'Geetha Kumari', nameTe: 'గీత కుమారి', village: 'BC Colony', phone: '9848022340' }

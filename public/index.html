@@ -26,6 +26,7 @@
       transform: translateY(-3px);
       border-color: var(--primary);
     }
+    .device-icon { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; margin: 0 auto; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; }
     .device-card img.qr {
       width: 180px;
       height: 180px;
@@ -40,6 +41,18 @@
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
+    .qr-toggle { display: none; }
+    .connection-panel { margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 0.9rem; }
+    .stats-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin: 1.5rem 0 0.75rem; }
+    @media (max-width: 600px) {
+      .hub-grid { grid-template-columns: 1fr; }
+      .device-card img.qr { display: none; }
+      .device-card img.qr.is-visible { display: block; }
+      .qr-toggle { display: inline-flex; margin: 0 0 0.85rem; }
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+      .stats-row .stat-box { padding: 0.85rem; }
+      .stats-row .stat-box:first-child { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -49,8 +62,9 @@
       <span>🌾</span>
       <span id="shopTitle">Smart Ration Queue System</span>
     </a>
+    <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
     <div class="nav-links">
-      <a href="/" class="nav-link active">Hub</a>
+      <a href="/" class="nav-link active" aria-current="page">Hub</a>
       <a href="/counter" class="nav-link">Counter / Scanner</a>
       <a href="/display" class="nav-link">Outside Display</a>
       <a href="/admin" class="nav-link">Admin & Records</a>
@@ -62,25 +76,32 @@
       <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="bannerShop">Smart Ration Card Queue & Token Management</h1>
       <p style="opacity: 0.9; font-size: 1.05rem;">Bilingual Voice Announcements (Telugu + English) | Live QR Scanner | Zero Waiting Chaos</p>
       
-      <div style="margin-top: 1.25rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.15); border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
-        🌐 <strong id="serverLabel">Server Address:</strong> <span id="wifiIp">Loading...</span>
+      <div class="connection-panel" aria-label="Connection information">
+        <strong id="serverLabel">Connection:</strong> <span id="wifiIp">Loading...</span>
         <div id="wifiSub" style="font-size: 0.85rem; opacity: 0.85; margin-top: 4px;">Connect all phones/tablets to this link, or scan the QR codes below.</div>
       </div>
     </div>
 
     <!-- Live Queue Counters -->
+    <div class="stats-heading">
+      <h2 style="font-size: 1.2rem;">Live queue</h2>
+      <span class="updated-at" id="queueUpdated" aria-live="polite">Connecting…</span>
+    </div>
     <div class="stats-row">
       <div class="stat-box">
+        <span class="stat-icon" aria-hidden="true">Σ</span>
         <div class="stat-value" id="statIssued">0</div>
         <div class="stat-label">Total Issued</div>
       </div>
-      <div class="stat-box" style="border-top: 4px solid var(--warning);">
+      <div class="stat-box stat-priority">
+        <span class="stat-icon" aria-hidden="true">▶</span>
         <div class="stat-value" id="statServing" style="color: var(--warning);">--</div>
         <div class="stat-label">Now Serving</div>
       </div>
-      <div class="stat-box" style="border-top: 4px solid var(--primary);">
+      <div class="stat-box stat-priority">
+        <span class="stat-icon" aria-hidden="true">⌛</span>
         <div class="stat-value" id="statWaiting">0</div>
-        <div class="stat-label">Waiting in Line</div>
+        <div class="stat-label">Waiting</div>
       </div>
       <div class="stat-box" style="border-top: 4px solid var(--success);">
         <div class="stat-value" id="statCompleted" style="color: var(--success);">0</div>
@@ -93,34 +114,37 @@
     </div>
 
     <!-- Device Pairing Cards -->
-    <h2 style="font-size: 1.3rem; margin-bottom: 0.5rem;">📱 Connect Devices via QR Code</h2>
-    <p style="color: var(--gray-600); margin-bottom: 1rem;">Scan with any phone camera or tap the button to open directly.</p>
+    <h2 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Choose a destination</h2>
+    <p style="color: var(--gray-600); margin-bottom: 1rem;">Open a workspace here, or reveal its QR code to connect another device.</p>
 
     <div class="hub-grid">
       <!-- Inside Shop Device -->
       <div class="device-card">
-        <div style="font-size: 2.5rem;">📱</div>
+        <div class="device-icon" aria-hidden="true">▣</div>
         <h3 style="margin-top: 0.5rem;">Inside Shop Phone</h3>
         <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Camera QR Scanner & Next Token Controls for Counter Staff</p>
         <img id="qrCounter" class="qr" alt="Scanner QR">
+        <button class="btn btn-outline qr-toggle" type="button" onclick="toggleQr('qrCounter', this)" aria-expanded="false">Show QR code</button>
         <a href="/counter" class="btn btn-primary btn-block">Open Counter Scanner</a>
       </div>
 
       <!-- Outside Display Device -->
       <div class="device-card">
-        <div style="font-size: 2.5rem;">📺</div>
+        <div class="device-icon" aria-hidden="true">▰</div>
         <h3 style="margin-top: 0.5rem;">Outside Tablet / TV</h3>
         <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Big Screen Display with Telugu & English Voice + Speaker Audio</p>
         <img id="qrDisplay" class="qr" alt="Display QR">
+        <button class="btn btn-outline qr-toggle" type="button" onclick="toggleQr('qrDisplay', this)" aria-expanded="false">Show QR code</button>
         <a href="/display" class="btn btn-success btn-block" target="_blank">Open Outside Display</a>
       </div>
 
       <!-- Admin & Setup -->
       <div class="device-card">
-        <div style="font-size: 2.5rem;">⚙️</div>
+        <div class="device-icon" aria-hidden="true">⚙</div>
         <h3 style="margin-top: 0.5rem;">Admin & Records</h3>
         <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem;">Upload Excel Roster (300+ Cards), Batch Print QR Codes & Reports</p>
         <img id="qrHome" class="qr" alt="Admin QR">
+        <button class="btn btn-outline qr-toggle" type="button" onclick="toggleQr('qrHome', this)" aria-expanded="false">Show QR code</button>
         <a href="/admin" class="btn btn-outline btn-block">Open Admin Dashboard</a>
       </div>
     </div>
@@ -130,13 +154,26 @@
   <script>
     const socket = io();
 
+    function toggleNav(button) {
+      const nav = button.closest('.navbar');
+      const open = nav.classList.toggle('nav-open');
+      button.setAttribute('aria-expanded', open);
+      button.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    }
+
+    function toggleQr(id, button) {
+      const visible = document.getElementById(id).classList.toggle('is-visible');
+      button.innerText = visible ? 'Hide QR code' : 'Show QR code';
+      button.setAttribute('aria-expanded', visible);
+    }
+
     // Fetch Network & QR codes
     fetch('/api/network-info')
       .then(res => res.json())
       .then(data => {
         if (data.isCloud) {
           document.getElementById('serverLabel').innerText = 'Cloud Live Server:';
-          document.getElementById('wifiIp').innerHTML = `<strong>${data.liveUrl}</strong> <span style="background: rgba(34, 197, 94, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 4px;">🟢 Online</span>`;
+          document.getElementById('wifiIp').innerText = `${data.liveUrl} · Online`;
           document.getElementById('wifiSub').innerText = '✨ Accessible anywhere from any phone or computer over 4G/5G/Wi-Fi!';
         } else {
           document.getElementById('wifiIp').innerText = data.baseUrl;
@@ -153,6 +190,7 @@
       document.getElementById('statWaiting').innerText = data.waitingCount;
       document.getElementById('statCompleted').innerText = data.completedCount;
       document.getElementById('statSkipped').innerText = data.skippedCount;
+      document.getElementById('queueUpdated').innerText = 'Updated just now';
     });
 
     socket.on('settings-updated', s => {

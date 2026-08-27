@@ -33,7 +33,8 @@ const req = http.request('http://localhost:3000/api/cards/upload', {
   method: 'POST',
   headers: {
     'Content-Type': `multipart/form-data; boundary=${boundary}`,
-    'Content-Length': fullBody.length
+    'Content-Length': fullBody.length,
+    'X-Admin-Pin': '1234'
   }
 }, (res) => {
   let respData = '';

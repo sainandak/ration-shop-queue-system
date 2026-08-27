@@ -18,6 +18,8 @@
       --sky-blue: #38bdf8;
       --green-glow: #22c55e;
       --border-color: #1e293b;
+      --danger: #ef4444;
+      --radius: 16px;
     }
 
     * {
@@ -40,24 +42,45 @@
 
     /* Top Navigation Header */
     header {
-      padding: 0.75rem 1.25rem;
+      padding: 0.65rem 1.25rem;
       background: rgba(15, 23, 42, 0.95);
       border-bottom: 2px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      z-index: 100;
     }
 
     .shop-header {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav-back {
+      background: #1e293b;
+      color: #93c5fd;
+      border: 1px solid #334155;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .btn-nav-back:hover {
+      background: #334155;
+      color: #ffffff;
     }
 
     .shop-title {
-      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-size: clamp(1.05rem, 2.2vw, 1.45rem);
       font-weight: 800;
       color: var(--text-white);
     }
@@ -72,9 +95,9 @@
       background: #dc2626;
       color: white;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.45rem 0.9rem;
       border-radius: 9999px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -88,6 +111,8 @@
       background: #15803d;
       animation: none;
       box-shadow: 0 0 15px rgba(21, 128, 61, 0.4);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
     }
 
     @keyframes pulse {
@@ -103,85 +128,266 @@
       font-family: monospace;
     }
 
-    /* Main Serving Card Area */
+    /* Main Container & Responsive Layout */
     main {
       flex: 1;
+      padding: 1rem 1.25rem;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      padding: 1rem;
-      text-align: center;
     }
 
+    .display-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .display-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Column 1: Active Serving Card */
     .serving-container {
       background: var(--card-bg);
       border: 3px solid #334155;
       border-radius: 20px;
-      padding: clamp(1.25rem, 4vw, 2.5rem);
-      max-width: 900px;
-      width: 100%;
+      padding: clamp(1.25rem, 3.5vw, 2.25rem);
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       position: relative;
       transition: all 0.3s ease;
     }
 
     .serving-badge {
       display: inline-block;
+      align-self: center;
       background: #1e3a8a;
       color: #93c5fd;
       padding: 0.4rem 1.25rem;
       border-radius: 9999px;
-      font-size: clamp(0.85rem, 2vw, 1.15rem);
+      font-size: clamp(0.85rem, 1.8vw, 1.1rem);
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.35rem;
       border: 1px solid #3b82f6;
     }
 
     .token-number {
-      font-size: clamp(4rem, 16vw, 8.5rem);
+      font-size: clamp(4.5rem, 14vw, 8.5rem);
       font-weight: 900;
       color: var(--gold-yellow);
       text-shadow: 0 0 35px rgba(250, 204, 21, 0.4);
       line-height: 1;
-      margin: 0.25rem 0 0.5rem 0;
+      margin: 0.2rem 0 0.4rem 0;
       letter-spacing: -2px;
     }
 
     .name-telugu {
-      font-size: clamp(1.8rem, 6vw, 3.8rem);
+      font-size: clamp(1.8rem, 5.5vw, 3.6rem);
       font-weight: 800;
       color: var(--text-white);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
       line-height: 1.2;
+      word-break: break-word;
     }
 
     .name-english {
-      font-size: clamp(1.35rem, 4.5vw, 2.5rem);
+      font-size: clamp(1.3rem, 4vw, 2.4rem);
       font-weight: 700;
       color: var(--sky-blue);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
       line-height: 1.2;
+      word-break: break-word;
     }
 
     .meta-details {
-      font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+      font-size: clamp(0.85rem, 2vw, 1.15rem);
       color: #94a3b8;
       margin-top: 1rem;
       display: flex;
       justify-content: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
 
     .meta-item {
       background: #1e293b;
-      padding: 0.35rem 0.85rem;
+      padding: 0.35rem 0.8rem;
       border-radius: 8px;
       border: 1px solid #334155;
     }
+
+    .last-called {
+      margin-top: 0.75rem;
+      color: #cbd5e1;
+      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+    }
+
+    /* Column 2: Side Panel (Next Up & Issued Tokens List) */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Next Up Card */
+    .next-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%);
+      border: 2px solid #6366f1;
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .next-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .next-badge {
+      background: #4338ca;
+      color: #e0e7ff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .next-token-badge {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: var(--gold-yellow);
+    }
+
+    .next-name-te {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .next-name-en {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--sky-blue);
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+
+    .next-meta {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .next-meta span {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    /* Issued Tokens List Card */
+    .queue-list-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-height: 380px;
+    }
+
+    .queue-list-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .queue-items-scroll {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding-right: 4px;
+    }
+
+    .queue-items-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .queue-items-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .queue-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: #1e293b;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      font-size: 0.9rem;
+    }
+
+    .queue-row.is-serving {
+      background: #1e3a8a;
+      border-color: #3b82f6;
+    }
+
+    .queue-row-token {
+      font-weight: 900;
+      color: var(--gold-yellow);
+      font-size: 1.05rem;
+      min-width: 55px;
+    }
+
+    .queue-row-name {
+      flex: 1;
+      font-weight: 700;
+      color: #ffffff;
+      padding: 0 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .queue-row-status {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+    .status-waiting { background: #3b82f6; color: white; }
+    .status-serving { background: #eab308; color: #000; animation: pulse 1.5s infinite; }
+    .status-completed { background: #22c55e; color: white; }
 
     /* Bottom Queue Bar */
     footer {
@@ -189,7 +395,7 @@
       border-top: 2px solid var(--border-color);
       padding: 0.75rem 1.25rem;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: auto 1fr 1fr;
       gap: 1rem;
     }
 
@@ -206,6 +412,8 @@
       gap: 0.75rem;
       overflow-x: auto;
     }
+    .queue-total { min-width: 130px; padding-right: 1rem; border-right: 1px solid #334155; }
+    .queue-total strong { display: block; color: var(--gold-yellow); font-size: 2rem; line-height: 1; }
 
     .queue-label {
       font-size: 0.85rem;
@@ -239,49 +447,99 @@
 
   <header>
     <div class="shop-header">
-      <span style="font-size: 1.5rem;">🌾</span>
+      <a href="/" class="btn-nav-back" title="Go back to Home Hub">
+        <span aria-hidden="true">⬅</span> <span>Hub</span>
+      </a>
+      <a href="/counter" class="btn-nav-back" style="background: rgba(30, 58, 138, 0.6); color: #bfdbfe;" title="Go to Counter">
+        <span>Counter ↗</span>
+      </a>
+      <span style="font-size: 1.4rem;">🌾</span>
       <div class="shop-title" id="shopNameDisplay">Fair Price Shop (#03)</div>
     </div>
     <div class="header-actions">
+      <button class="btn-nav-back" style="background: #0284c7; color: white; border-color: #0369a1; cursor: pointer;" onclick="replayCurrentVoice()" title="Re-announce in Telugu & English">
+        <span>📢 Replay Voice / రీ-అనౌన్స్</span>
+      </button>
       <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
-        🔊 <span id="audioBtnText">Enable Voice / ఆడియో ఆన్</span>
+        <span aria-hidden="true">🔊</span> <span id="audioBtnText">Enable Voice / ఆడియో ఆన్</span>
       </button>
       <div class="clock" id="liveClock">--:--:--</div>
     </div>
   </header>
 
   <main>
-    <div class="serving-container" id="displayBox">
-      <div class="serving-badge">NOW SERVING / ఇప్పుడు పిలుస్తున్న టోకెన్</div>
+    <div class="display-layout">
       
-      <div class="token-number" id="tokenNum">--</div>
-      <div class="name-telugu" id="personNameTe">వేచి ఉండండి...</div>
-      <div class="name-english" id="personNameEn">Waiting for Next Token</div>
+      <!-- LEFT / HERO: NOW SERVING -->
+      <div class="serving-container" id="displayBox">
+        <div class="serving-badge">NOW SERVING / ఇప్పుడు పిలుస్తున్న టోకెన్</div>
+        
+        <div class="token-number" id="tokenNum">--</div>
+        <div class="name-telugu" id="personNameTe">వేచి ఉండండి...</div>
+        <div class="name-english" id="personNameEn">Waiting for Next Token</div>
 
-      <div class="meta-details">
-        <div class="meta-item" id="itemSNo">
-          🔢 S.No: <strong id="personSNo" style="color: var(--gold-yellow);">--</strong>
+        <div class="meta-details">
+          <div class="meta-item" id="itemSNo">
+            🔢 S.No: <strong id="personSNo" style="color: var(--gold-yellow);">--</strong>
+          </div>
+          <div class="meta-item" id="itemCardType">
+            📋 Type: <strong id="personCardType" style="color: #38bdf8;">FSC</strong>
+          </div>
+          <div class="meta-item">
+            🪪 Card: <strong id="personCardNo" style="color: white;">--</strong>
+          </div>
         </div>
-        <div class="meta-item" id="itemCardType">
-          📋 Type: <strong id="personCardType" style="color: #38bdf8;">FSC</strong>
-        </div>
-        <div class="meta-item">
-          🪪 Card: <strong id="personCardNo" style="color: white;">--</strong>
-        </div>
+        <div class="last-called" id="lastCalled" aria-live="polite">No token called yet</div>
       </div>
+
+      <!-- RIGHT / SIDE PANEL: NEXT UP & ISSUED QUEUE LIST -->
+      <div class="side-panel">
+        
+        <!-- Next Token Card -->
+        <div class="next-card" id="nextCardBox">
+          <div class="next-header">
+            <span class="next-badge">NEXT IN LINE / తర్వాత వచ్చే టోకెన్</span>
+            <span class="next-token-badge" id="nextTokenNum">--</span>
+          </div>
+          <div class="next-name-te" id="nextNameTe">క్యూలో ఎవరూ లేరు</div>
+          <div class="next-name-en" id="nextNameEn">Queue is currently empty</div>
+          <div class="next-meta">
+            <span id="nextSNo">S.No: --</span>
+            <span id="nextCardType">Type: --</span>
+            <span id="nextCardLast5">Card: --</span>
+          </div>
+        </div>
+
+        <!-- Live Issued Queue List -->
+        <div class="queue-list-card">
+          <div class="queue-list-title">
+            <span>📋 Today's Issued Tokens</span>
+            <span id="queueListCount" style="color: var(--gold-yellow);">0 active</span>
+          </div>
+          <div class="queue-items-scroll" id="queueItemsList">
+            <div style="text-align: center; color: #64748b; padding: 1.5rem 0;">No active tokens in queue</div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </main>
 
   <footer>
+    <div class="queue-box queue-total">
+      <span class="queue-label">Waiting in queue</span>
+      <strong id="waitingTotal">0</strong>
+    </div>
     <div class="queue-box">
-      <span class="queue-label">⏳ Next Waiting:</span>
+      <span class="queue-label">Next waiting:</span>
       <div class="queue-chips" id="upcomingChips">
         <span class="chip">Queue empty</span>
       </div>
     </div>
 
     <div class="queue-box">
-      <span class="queue-label">✅ Recently Served:</span>
+      <span class="queue-label">Recently served:</span>
       <div class="queue-chips" id="servedChips">
         <span class="chip">None yet</span>
       </div>
@@ -290,10 +548,32 @@
 
   <script>
     const socket = io();
-    let audioUnlocked = false;
+    let audioUnlocked = true; // Enabled by default!
     let speechSynth = window.speechSynthesis;
     let teluguVoice = null;
     let englishVoice = null;
+    let lastAnnouncedData = null;
+
+    function replayCurrentVoice() {
+      if (!audioUnlocked) enableAudio();
+      if (lastAnnouncedData) {
+        makeAnnouncement(lastAnnouncedData);
+      } else {
+        const testData = {
+          tokenNo: 1,
+          nameEn: 'Mandala Latha',
+          nameTe: 'మండల లత',
+          rationNo: '365370657769',
+          sNo: 1,
+          cardType: 'AFSC'
+        };
+        makeAnnouncement(testData);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
 
     // Digital Live Clock
     function updateClock() {
@@ -305,14 +585,54 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Voice Engine setup
+    // Prioritize Natural Female Voices across Google, Microsoft, Apple, & WebKit
     function loadVoices() {
       if (!speechSynth) return;
       const voices = speechSynth.getVoices();
-      teluguVoice = voices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te')) || null;
-      englishVoice = voices.find(v => v.lang === 'en-IN') ||
-                     voices.find(v => v.lang.startsWith('en')) ||
-                     voices[0];
+      if (!voices || voices.length === 0) return;
+
+      const femaleKeywords = [
+        'female', 'woman', 'girl', 'shruti', 'heera', 'neerja', 'veena',
+        'kalpana', 'swara', 'sangeeta', 'zira', 'samantha', 'karen',
+        'victoria', 'moira', 'serena', 'priti', 'ananya', 'geeta'
+      ];
+
+      function scoreVoice(v, langPrefix) {
+        let score = 0;
+        const nameLower = (v.name || '').toLowerCase();
+        const langLower = (v.lang || '').toLowerCase();
+
+        if (langLower.startsWith(langPrefix)) score += 60;
+        if (langLower.includes('in') || langLower.includes('india')) score += 30;
+
+        // High priority for Female voice identifiers
+        if (femaleKeywords.some(kw => nameLower.includes(kw))) score += 50;
+        if (nameLower.includes('natural') || nameLower.includes('neural') || nameLower.includes('online')) score += 20;
+        if (v.default) score += 5;
+
+        // Reduce score if explicitly male
+        if (nameLower.includes(' male') || nameLower.includes('david') || nameLower.includes('ravi') || nameLower.includes('george') || nameLower.includes('mark') || nameLower.includes('prabhat')) {
+          score -= 40;
+        }
+
+        return score;
+      }
+
+      // 1. Select Best Telugu Female Voice
+      const teluguCandidates = voices.filter(v => 
+        (v.lang && (v.lang.startsWith('te') || v.lang.includes('te-IN'))) || 
+        (v.name && v.name.toLowerCase().includes('telugu'))
+      );
+      if (teluguCandidates.length > 0) {
+        teluguCandidates.sort((a, b) => scoreVoice(b, 'te') - scoreVoice(a, 'te'));
+        teluguVoice = teluguCandidates[0];
+      } else {
+        teluguVoice = null;
+      }
+
+      // 2. Select Best English / Indian Female Voice
+      const englishCandidates = [...voices].sort((a, b) => scoreVoice(b, 'en') - scoreVoice(a, 'en'));
+      englishVoice = englishCandidates[0] || voices[0];
     }
     if (speechSynth) {
       speechSynth.onvoiceschanged = loadVoices;
@@ -374,47 +694,113 @@
       requestWakeLock();
       
       if (speechSynth) {
-        const dummy = new SpeechSynthesisUtterance('Audio enabled');
-        dummy.volume = 0.2;
+        const dummy = new SpeechSynthesisUtterance('ఆడియో ఆన్ చేయబడింది. Audio enabled');
+        dummy.volume = 0.3;
         speechSynth.speak(dummy);
       }
 
       const btn = document.getElementById('audioToggleBtn');
       btn.classList.add('enabled');
-      document.getElementById('audioBtnText').innerText = '🔊 Audio Active / ఆన్ లో ఉంది';
+      document.getElementById('audioBtnText').innerText = 'Audio active / ఆన్ లో ఉంది';
     }
 
-    // Bilingual Voice Announcement (Speaks Last 5 Digits of Ration Card)
-    function makeAnnouncement(data) {
+    // Number word dictionaries for crystal-clear announcements
+    const teluguDigitWords = {
+      '0': 'సున్నా',
+      '1': 'ఒకటి',
+      '2': 'రెండు',
+      '3': 'మూడు',
+      '4': 'నాలుగు',
+      '5': 'ఐదు',
+      '6': 'ఆరు',
+      '7': 'ఏడు',
+      '8': 'ఎనిమిది',
+      '9': 'తొమ్మిది'
+    };
+
+    const phoneticDigitWords = {
+      '0': 'Sunna',
+      '1': 'Okati',
+      '2': 'Rendu',
+      '3': 'Moodu',
+      '4': 'Naalugu',
+      '5': 'Aidu',
+      '6': 'Aaru',
+      '7': 'Yedu',
+      '8': 'Enimidi',
+      '9': 'Thommidi'
+    };
+
+    let activeUtterances = [];
+
+    function speakUtterance(text, lang, voice, rate = 0.86, pitch = 1.12) {
+      return new Promise((resolve) => {
+        if (!speechSynth) return resolve();
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = lang;
+        if (voice) utt.voice = voice;
+        utt.rate = rate;
+        utt.pitch = pitch; // Female vocal pitch setting
+
+        let isDone = false;
+        const complete = () => {
+          if (!isDone) {
+            isDone = true;
+            resolve();
+          }
+        };
+
+        utt.onend = complete;
+        utt.onerror = complete;
+        setTimeout(complete, 8000); // Safety timeout
+
+        activeUtterances.push(utt);
+        speechSynth.speak(utt);
+      });
+    }
+
+    // MAIN BILINGUAL ANNOUNCEMENT: TELUGU IS FIRST & MAIN, THEN REPEATED
+    async function makeAnnouncement(data) {
       if (!audioUnlocked) return;
 
       playChime();
 
       if (!speechSynth) return;
       speechSynth.cancel();
+      activeUtterances = [];
 
       const digits = (data.rationNo || '').replace(/\D/g, '');
       const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
 
-      setTimeout(() => {
-        // English Utterance
-        const msgEn = new SpeechSynthesisUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in ${last5}`);
-        msgEn.lang = 'en-IN';
-        if (englishVoice) msgEn.voice = englishVoice;
-        msgEn.rate = 0.9;
-        msgEn.pitch = 1.0;
+      const last5DigitsSpelledEn = last5.split('').join(', ');
+      const last5DigitsSpelledTe = last5.split('').map(d => teluguDigitWords[d] || d).join(', ');
+      const last5DigitsPhonetic = last5.split('').map(d => phoneticDigitWords[d] || d).join(', ');
 
-        // Telugu Utterance
-        const teluguText = data.nameTe ? data.nameTe : data.nameEn;
-        const msgTe = new SpeechSynthesisUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguText}, కార్డు నంబర్ ${last5}`);
-        msgTe.lang = 'te-IN';
-        if (teluguVoice) msgTe.voice = teluguVoice;
-        msgTe.rate = 0.85;
-        msgTe.pitch = 1.0;
+      const teluguName = data.nameTe ? data.nameTe : data.nameEn;
 
-        speechSynth.speak(msgEn);
-        speechSynth.speak(msgTe);
-      }, 700);
+      // Small pause after bell chime
+      await new Promise(r => setTimeout(r, 650));
+
+      // 1. PRIMARY TELUGU ANNOUNCEMENT (MAIN CALL)
+      if (teluguVoice) {
+        await speakUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguName}, కార్డు చివర నంబర్లు: ${last5DigitsSpelledTe}`, 'te-IN', teluguVoice, 0.82);
+      } else {
+        await speakUtterance(`Token Sankhya ${data.tokenNo}, ${data.nameEn}, Card chivara sankhyalu: ${last5DigitsPhonetic}`, 'en-IN', englishVoice, 0.85);
+      }
+
+      await new Promise(r => setTimeout(r, 450));
+
+      // 2. TELUGU RE-CALL (REPEATING TELUGU MAIN NAME & TOKEN)
+      if (teluguVoice) {
+        await speakUtterance(`టోకెన్ ${data.tokenNo}, ${teluguName}, దయచేసి కౌంటర్ వద్దకు రండి`, 'te-IN', teluguVoice, 0.85);
+      } else {
+        await speakUtterance(`Token ${data.tokenNo}, ${data.nameEn}, dayachesi counter vaddaku randi`, 'en-IN', englishVoice, 0.88);
+      }
+
+      await new Promise(r => setTimeout(r, 400));
+
+      // 3. ENGLISH CONFIRMATION ANNOUNCEMENT
+      await speakUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in: ${last5DigitsSpelledEn}`, 'en-IN', englishVoice, 0.90);
     }
 
     // Visual Flash Animation
@@ -429,8 +815,65 @@
       }, 600);
     }
 
+    function renderNextCard(nextItem) {
+      if (nextItem) {
+        const digits = (nextItem.rationNo || '').replace(/\D/g, '');
+        const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
+
+        document.getElementById('nextTokenNum').innerText = '#' + nextItem.tokenNo;
+        document.getElementById('nextNameTe').innerText = nextItem.nameTe || nextItem.nameEn;
+        document.getElementById('nextNameEn').innerText = nextItem.nameEn;
+        document.getElementById('nextSNo').innerText = nextItem.sNo ? `S.No: #${nextItem.sNo}` : 'S.No: --';
+        document.getElementById('nextCardType').innerText = `Type: ${nextItem.cardType || 'FSC'}`;
+        document.getElementById('nextCardLast5').innerText = `Card: ...${last5}`;
+      } else {
+        document.getElementById('nextTokenNum').innerText = '--';
+        document.getElementById('nextNameTe').innerText = 'క్యూలో ఎవరూ లేరు';
+        document.getElementById('nextNameEn').innerText = 'Queue is currently empty';
+        document.getElementById('nextSNo').innerText = 'S.No: --';
+        document.getElementById('nextCardType').innerText = 'Type: --';
+        document.getElementById('nextCardLast5').innerText = 'Card: --';
+      }
+    }
+
+    function renderQueueList(state) {
+      const container = document.getElementById('queueItemsList');
+      const countEl = document.getElementById('queueListCount');
+      const waiting = state.waiting || [];
+      const serving = state.serving ? [state.serving] : [];
+      const allActive = [...serving, ...waiting];
+
+      countEl.innerText = `${allActive.length} in queue`;
+
+      if (allActive.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 1.5rem 0;">No active tokens in queue</div>';
+        return;
+      }
+
+      container.innerHTML = allActive.map(item => {
+        const isServ = item.status === 'SERVING' || (state.serving && state.serving.tokenNo === item.tokenNo);
+        const digits = (item.rationNo || '').replace(/\D/g, '');
+        const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
+        return `
+          <div class="queue-row ${isServ ? 'is-serving' : ''}">
+            <span class="queue-row-token">#${item.tokenNo}</span>
+            <div class="queue-row-name">
+              <div>${escapeHtml(item.nameTe || item.nameEn)}</div>
+              <div style="font-size: 0.78rem; color: #94a3b8; font-weight: 500;">
+                ${item.sNo ? `[#${escapeHtml(item.sNo)}] ` : ''}${escapeHtml(item.nameEn)} (...${last5})
+              </div>
+            </div>
+            <span class="queue-row-status ${isServ ? 'status-serving' : 'status-waiting'}">
+              ${isServ ? '📢 SERVING' : 'WAITING'}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
     // Real-time Token Announced
     socket.on('token-announced', (data) => {
+      lastAnnouncedData = data;
       const digits = (data.rationNo || '').replace(/\D/g, '');
       const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
 
@@ -440,6 +883,7 @@
       document.getElementById('personSNo').innerText = data.sNo ? '#' + data.sNo : '--';
       document.getElementById('personCardType').innerText = data.cardType || 'FSC';
       document.getElementById('personCardNo').innerText = data.rationNo ? `${data.rationNo} (...${last5})` : '--';
+      document.getElementById('lastCalled').innerText = `Last called just now · ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
 
       triggerVisualAlert();
       makeAnnouncement(data);
@@ -447,6 +891,8 @@
 
     // Real-time Full Queue Updated
     socket.on('queue-updated', (state) => {
+      if (state.serving) lastAnnouncedData = state.serving;
+      document.getElementById('waitingTotal').innerText = state.waiting.length;
       if (state.serving) {
         const digits = (state.serving.rationNo || '').replace(/\D/g, '');
         const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
@@ -466,12 +912,19 @@
         document.getElementById('personCardNo').innerText = '--';
       }
 
+      // Render Next in Line Card
+      const nextPerson = (state.waiting && state.waiting.length > 0) ? state.waiting[0] : null;
+      renderNextCard(nextPerson);
+
+      // Render Live Issued Queue List
+      renderQueueList(state);
+
       // Upcoming chips
       const upcoming = state.waiting.slice(0, 5);
       const upcomingContainer = document.getElementById('upcomingChips');
       if (upcoming.length > 0) {
         upcomingContainer.innerHTML = upcoming.map(u => 
-          `<span class="chip chip-upcoming">#${u.tokenNo} (${u.nameEn.split(' ')[0]})</span>`
+          `<span class="chip chip-upcoming">#${u.tokenNo} (${escapeHtml(u.nameEn.split(' ')[0])})</span>`
         ).join('');
       } else {
         upcomingContainer.innerHTML = '<span class="chip">Queue empty</span>';
@@ -482,7 +935,7 @@
       const servedContainer = document.getElementById('servedChips');
       if (completed.length > 0) {
         servedContainer.innerHTML = completed.map(c => 
-          `<span class="chip chip-done">#${c.tokenNo} (${c.nameEn.split(' ')[0]})</span>`
+          `<span class="chip chip-done">#${c.tokenNo} (${escapeHtml(c.nameEn.split(' ')[0])})</span>`
         ).join('');
       } else {
         servedContainer.innerHTML = '<span class="chip">None yet</span>';
@@ -499,16 +952,27 @@
       document.getElementById('tokenNum').innerText = '--';
       document.getElementById('personNameTe').innerText = 'రోజు రీసెట్ చేయబడింది';
       document.getElementById('personNameEn').innerText = 'Day Reset Complete';
-      document.getElementById('personVillage').innerText = '--';
+      document.getElementById('personSNo').innerText = '--';
+      document.getElementById('personCardType').innerText = '--';
       document.getElementById('personCardNo').innerText = '--';
+      document.getElementById('waitingTotal').innerText = '0';
+      document.getElementById('lastCalled').innerText = 'Queue reset just now';
       document.getElementById('upcomingChips').innerHTML = '<span class="chip">Queue empty</span>';
       document.getElementById('servedChips').innerHTML = '<span class="chip">None yet</span>';
+      renderNextCard(null);
+      renderQueueList({ waiting: [], completed: [], serving: null });
     });
 
-    // Auto unlock audio on first tap
-    document.addEventListener('click', () => {
-      if (!audioUnlocked) enableAudio();
-    }, { once: true });
+    // Auto-enable audio on load and unlock on first interaction
+    window.addEventListener('DOMContentLoaded', () => {
+      enableAudio();
+    });
+
+    ['click', 'touchstart', 'pointerdown', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, () => {
+        if (!audioUnlocked) enableAudio();
+      }, { once: true, passive: true });
+    });
   </script>
 </body>
 </html>

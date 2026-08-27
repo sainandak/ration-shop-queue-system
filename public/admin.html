@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/style.css">
   <script src="/socket.io/socket.io.js"></script>
   <!-- SheetJS for instant in-browser Excel/CSV reading and preview -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="/vendor/xlsx.full.min.js"></script>
   <style>
     .upload-zone {
       border: 2px dashed var(--primary);
@@ -29,6 +29,9 @@
       border-bottom: 2px solid var(--gray-200);
       margin-bottom: 1.25rem;
     }
+    .mobile-method-select { display: none; margin-bottom: 1rem; }
+    .page-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+    .page-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     .tab-btn {
       padding: 0.75rem 1.25rem;
       border: none;
@@ -87,10 +90,6 @@
       align-items: center;
       justify-content: center;
     }
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
     .modal-content {
       background: white;
       border-radius: var(--radius);
@@ -98,6 +97,12 @@
       width: 100%;
       max-width: 500px;
       box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 680px) {
+      .tab-nav { display: none; }
+      .mobile-method-select { display: block; }
+      .page-heading { align-items: flex-start; flex-direction: column; }
+      .page-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -108,15 +113,27 @@
       <span>🌾</span>
       <span>Admin & Card Database</span>
     </a>
+    <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
     <div class="nav-links">
       <a href="/" class="nav-link">Hub</a>
       <a href="/counter" class="nav-link">Counter</a>
       <a href="/display" class="nav-link" target="_blank">Display ↗</a>
-      <a href="/admin" class="nav-link active">Admin</a>
+      <a href="/admin" class="nav-link active" aria-current="page">Admin</a>
     </div>
   </nav>
 
   <div class="container">
+
+    <div class="page-heading">
+      <div>
+        <h1 style="font-size: 1.65rem;">Cardholder administration</h1>
+        <p style="color: var(--gray-600); margin-top: 0.25rem;">Manage the roster, QR passes, and daily reports.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button" onclick="switchMethod('excel')">Upload roster</button>
+        <a href="/print-qr" target="_blank" class="btn btn-outline">Print QR sheets</a>
+      </div>
+    </div>
 
     <!-- TAB SELECTOR FOR CARD ENTRY METHODS -->
     <div class="card" style="padding-bottom: 1rem;">
@@ -125,6 +142,12 @@
         <button class="tab-btn" onclick="switchMethod('manual')" id="tabManual">➕ Add Card Manually</button>
         <button class="tab-btn" onclick="switchMethod('paste')" id="tabPaste">📋 Quick Paste Roster</button>
       </div>
+      <label class="input-label" for="methodSelect">Card entry method</label>
+      <select id="methodSelect" class="input-control mobile-method-select" onchange="switchMethod(this.value)">
+        <option value="excel">Excel / CSV upload</option>
+        <option value="manual">Add card manually</option>
+        <option value="paste">Quick paste roster</option>
+      </select>
 
       <!-- 1. EXCEL / CSV UPLOAD SECTION -->
       <div id="sectionExcel">
@@ -133,7 +156,7 @@
           Drag and drop your spreadsheet file below. The system automatically reads columns for <strong>Ration No, English Name, Telugu Name, Village, and Phone</strong>.
         </p>
 
-        <div class="upload-zone" id="dropZone" onclick="document.getElementById('excelFileInput').click()">
+        <div class="upload-zone" id="dropZone" role="button" tabindex="0" aria-label="Choose an Excel or CSV roster file" onclick="document.getElementById('excelFileInput').click()" onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); document.getElementById('excelFileInput').click(); }">
           <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
           <strong style="font-size: 1.1rem; color: var(--primary);">Click or Drag & Drop Excel (.xlsx, .xls) or CSV file here</strong>
           <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 6px;">Supports Telugu Unicode text natively</div>
@@ -348,7 +371,7 @@
             📥 Daily Excel Report
           </a>
           <button class="btn btn-danger" onclick="openResetModal()">
-            🔄 Reset Day (PIN: 1234)
+            Reset daily queue
           </button>
         </div>
       </div>
@@ -359,12 +382,15 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h3 style="font-size: 1.25rem;">👥 Registered Cardholders (<span id="totalCardsCount">0</span>)</h3>
-          <div style="font-size: 0.85rem; color: var(--gray-600);">Click QR thumbnail to preview card or tap ⬇️ to download image</div>
+          <div style="font-size: 0.85rem; color: var(--gray-600);">Click QR thumbnail to preview card or tap ⬇️ to download QR image</div>
         </div>
 
-        <div style="display: flex; gap: 0.5rem; flex: 1; max-width: 450px;">
-          <input type="text" id="searchInput" class="input-control" placeholder="Search by name, card no, village..." oninput="handleSearch()">
-          <button class="btn btn-primary" onclick="switchMethod('manual')">+ Add</button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="searchInput" class="input-control" style="max-width: 260px;" placeholder="Search S.No, name, card#..." oninput="handleSearch()">
+          <a href="/api/cards/download-zip" class="btn btn-success" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; font-weight: 700;" title="Download all QR codes in ZIP">
+            📦 Download All QRs (.ZIP)
+          </a>
+          <button class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" onclick="switchMethod('manual')">+ Add Card</button>
         </div>
       </div>
 
@@ -372,8 +398,9 @@
         <table class="data-table">
           <thead>
             <tr>
+              <th style="width: 55px; text-align: center;">S.No</th>
               <th style="width: 60px;">QR</th>
-              <th>Ration No</th>
+              <th>Ration Card No</th>
               <th>English Name</th>
               <th>Telugu Name (తెలుగు)</th>
               <th>Village / Ward</th>
@@ -382,7 +409,7 @@
             </tr>
           </thead>
           <tbody id="cardsTableBody">
-            <tr><td colspan="7" style="text-align: center; padding: 2rem;">Loading cardholders...</td></tr>
+            <tr><td colspan="8" style="text-align: center; padding: 2rem;">Loading cardholders...</td></tr>
           </tbody>
         </table>
       </div>
@@ -460,7 +487,7 @@
       </p>
 
       <div class="input-group">
-        <label class="input-label">Enter Admin PIN (Default: 1234)</label>
+        <label class="input-label">Enter admin PIN</label>
         <input type="password" id="resetPinInput" class="input-control" placeholder="Enter PIN" maxlength="10">
       </div>
 
@@ -471,9 +498,98 @@
     </div>
   </div>
 
+  <!-- Admin PIN Input Modal -->
+  <div id="pinModal" class="modal" style="display: none; align-items: center; justify-content: center; z-index: 10000;">
+    <div class="modal-content" style="max-width: 380px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+      <h3 style="font-size: 1.25rem; color: var(--primary); margin-bottom: 0.35rem;" id="pinModalTitle">Admin Authorization</h3>
+      <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.2rem;" id="pinModalSubtitle">Please enter the admin PIN to continue</p>
+      
+      <form id="pinModalForm" onsubmit="event.preventDefault(); submitPinModal();">
+        <div style="margin-bottom: 1rem;">
+          <input type="password" id="pinModalInput" class="input-control" placeholder="Enter PIN" autocomplete="current-password" inputmode="numeric" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-weight: 700; height: 50px;" required>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="cancelPinModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1.5; font-weight: 700;">Authorize</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     let allCards = [];
     let parsedCardsForImport = [];
+    let pinModalResolver = null;
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
+
+    function promptAdminPin(title = 'Admin Authorization', subtitle = 'Please enter admin PIN to perform this action') {
+      return new Promise((resolve) => {
+        pinModalResolver = resolve;
+        const modal = document.getElementById('pinModal');
+        const input = document.getElementById('pinModalInput');
+        const titleEl = document.getElementById('pinModalTitle');
+        const subEl = document.getElementById('pinModalSubtitle');
+        
+        if (titleEl) titleEl.innerText = title;
+        if (subEl) subEl.innerText = subtitle;
+        if (input) input.value = '';
+        if (modal) modal.style.display = 'flex';
+        
+        setTimeout(() => { if (input) input.focus(); }, 150);
+      });
+    }
+
+    function submitPinModal() {
+      const input = document.getElementById('pinModalInput');
+      const val = input ? input.value.trim() : '';
+      if (!val) return;
+      document.getElementById('pinModal').style.display = 'none';
+      if (pinModalResolver) {
+        pinModalResolver(val);
+        pinModalResolver = null;
+      }
+    }
+
+    function cancelPinModal() {
+      document.getElementById('pinModal').style.display = 'none';
+      if (pinModalResolver) {
+        pinModalResolver(null);
+        pinModalResolver = null;
+      }
+    }
+
+    async function adminFetch(url, options = {}) {
+      let pin = sessionStorage.getItem('staffPin');
+      if (!pin) {
+        pin = await promptAdminPin('Admin Authorization', 'Enter admin PIN to perform this action');
+        if (!pin) throw new Error('Admin PIN is required');
+        sessionStorage.setItem('staffPin', pin);
+      }
+      let response = await fetch(url, { ...options, headers: { ...(options.headers || {}), 'X-Admin-Pin': pin } });
+      if (response.status === 401) {
+        sessionStorage.removeItem('staffPin');
+        pin = await promptAdminPin('Invalid PIN', 'The previous PIN was incorrect. Please enter valid admin PIN:');
+        if (!pin) throw new Error('Invalid admin PIN.');
+        sessionStorage.setItem('staffPin', pin);
+        response = await fetch(url, { ...options, headers: { ...(options.headers || {}), 'X-Admin-Pin': pin } });
+        if (response.status === 401) {
+          sessionStorage.removeItem('staffPin');
+          throw new Error('Invalid admin PIN. Authorization failed.');
+        }
+      }
+      return response;
+    }
+
+    function toggleNav(button) {
+      const nav = button.closest('.navbar');
+      const open = nav.classList.toggle('nav-open');
+      button.setAttribute('aria-expanded', open);
+      button.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    }
 
     function switchMethod(method) {
       document.getElementById('tabExcel').classList.toggle('active', method === 'excel');
@@ -483,6 +599,7 @@
       document.getElementById('sectionExcel').style.display = (method === 'excel') ? 'block' : 'none';
       document.getElementById('sectionManual').style.display = (method === 'manual') ? 'block' : 'none';
       document.getElementById('sectionPaste').style.display = (method === 'paste') ? 'block' : 'none';
+      document.getElementById('methodSelect').value = method;
 
       if (method === 'manual') {
         document.getElementById('manRationNo').focus();
@@ -535,14 +652,14 @@
           <td><strong style="color: var(--primary); font-size: 1.1rem;">#${item.tokenNo}</strong></td>
           <td><span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">#${item.sNo || '--'}</span></td>
           <td>
-            <strong>${item.nameEn}</strong>
-            <div style="font-size: 0.85rem; color: #0284c7;">${item.nameTe || ''}</div>
+            <strong>${escapeHtml(item.nameEn)}</strong>
+            <div style="font-size: 0.85rem; color: #0369a1;">${escapeHtml(item.nameTe || '')}</div>
           </td>
           <td>
-            ${item.rationNo}
+            ${escapeHtml(item.rationNo)}
             <span style="background: ${item.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">${item.cardType || 'FSC'}</span>
           </td>
-          <td><small style="color: var(--gray-600);">${item.skippedAt || '--'}</small></td>
+          <td><small style="color: var(--gray-600);">${escapeHtml(item.skippedAt || '--')}</small></td>
           <td style="text-align: right;">
             <button class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; font-weight: 700;" onclick="recallSkippedToken(${item.tokenNo})">
               🔄 Recall to Queue
@@ -553,7 +670,7 @@
     }
 
     function recallSkippedToken(tokenNo) {
-      fetch('/api/queue/recall-skipped', {
+      adminFetch('/api/queue/recall-skipped', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenNo })
@@ -580,7 +697,7 @@
 
           const datalist = document.getElementById('villageDatalist');
           if (datalist && data.villages) {
-            datalist.innerHTML = data.villages.map(v => `<option value="${v}">`).join('');
+            datalist.innerHTML = data.villages.map(v => `<option value="${escapeHtml(v)}">`).join('');
           }
         });
     }
@@ -597,32 +714,38 @@
     function renderCardsTable(cards) {
       const tbody = document.getElementById('cardsTableBody');
       if (cards.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--gray-600);">No cards found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 2rem; color: var(--gray-600);">No cards found</td></tr>';
         return;
       }
 
       tbody.innerHTML = cards.map(c => `
         <tr>
-          <td>
-            <img class="qr-thumb" src="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" alt="QR" onclick="openSingleCardModal('${c.rationNo}')" title="Click to preview & print pass">
+          <td style="text-align: center;">
+            <span class="badge" style="background: #e2e8f0; color: #1e293b; font-weight: 800; font-size: 0.82rem;">#${escapeHtml(c.sNo || '--')}</span>
           </td>
-          <td><strong style="color: var(--primary); font-size: 1.05rem;">${c.rationNo}</strong></td>
-          <td><strong>${c.nameEn}</strong></td>
-          <td><strong style="color: #0369a1;">${c.nameTe || '--'}</strong></td>
-          <td>${c.village || '--'}</td>
-          <td>${c.phone || '--'}</td>
+          <td>
+            <img class="qr-thumb" src="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" alt="QR" onclick="openSingleCardModal('${escapeHtml(c.rationNo)}')" title="Click to preview & print pass">
+          </td>
+          <td>
+            <strong style="color: var(--primary); font-size: 1.05rem;">${escapeHtml(c.rationNo)}</strong>
+            <span class="badge" style="font-size: 0.7rem; margin-left: 4px; background: ${c.cardType === 'AFSC' ? '#fef3c7' : '#e0f2fe'}; color: ${c.cardType === 'AFSC' ? '#92400e' : '#0369a1'};">${escapeHtml(c.cardType || 'FSC')}</span>
+          </td>
+          <td><strong>${escapeHtml(c.nameEn)}</strong></td>
+          <td><strong style="color: #0369a1;">${escapeHtml(c.nameTe || '--')}</strong></td>
+          <td>${escapeHtml(c.village || '--')}</td>
+          <td>${escapeHtml(c.phone || '--')}</td>
           <td style="text-align: right;">
-            <div style="display: inline-flex; gap: 0.35rem;">
-              <a href="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem;" title="Download PNG" download>
+            <div style="display: inline-flex; gap: 0.35rem; flex-wrap: nowrap;">
+              <a href="/api/cards/${encodeURIComponent(c.rationNo)}/qr.png" class="btn btn-success" style="padding: 0.25rem 0.6rem; font-size: 0.8rem; font-weight: 700;" title="Download Single QR Image" download="QR_${escapeHtml(c.rationNo)}.png">
                 ⬇️ QR
               </a>
-              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openSingleCardModal('${c.rationNo}')" title="View Pass">
+              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openSingleCardModal('${escapeHtml(c.rationNo)}')" title="View Pass">
                 👁️ View
               </button>
-              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openEditModal('${c.rationNo}')">
+              <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="openEditModal('${escapeHtml(c.rationNo)}')" title="Edit Card">
                 ✏️
               </button>
-              <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteCard('${c.rationNo}')">
+              <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteCard('${escapeHtml(c.rationNo)}')" title="Delete Card">
                 ✕
               </button>
             </div>
@@ -723,11 +846,11 @@
           const sampleRows = parsedCardsForImport.slice(0, 10);
           previewTbody.innerHTML = sampleRows.map(r => `
             <tr>
-              <td><strong>${r.rationNo}</strong></td>
-              <td>${r.nameEn}</td>
-              <td style="color:#0369a1;">${r.nameTe}</td>
-              <td>${r.village}</td>
-              <td>${r.phone || '--'}</td>
+              <td><strong>${escapeHtml(r.rationNo)}</strong></td>
+              <td>${escapeHtml(r.nameEn)}</td>
+              <td style="color:#0369a1;">${escapeHtml(r.nameTe)}</td>
+              <td>${escapeHtml(r.village)}</td>
+              <td>${escapeHtml(r.phone || '--')}</td>
             </tr>
           `).join('') + (parsedCardsForImport.length > 10 ? `<tr><td colspan="5" style="text-align:center; color: var(--gray-600);">... and ${parsedCardsForImport.length - 10} more cards ready to import</td></tr>` : '');
 
@@ -744,7 +867,7 @@
       document.getElementById('confirmImportBtn').disabled = true;
       document.getElementById('confirmImportBtn').innerText = 'Saving...';
 
-      fetch('/api/cards/bulk', {
+      adminFetch('/api/cards/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cards: parsedCardsForImport })
@@ -785,7 +908,7 @@
         return;
       }
 
-      fetch('/api/cards', {
+      adminFetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rationNo, nameEn, nameTe, village, phone })
@@ -823,11 +946,12 @@
       if (!c) return;
 
       document.getElementById('modalQrImg').src = `/api/cards/${encodeURIComponent(c.rationNo)}/qr.png`;
-      document.getElementById('modalRationNo').innerText = c.rationNo;
+      document.getElementById('modalRationNo').innerHTML = `<span style="font-size: 0.9rem; background: #e2e8f0; color: #1e293b; padding: 2px 8px; border-radius: 6px; margin-right: 6px;">#${escapeHtml(c.sNo || '--')}</span> ${escapeHtml(c.rationNo)} <span style="font-size: 0.75rem; background: ${c.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 2px 6px; border-radius: 4px;">${escapeHtml(c.cardType || 'FSC')}</span>`;
       document.getElementById('modalNameEn').innerText = c.nameEn;
       document.getElementById('modalNameTe').innerText = c.nameTe || '';
       document.getElementById('modalVillage').innerText = `📍 ${c.village || 'Main Village'} ${c.phone ? (' | 📞 ' + c.phone) : ''}`;
       document.getElementById('modalDownloadLink').href = `/api/cards/${encodeURIComponent(c.rationNo)}/qr.png`;
+      document.getElementById('modalDownloadLink').setAttribute('download', `QR_${c.rationNo}_${(c.nameEn || 'Card').replace(/[^a-zA-Z0-9]/g, '_')}.png`);
 
       document.getElementById('singleCardModal').style.display = 'flex';
     }
@@ -869,7 +993,7 @@
         return;
       }
 
-      fetch('/api/cards/bulk', {
+      adminFetch('/api/cards/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cards: cardsToImport })
@@ -906,7 +1030,7 @@
       const village = document.getElementById('editVillage').value.trim();
       const phone = document.getElementById('editPhone').value.trim();
 
-      fetch('/api/cards', {
+      adminFetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rationNo, nameEn, nameTe, village, phone })
@@ -925,7 +1049,7 @@
     function deleteCard(rationNo) {
       if (!confirm(`Are you sure you want to delete card ${rationNo}?`)) return;
 
-      fetch('/api/cards/' + encodeURIComponent(rationNo), { method: 'DELETE' })
+      adminFetch('/api/cards/' + encodeURIComponent(rationNo), { method: 'DELETE' })
         .then(res => res.json())
         .then(data => {
           if (data.success) {

@@ -11,7 +11,7 @@ A production-ready Queue & Bilingual Voice Announcement System for Fair Price Sh
 - **➕ Smart Manual Entry**: Fast live auto-suggestions & auto-complete by name/RC number.
 - **🖨️ Printable QR Generator**: Batch A4 sheet generator with dashed scissor lines for physical card distribution.
 - **📦 1-Click QR Downloads**: Download single QR PNGs or all 300+ QR codes in a single `.zip` file.
-- **📊 Daily Reports & PIN Reset**: Download daily served logs in Excel/CSV and reset queue with Admin PIN (`1234`).
+- **📊 Daily Reports & PIN Reset**: Download daily served logs in Excel/CSV and reset the queue with a protected staff PIN.
 
 ## 🛠️ Quick Start
 
@@ -22,6 +22,8 @@ npm install
 # 2. Start server
 npm start
 ```
+
+Set `ADMIN_PIN` before the first start to choose the initial staff PIN. If omitted, the server generates a one-time PIN and prints it in the startup output.
 
 Open in your browser:
 - **Hub:** `http://localhost:3000`

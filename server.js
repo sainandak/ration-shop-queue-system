@@ -8,9 +8,9 @@ const os = require('os');
 const multer = require('multer');
 const xlsx = require('xlsx');
 const QRCode = require('qrcode');
-const cors = require('cors');
 const JSZip = require('jszip');
 const selfsigned = require('selfsigned');
+const crypto = require('crypto');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -26,13 +26,12 @@ try {
   console.log('HTTPS setup note:', e.message);
 }
 
-const io = new Server({ cors: { origin: '*' } });
+const io = new Server();
 io.attach(httpServer);
 if (httpsServer) io.attach(httpsServer);
 
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Storage paths
@@ -43,6 +42,8 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const CARDS_FILE = path.join(DATA_DIR, 'cards.json');
 const QUEUE_FILE = path.join(DATA_DIR, 'queue.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+const settingsFileExisted = fs.existsSync(SETTINGS_FILE);
+const initialAdminPin = process.env.ADMIN_PIN || crypto.randomInt(100000, 1000000).toString();
 
 // Helper functions for data persistence
 function loadJson(file, defaultVal) {
@@ -61,7 +62,58 @@ function saveJson(file, data) {
     fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
   } catch (err) {
     console.error('Error saving ' + file + ':', err.message);
+    throw err;
   }
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  })[char]);
+}
+
+function requireAdminPin(req, res, next) {
+  const pin = req.get('x-admin-pin') || req.body?.pin;
+  if (!verifyAdminPin(pin)) {
+    return res.status(401).json({ success: false, requiresPin: true, message: 'Staff PIN required' });
+  }
+  next();
+}
+
+function hashAdminPin(pin) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(String(pin), salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyAdminPin(pin) {
+  if (!pin) return false;
+  if (!settings.adminPinHash) return pin === settings.adminPin;
+  const [salt, storedHex] = settings.adminPinHash.split(':');
+  if (!salt || !storedHex) return false;
+  const actual = crypto.scryptSync(String(pin), salt, 64);
+  const stored = Buffer.from(storedHex, 'hex');
+  return actual.length === stored.length && crypto.timingSafeEqual(actual, stored);
+}
+
+function normalizeCard(input, existing = null) {
+  const rationNo = (input.rationNo || input.ration || input.rcNo || input['Ration No'] || input['Card No'] || existing?.rationNo || '').toString().trim().toUpperCase();
+  const nameEn = (input.nameEn || input.name || input.holderName || input['Name English'] || input['Name'] || existing?.nameEn || '').toString().trim();
+  const numericSNo = Number(input.sNo ?? input.serialNo ?? input['S.No'] ?? existing?.sNo);
+  const nextSNo = cards.reduce((max, card) => Math.max(max, Number(card.sNo) || 0), 0) + 1;
+  const cardTypeInput = (input.cardType || input.type || input['Card Type'] || existing?.cardType || 'FSC').toString().trim().toUpperCase();
+
+  return {
+    ...existing,
+    sNo: Number.isFinite(numericSNo) && numericSNo > 0 ? numericSNo : nextSNo,
+    rationNo,
+    cardType: cardTypeInput === 'AFSC' ? 'AFSC' : 'FSC',
+    nameEn,
+    nameTe: (input.nameTe || input.telugu || input['Name Telugu'] || existing?.nameTe || nameEn).toString().trim() || nameEn,
+    village: (input.village || input.area || input.colony || input['Village'] || existing?.village || 'Main Village').toString().trim(),
+    phone: (input.phone || input.mobile || input['Phone'] || existing?.phone || '').toString().trim(),
+    last4: rationNo.slice(-4)
+  };
 }
 
 // In-memory data store with file sync
@@ -75,11 +127,20 @@ let queueState = loadJson(QUEUE_FILE, {
 let settings = loadJson(SETTINGS_FILE, {
   shopName: 'Fair Price Shop (#03)',
   village: 'Gram Panchayat',
-  adminPin: '1234',
+  adminPin: initialAdminPin,
   autoAnnounceOnScan: true,
   chimeEnabled: true,
   speechRate: 0.9
 });
+
+if (!settings.adminPinHash && settings.adminPin) {
+  settings.adminPinHash = hashAdminPin(settings.adminPin);
+  delete settings.adminPin;
+  saveJson(SETTINGS_FILE, settings);
+}
+if (!settingsFileExisted) {
+  console.log(`Initial staff PIN: ${initialAdminPin} (change it after first login)`);
+}
 
 function getLocalIpAddresses() {
   const interfaces = os.networkInterfaces();
@@ -95,7 +156,14 @@ function getLocalIpAddresses() {
 }
 
 // Multer for Excel file upload
-const upload = multer({ dest: UPLOADS_DIR });
+const upload = multer({
+  dest: UPLOADS_DIR,
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  fileFilter: (req, file, callback) => {
+    const allowedExtension = /\.(xlsx|xls|csv)$/i.test(file.originalname || '');
+    callback(allowedExtension ? null : new Error('Only .xlsx, .xls, and .csv files are allowed'), allowedExtension);
+  }
+});
 
 app.enable('trust proxy');
 
@@ -105,8 +173,10 @@ app.enable('trust proxy');
 
 // Get network information & pairing QR (Supports both Local Wi-Fi & Live Render Domain)
 app.get('/api/network-info', async (req, res) => {
-  const host = req.get('host') || 'localhost:3000';
-  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+  const requestedHost = req.get('host') || 'localhost:3000';
+  const host = /^[a-z0-9.:[\]-]+$/i.test(requestedHost) ? requestedHost : 'localhost:3000';
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const proto = forwardedProto === 'https' || req.protocol === 'https' ? 'https' : 'http';
   const isCloud = !host.includes('localhost') && !host.includes('127.0.0.1') && !host.startsWith('192.168.') && !host.startsWith('10.');
   
   const liveUrl = `${proto}://${host}`;
@@ -162,7 +232,7 @@ app.get('/api/settings', (req, res) => {
 
 app.post('/api/settings', (req, res) => {
   const { pin, newPin, shopName, village, autoAnnounceOnScan, chimeEnabled, speechRate } = req.body;
-  if (pin !== settings.adminPin) {
+  if (!verifyAdminPin(pin)) {
     return res.status(401).json({ success: false, message: 'Invalid Admin PIN' });
   }
 
@@ -171,7 +241,7 @@ app.post('/api/settings', (req, res) => {
   if (autoAnnounceOnScan !== undefined) settings.autoAnnounceOnScan = autoAnnounceOnScan;
   if (chimeEnabled !== undefined) settings.chimeEnabled = chimeEnabled;
   if (speechRate !== undefined) settings.speechRate = speechRate;
-  if (newPin && newPin.trim()) settings.adminPin = newPin.trim();
+  if (newPin && newPin.trim()) settings.adminPinHash = hashAdminPin(newPin.trim());
 
   saveJson(SETTINGS_FILE, settings);
   io.emit('settings-updated', settings);
@@ -224,21 +294,18 @@ app.get('/api/cards/suggestions', (req, res) => {
 });
 
 // Add or Update Single Card
-app.post('/api/cards', async (req, res) => {
-  const { rationNo, nameEn, nameTe, village, phone } = req.body;
+app.post('/api/cards', requireAdminPin, async (req, res) => {
+  const { rationNo, nameEn } = req.body;
   if (!rationNo || !nameEn) {
     return res.status(400).json({ success: false, message: 'Ration No and English Name are required' });
   }
 
   const cleanNo = rationNo.toString().trim().toUpperCase();
+  if (!/^[A-Z0-9-]{3,32}$/.test(cleanNo)) {
+    return res.status(400).json({ success: false, message: 'Ration number may contain only letters, numbers, and hyphens' });
+  }
   const existingIdx = cards.findIndex(c => c.rationNo.toUpperCase() === cleanNo);
-  const cardObj = {
-    rationNo: cleanNo,
-    nameEn: nameEn.toString().trim(),
-    nameTe: (nameTe || '').toString().trim() || nameEn.toString().trim(),
-    village: (village || '').toString().trim() || 'Main Village',
-    phone: (phone || '').toString().trim()
-  };
+  const cardObj = normalizeCard({ ...req.body, rationNo: cleanNo }, existingIdx >= 0 ? cards[existingIdx] : null);
 
   if (existingIdx >= 0) {
     cards[existingIdx] = cardObj;
@@ -262,7 +329,7 @@ app.post('/api/cards', async (req, res) => {
 });
 
 // Bulk Insert/Update Cards
-app.post('/api/cards/bulk', (req, res) => {
+app.post('/api/cards/bulk', requireAdminPin, (req, res) => {
   const rawList = req.body.cards;
   if (!Array.isArray(rawList) || rawList.length === 0) {
     return res.status(400).json({ success: false, message: 'Invalid or empty cards list' });
@@ -278,10 +345,10 @@ app.post('/api/cards/bulk', (req, res) => {
     const village = (item.village || item.area || item.colony || item['Village'] || 'Main Village').toString().trim();
     const phone = (item.phone || item.mobile || item['Phone'] || '').toString().trim();
 
-    if (!rationNo || !nameEn) continue;
+    if (!rationNo || !nameEn || !/^[A-Z0-9-]{3,32}$/.test(rationNo)) continue;
 
-    const cardObj = { rationNo, nameEn, nameTe, village, phone };
     const existingIdx = cards.findIndex(c => c.rationNo === rationNo);
+    const cardObj = normalizeCard({ ...item, rationNo, nameEn, nameTe, village, phone }, existingIdx >= 0 ? cards[existingIdx] : null);
     if (existingIdx >= 0) {
       cards[existingIdx] = cardObj;
       updated++;
@@ -347,7 +414,7 @@ app.get('/api/cards/download-zip', async (req, res) => {
   }
 });
 
-app.delete('/api/cards/:rationNo', (req, res) => {
+app.delete('/api/cards/:rationNo', requireAdminPin, (req, res) => {
   const rationNo = req.params.rationNo.toUpperCase();
   const idx = cards.findIndex(c => c.rationNo === rationNo);
   if (idx === -1) {
@@ -378,7 +445,7 @@ app.get('/api/cards/template', (req, res) => {
 });
 
 // Excel / CSV File Upload with deep column matching
-app.post('/api/cards/upload', upload.single('file'), (req, res) => {
+app.post('/api/cards/upload', requireAdminPin, upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
@@ -613,7 +680,7 @@ app.post('/api/scan', (req, res) => {
   });
 });
 
-// Direct Phone Camera / Google Lens QR Scan Check-In (GET /scan/:rationNo)
+// Direct phone check-in page. GET is read-only; issuing happens through POST /api/scan.
 app.get('/scan/:rationNo', (req, res) => {
   const rawRation = (req.params.rationNo || '').trim().toUpperCase();
   const holder = cards.find(c => c.rationNo === rawRation);
@@ -627,7 +694,7 @@ app.get('/scan/:rationNo', (req, res) => {
         <div style="max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
           <div style="font-size: 3rem;">❌</div>
           <h2 style="color: #b91c1c; margin: 0.5rem 0;">Card Not Found</h2>
-          <p style="color: #64748b;">Ration Card <strong>${rawRation}</strong> is not registered in the system.</p>
+          <p style="color: #64748b;">Ration Card <strong>${escapeHtml(rawRation)}</strong> is not registered in the system.</p>
           <a href="/counter" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Go to Counter</a>
         </div>
       </body>
@@ -635,77 +702,77 @@ app.get('/scan/:rationNo', (req, res) => {
     `);
   }
 
-  // Check if already in queue
-  let entry = queueState.queue.find(q => q.rationNo === rawRation);
-  let isNew = false;
-
-  if (!entry) {
-    isNew = true;
-    queueState.tokenNo += 1;
-    entry = {
-      tokenNo: queueState.tokenNo,
-      rationNo: holder.rationNo,
-      nameEn: holder.nameEn,
-      nameTe: holder.nameTe,
-      village: holder.village,
-      phone: holder.phone,
-      issuedAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
-      servedAt: null,
-      status: 'WAITING'
-    };
-
-    if (!queueState.currentToken) {
-      entry.status = 'SERVING';
-      entry.servedAt = entry.issuedAt;
-      queueState.currentToken = entry;
-      io.emit('token-announced', entry);
-    }
-
-    queueState.queue.push(entry);
-    saveJson(QUEUE_FILE, queueState);
-    io.emit('queue-updated', getQueueStateFormatted());
-  }
+  const entry = queueState.queue.find(q => q.rationNo === rawRation) || null;
+  const safeNameEn = escapeHtml(holder.nameEn);
+  const safeNameTe = escapeHtml(holder.nameTe);
+  const safeVillage = escapeHtml(holder.village);
+  const safeRation = escapeHtml(holder.rationNo);
 
   res.send(`
     <!DOCTYPE html>
     <html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Token #${entry.tokenNo} - ${holder.nameEn}</title>
+      <title>${entry ? `Token #${entry.tokenNo}` : 'Join Queue'} - ${safeNameEn}</title>
       <link rel="stylesheet" href="/style.css">
     </head>
     <body style="padding: 2rem 1rem; text-align: center; font-family: sans-serif; background: #0f172a; color: white;">
       <div style="max-width: 420px; margin: 0 auto; background: white; color: #1e293b; padding: 2rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-        <div style="font-size: 0.85rem; font-weight: bold; color: #16a34a; text-transform: uppercase; letter-spacing: 1px;">
-          ${isNew ? '🎉 Token Issued Successfully' : 'ℹ️ You Are in Queue'}
+        <div id="statusLabel" style="font-size: 0.85rem; font-weight: bold; color: #166534; text-transform: uppercase; letter-spacing: 1px;">
+          ${entry ? 'You are already in the queue' : 'Confirm queue check-in'}
         </div>
-        <div style="font-size: 4rem; font-weight: 900; color: #1e40af; margin: 0.5rem 0; line-height: 1;">#${entry.tokenNo}</div>
-        <h2 style="margin: 0.25rem 0; font-size: 1.5rem;">${holder.nameEn}</h2>
-        <h3 style="margin: 0.25rem 0; color: #0284c7; font-size: 1.25rem;">${holder.nameTe}</h3>
-        <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;">📍 ${holder.village} | 🪪 ${holder.rationNo}</p>
+        <div id="tokenNumber" style="font-size: 4rem; font-weight: 900; color: #1e40af; margin: 0.5rem 0; line-height: 1;">${entry ? `#${entry.tokenNo}` : '--'}</div>
+        <h2 style="margin: 0.25rem 0; font-size: 1.5rem;">${safeNameEn}</h2>
+        <h3 style="margin: 0.25rem 0; color: #0369a1; font-size: 1.25rem;">${safeNameTe}</h3>
+        <p style="color: #475569; font-size: 0.9rem; margin-top: 0.5rem;">${safeVillage} · ${safeRation}</p>
         
         <div style="margin-top: 1.5rem; padding: 0.75rem; background: #f1f5f9; border-radius: 12px; font-weight: 600;">
-          Status: <span style="color: ${entry.status === 'SERVING' ? '#eab308' : '#16a34a'};">${entry.status}</span>
+          Status: <span id="queueStatus">${entry ? escapeHtml(entry.status) : 'Not checked in'}</span>
         </div>
 
         <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+          ${entry ? '' : '<button id="joinButton" class="btn btn-primary" type="button" onclick="joinQueue()">Join queue</button>'}
           <a href="/counter" class="btn btn-outline">Counter View</a>
-          <a href="/display" class="btn btn-primary">Live Display ↗</a>
         </div>
       </div>
+      <script>
+        async function joinQueue() {
+          const button = document.getElementById('joinButton');
+          button.disabled = true;
+          button.textContent = 'Issuing token…';
+          try {
+            const response = await fetch('/api/scan', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ rationNo: ${JSON.stringify(rawRation)} })
+            });
+            const data = await response.json();
+            if (!data.success && !data.isDuplicate) throw new Error(data.message || 'Unable to join queue');
+            document.getElementById('statusLabel').textContent = data.isDuplicate ? 'Already in queue' : 'Token issued successfully';
+            document.getElementById('tokenNumber').textContent = '#' + data.tokenNo;
+            document.getElementById('queueStatus').textContent = data.status || (data.autoCalled ? 'SERVING' : 'WAITING');
+            button.remove();
+          } catch (error) {
+            button.disabled = false;
+            button.textContent = 'Try again';
+            document.getElementById('statusLabel').textContent = error.message;
+          }
+        }
+      </script>
     </body>
     </html>
   `);
 });
 
 // Counter: Call Next
-app.post('/api/queue/call-next', (req, res) => {
+app.post('/api/queue/call-next', requireAdminPin, (req, res) => {
   if (queueState.currentToken) {
-    const currentInQueue = queueState.queue.find(q => q.tokenNo === queueState.currentToken.tokenNo);
-    if (currentInQueue && currentInQueue.status === 'SERVING') {
-      currentInQueue.status = 'COMPLETED';
-      currentInQueue.completedAt = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    }
+    return res.status(409).json({
+      success: false,
+      requiresCompletion: true,
+      currentToken: queueState.currentToken,
+      message: `Complete or skip Token #${queueState.currentToken.tokenNo} before calling the next beneficiary.`
+    });
   }
 
   const nextWaiting = queueState.queue.find(q => q.status === 'WAITING');
@@ -728,7 +795,7 @@ app.post('/api/queue/call-next', (req, res) => {
 });
 
 // Counter: Call Specific Token
-app.post('/api/queue/call-token', (req, res) => {
+app.post('/api/queue/call-token', requireAdminPin, (req, res) => {
   const targetTokenNo = parseInt(req.body.tokenNo);
   const targetEntry = queueState.queue.find(q => q.tokenNo === targetTokenNo);
 
@@ -737,11 +804,11 @@ app.post('/api/queue/call-token', (req, res) => {
   }
 
   if (queueState.currentToken && queueState.currentToken.tokenNo !== targetTokenNo) {
-    const cur = queueState.queue.find(q => q.tokenNo === queueState.currentToken.tokenNo);
-    if (cur && cur.status === 'SERVING') {
-      cur.status = 'COMPLETED';
-      cur.completedAt = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    }
+    return res.status(409).json({
+      success: false,
+      requiresCompletion: true,
+      message: `Complete or skip Token #${queueState.currentToken.tokenNo} before calling another token.`
+    });
   }
 
   targetEntry.status = 'SERVING';
@@ -756,7 +823,7 @@ app.post('/api/queue/call-token', (req, res) => {
 });
 
 // Counter: Repeat Current Announcement
-app.post('/api/queue/repeat', (req, res) => {
+app.post('/api/queue/repeat', requireAdminPin, (req, res) => {
   if (!queueState.currentToken) {
     return res.status(400).json({ success: false, message: 'No active token is currently serving' });
   }
@@ -765,7 +832,7 @@ app.post('/api/queue/repeat', (req, res) => {
 });
 
 // Counter: Mark Current as Completed
-app.post('/api/queue/complete', (req, res) => {
+app.post('/api/queue/complete', requireAdminPin, (req, res) => {
   if (!queueState.currentToken) {
     return res.status(400).json({ success: false, message: 'No active token to complete' });
   }
@@ -801,7 +868,7 @@ app.post('/api/queue/complete', (req, res) => {
 });
 
 // Counter: Skip Current Token
-app.post('/api/queue/skip', (req, res) => {
+app.post('/api/queue/skip', requireAdminPin, (req, res) => {
   if (!queueState.currentToken) {
     return res.status(400).json({ success: false, message: 'No active token to skip' });
   }
@@ -839,7 +906,7 @@ app.post('/api/queue/skip', (req, res) => {
 // Reset Day (PIN Protected)
 app.post('/api/queue/reset', (req, res) => {
   const { pin } = req.body;
-  if (pin !== settings.adminPin) {
+  if (!verifyAdminPin(pin)) {
     return res.status(401).json({ success: false, message: 'Invalid Admin PIN' });
   }
 
@@ -943,11 +1010,14 @@ app.get('/api/reports/pending-csv', (req, res) => {
 });
 
 // Recall Skipped Beneficiary back to Waiting Queue
-app.post('/api/queue/recall-skipped', (req, res) => {
+app.post('/api/queue/recall-skipped', requireAdminPin, (req, res) => {
   const tokenNo = parseInt(req.body.tokenNo);
   const entry = queueState.queue.find(q => q.tokenNo === tokenNo);
   if (!entry) {
     return res.status(404).json({ success: false, message: 'Token not found in queue' });
+  }
+  if (entry.status !== 'SKIPPED') {
+    return res.status(409).json({ success: false, message: 'Only skipped tokens can be recalled to the waiting queue' });
   }
 
   entry.status = 'WAITING';
@@ -1018,6 +1088,19 @@ app.get('/print-qr', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'print-qr.html'));
 });
 
+app.get('/vendor/xlsx.full.min.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules', 'xlsx', 'dist', 'xlsx.full.min.js'));
+});
+
+app.use((err, req, res, next) => {
+  console.error('Request failed:', err.message);
+  if (res.headersSent) return next(err);
+  res.status(err.code === 'LIMIT_FILE_SIZE' ? 413 : 500).json({
+    success: false,
+    message: err.code === 'LIMIT_FILE_SIZE' ? 'Uploaded file is too large (10 MB maximum)' : err.message
+  });
+});
+
 // Socket.io Connection
 io.on('connection', (socket) => {
   socket.emit('queue-updated', getQueueStateFormatted());
@@ -1025,7 +1108,7 @@ io.on('connection', (socket) => {
 });
 
 const HTTP_PORT = process.env.PORT || 3000;
-const HTTPS_PORT = 3443;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
 httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
   const ips = getLocalIpAddresses();

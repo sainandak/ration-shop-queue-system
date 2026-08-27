@@ -32,66 +32,441 @@
       text-align: center;
       box-shadow: var(--shadow-lg);
       margin-bottom: 1.5rem;
+      position: relative;
     }
     .serving-token {
       font-size: 3.5rem;
       font-weight: 900;
       color: #fde047;
-      line-height: 1;
-      margin: 0.5rem 0;
+      line-height: 1.1;
+      margin: 0.4rem 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      letter-spacing: -0.5px;
     }
     .serving-name-en {
       font-size: 1.6rem;
       font-weight: 700;
+      word-break: break-word;
     }
     .serving-name-te {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       color: #93c5fd;
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
+      word-break: break-word;
     }
     .serving-details {
       font-size: 0.95rem;
-      opacity: 0.85;
+      opacity: 0.9;
       margin-top: 0.5rem;
+      word-break: break-word;
     }
-    .btn-group-grid {
+    .primary-counter-action {
+      width: 100%;
+      min-height: 54px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(30,64,175,0.25);
+      border-radius: var(--radius-sm);
+      transition: transform 0.08s ease, background 0.15s ease;
+    }
+    .primary-counter-action:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    .counter-actions { margin-top: 0.9rem; position: relative; }
+    .counter-secondary {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 1rem;
+      grid-template-columns: 1.25fr 1.15fr auto;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+      align-items: stretch;
     }
-    @media (max-width: 480px) {
-      .serving-token { font-size: 2.8rem; }
-      .serving-name-en { font-size: 1.3rem; }
-      .serving-name-te { font-size: 1.2rem; }
+    .counter-secondary .btn {
+      min-height: 46px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 0.5rem 0.75rem;
+      white-space: nowrap;
     }
+    .btn-repeat {
+      background: #f59e0b;
+      color: #ffffff;
+      border: 1px solid #d97706;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+    .btn-repeat:hover:not(:disabled) {
+      background: #d97706;
+    }
+    .btn-repeat:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+    .btn-repeat:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .more-actions { position: relative; }
+    .more-actions summary {
+      list-style: none;
+      background: #ffffff;
+      color: #0f172a;
+      border: 1.5px solid #cbd5e1;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      min-height: 46px;
+      padding: 0.5rem 0.85rem;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+    .more-actions summary:hover,
+    .more-actions[open] > summary {
+      background: #f8fafc;
+      color: #000000;
+      border-color: #64748b;
+    }
+    .more-actions summary:focus-visible {
+      outline: 3px solid #fde047;
+      outline-offset: 2px;
+    }
+    .more-actions summary::-webkit-details-marker { display: none; }
+    .more-menu {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 0.45rem);
+      z-index: 1000;
+      min-width: 230px;
+      padding: 0.5rem;
+      display: grid;
+      gap: 0.4rem;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22), 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .more-menu .btn {
+      justify-content: flex-start;
+      width: 100%;
+      font-weight: 600;
+      min-height: 42px;
+      font-size: 0.9rem;
+      white-space: normal;
+      text-align: left;
+    }
+    .more-menu .btn-outline { color: #0f172a; border-color: #cbd5e1; background: #ffffff; }
+    .more-menu .btn-outline:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+
+    .workflow-state { display: none; margin: -0.75rem 0 1rem; padding: 0.75rem 1rem; border-radius: 10px; font-weight: 700; font-size: 0.92rem; }
+    .workflow-state.is-visible { display: block; }
+    .workflow-state.success { color: #166534; background: #f0fdf4; border: 1px solid #86efac; }
+    .workflow-state.warning { color: #92400e; background: #fffbeb; border: 1px solid #fcd34d; }
+
+    /* Entry Mode Tab Bar */
+    .mode-tab-bar {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-200);
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .mode-tab-bar::-webkit-scrollbar { display: none; }
+
     .tab-btn {
-      padding: 0.5rem 1rem;
+      padding: 0.55rem 0.9rem;
       border: none;
       background: transparent;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 0.9rem;
       color: var(--gray-600);
       cursor: pointer;
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.15s ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     .tab-btn.active {
       color: var(--primary);
       border-bottom-color: var(--primary);
+      background: var(--primary-light);
     }
+    .tab-btn:hover:not(.active) {
+      color: var(--dark);
+      background: var(--gray-100);
+    }
+
+    /* Keypad Grid & Buttons */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .keypad-btn {
+      height: 52px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #0f172a;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.05s ease, background 0.1s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .keypad-btn:active {
+      transform: scale(0.95);
+      background: #e2e8f0 !important;
+    }
+    .keypad-btn-del {
+      background: #fee2e2 !important;
+      color: #991b1b !important;
+      border-color: #fca5a5 !important;
+      font-size: 1.05rem;
+    }
+    .keypad-btn-clear {
+      background: #fef3c7 !important;
+      color: #92400e !important;
+      border-color: #fcd34d !important;
+      font-size: 1.05rem;
+    }
+
+    /* Queue Header & Tabs */
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .queue-tabs {
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .queue-tabs::-webkit-scrollbar { display: none; }
+    .queue-tabs .tab-btn {
+      font-size: 0.82rem;
+      padding: 0.4rem 0.65rem;
+      min-height: 38px;
+    }
+
+    /* Modal Overlays & Animation */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid var(--gray-200);
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Toast Notification */
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
       left: 50%;
       transform: translateX(-50%);
       background: #1e293b;
       color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
+      padding: 10px 18px;
+      border-radius: 10px;
       font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      z-index: 1000;
+      font-size: 0.95rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
       display: none;
+      max-width: calc(100vw - 2rem);
+      width: auto;
+      text-align: center;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .cell-label-mobile { display: none; }
+    .token-pill {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* RESPONSIVE BREAKPOINTS */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0.85rem 0.65rem;
+      }
+      .card {
+        padding: 1.1rem 0.9rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+      }
+      .serving-card {
+        padding: 1.25rem 0.9rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+      }
+      .serving-token {
+        font-size: 2.85rem;
+      }
+      .serving-name-en {
+        font-size: 1.35rem;
+      }
+      .serving-name-te {
+        font-size: 1.15rem;
+      }
+      .serving-details {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .counter-secondary {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.45rem;
+      }
+      .counter-secondary .btn {
+        font-size: 0.86rem;
+        padding: 0.45rem 0.35rem;
+      }
+      .more-actions {
+        grid-column: 1 / -1;
+      }
+      .more-actions summary {
+        width: 100%;
+        justify-content: center;
+        min-height: 42px;
+      }
+      .more-menu {
+        position: static;
+        width: 100%;
+        margin-top: 0.4rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      }
+      .counter-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 40;
+        margin: 0.75rem -0.9rem -1.25rem;
+        padding: 0.75rem 0.9rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+        background: rgba(30, 58, 138, 0.97);
+        border-top: 1px solid rgba(255,255,255,0.25);
+        backdrop-filter: blur(8px);
+      }
+      .form-grid-2 {
+        grid-template-columns: 1fr !important;
+      }
+      .modal {
+        padding: 1.1rem;
+      }
+      .queue-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .queue-tabs {
+        width: 100%;
+      }
+      .queue-tabs .tab-btn {
+        flex: 1;
+        text-align: center;
+      }
+
+      /* Mobile Card-Style Queue Table */
+      table.data-table thead {
+        display: none;
+      }
+      table.data-table,
+      table.data-table tbody,
+      table.data-table tr,
+      table.data-table td {
+        display: block;
+        width: 100%;
+      }
+      table.data-table tr {
+        background: #f8fafc;
+        border: 1px solid var(--gray-200);
+        border-radius: 10px;
+        margin-bottom: 0.65rem;
+        padding: 0.75rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      }
+      table.data-table td {
+        padding: 0.25rem 0;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+      }
+      table.data-table td.cell-token {
+        border-bottom: 1px dashed var(--gray-200);
+        padding-bottom: 0.4rem;
+        margin-bottom: 0.35rem;
+      }
+      table.data-table td.cell-action {
+        margin-top: 0.5rem;
+        padding-top: 0.45rem;
+        border-top: 1px solid var(--gray-200);
+      }
+      table.data-table td.cell-action .btn {
+        width: 100%;
+        min-height: 42px;
+        font-weight: 700;
+        justify-content: center;
+      }
+      .cell-label-mobile {
+        display: inline-block;
+        font-weight: 600;
+        color: var(--gray-600);
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -102,12 +477,13 @@
       <span>🌾</span>
       <span>Shop Counter (#03)</span>
     </a>
+    <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
     <div class="nav-links">
       <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;" onclick="openAddModal()">
         ➕ Add Beneficiary
       </button>
       <a href="/" class="nav-link">Hub</a>
-      <a href="/counter" class="nav-link active">Counter</a>
+      <a href="/counter" class="nav-link active" aria-current="page">Counter</a>
       <a href="/display" class="nav-link" target="_blank">Display ↗</a>
       <a href="/admin" class="nav-link">Admin</a>
     </div>
@@ -126,33 +502,42 @@
           <div class="serving-name-te" id="activeNameTe">కౌంటర్ ఖాళీగా ఉంది</div>
           <div class="serving-details" id="activeDetails">--</div>
 
-          <div class="btn-group-grid" style="grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem;">
-            <button class="btn btn-success" onclick="completeCurrent()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
-              ✅ Complete & Next
+          <div class="counter-actions">
+            <button id="callNextBtn" class="btn btn-primary primary-counter-action" onclick="callNext()">
+              <span aria-hidden="true">▶</span> Call Next Beneficiary
             </button>
-            <button class="btn btn-outline" style="background: white; color: #b91c1c; border-color: #fca5a5; padding: 0.65rem 0.5rem; font-weight: 700;" onclick="exitCurrentOnly()">
-              🚪 Exit / Free Counter
-            </button>
-            <button class="btn btn-warning" onclick="repeatAnnouncement()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
-              📢 Repeat Audio
-            </button>
-            <button class="btn btn-danger" onclick="skipCurrent()" style="padding: 0.65rem 0.5rem; font-weight: 700;">
-              ⏸️ Skip Absent
-            </button>
-            <button class="btn btn-primary" style="grid-column: span 2; padding: 0.75rem; font-size: 1rem; font-weight: 800;" onclick="callNext()">
-              ⏭️ Call Next Beneficiary
-            </button>
+            <div class="counter-secondary">
+              <button id="completeNextBtn" class="btn btn-success" onclick="completeCurrent()" disabled title="Complete current beneficiary and call next waiting token">
+                <span aria-hidden="true">✓</span> Complete & Next
+              </button>
+              <button id="repeatBtn" class="btn btn-repeat" onclick="repeatAnnouncement()" disabled title="Announce / Call active token on audio speaker & display">
+                <span aria-hidden="true">📢</span> Call Token
+              </button>
+              <details class="more-actions">
+                <summary class="btn btn-outline" aria-haspopup="true">More ▾</summary>
+                <div class="more-menu" role="menu">
+                  <button id="completeOnlyBtn" class="btn btn-outline" onclick="closeMoreMenu(); exitCurrentOnly()" disabled>
+                    ✓ Complete without next
+                  </button>
+                  <button id="skipBtn" class="btn btn-danger" onclick="closeMoreMenu(); skipCurrent()" disabled>
+                    ✕ Skip as absent
+                  </button>
+                </div>
+              </details>
+            </div>
           </div>
         </div>
+
+        <div id="workflowState" class="workflow-state" role="status" aria-live="polite"></div>
 
         <!-- Scanner Card with 4 Fast Entry Modes -->
         <div class="card">
           <!-- Mode Tabs -->
-          <div style="display: flex; gap: 0.35rem; margin-bottom: 1rem; border-bottom: 2px solid var(--gray-200); padding-bottom: 0.5rem; overflow-x: auto;">
-            <button class="tab-btn active" id="btnModeKeypad" onclick="setEntryMode('keypad')">🔢 Keypad (Fastest)</button>
-            <button class="tab-btn" id="btnModeSnap" onclick="setEntryMode('snap')">📸 Snap QR</button>
-            <button class="tab-btn" id="btnModeSearch" onclick="setEntryMode('search')">🔍 Search</button>
-            <button class="tab-btn" id="btnModeLive" onclick="setEntryMode('live')">📹 Live Cam</button>
+          <div class="mode-tab-bar" role="tablist" aria-label="Card entry method">
+            <button class="tab-btn active" role="tab" aria-selected="true" id="btnModeKeypad" onclick="setEntryMode('keypad')">Keypad</button>
+            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeSnap" onclick="setEntryMode('snap')">Scan QR</button>
+            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeSearch" onclick="setEntryMode('search')">Search</button>
+            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeLive" onclick="setEntryMode('live')">Camera</button>
           </div>
 
           <!-- 1. TOUCH NUMBER PAD MODE (Fastest & 100% Reliable on all Phones) -->
@@ -164,23 +549,23 @@
             </div>
 
             <!-- Number Pad Grid -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-bottom: 0.75rem;">
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('1')">1</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('2')">2</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('3')">3</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('4')">4</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('5')">5</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('6')">6</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('7')">7</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('8')">8</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('9')">9</button>
-              <button class="btn btn-danger" style="height: 50px; font-size: 1.1rem; font-weight: 800;" onclick="pressKeypad('CLEAR')">⌫ Del</button>
-              <button class="btn btn-outline" style="height: 50px; font-size: 1.35rem; font-weight: 800; background: white;" onclick="pressKeypad('0')">0</button>
-              <button class="btn btn-warning" style="height: 50px; font-size: 1.1rem; font-weight: 800;" onclick="pressKeypad('RESET')">Clear</button>
+            <div class="keypad-grid">
+              <button class="keypad-btn" onclick="pressKeypad('1')">1</button>
+              <button class="keypad-btn" onclick="pressKeypad('2')">2</button>
+              <button class="keypad-btn" onclick="pressKeypad('3')">3</button>
+              <button class="keypad-btn" onclick="pressKeypad('4')">4</button>
+              <button class="keypad-btn" onclick="pressKeypad('5')">5</button>
+              <button class="keypad-btn" onclick="pressKeypad('6')">6</button>
+              <button class="keypad-btn" onclick="pressKeypad('7')">7</button>
+              <button class="keypad-btn" onclick="pressKeypad('8')">8</button>
+              <button class="keypad-btn" onclick="pressKeypad('9')">9</button>
+              <button class="keypad-btn keypad-btn-del" onclick="pressKeypad('CLEAR')">⌫ Del</button>
+              <button class="keypad-btn" onclick="pressKeypad('0')">0</button>
+              <button class="keypad-btn keypad-btn-clear" onclick="pressKeypad('RESET')">Clear</button>
             </div>
 
-            <button class="btn btn-primary btn-lg btn-block" style="font-size: 1.1rem; padding: 0.75rem;" onclick="submitKeypad()">
-              ⚡ Issue Token Now
+            <button id="issueTokenBtn" class="btn btn-primary btn-lg btn-block" style="font-size: 1.1rem; padding: 0.75rem;" onclick="submitKeypad()" disabled>
+              Select a beneficiary first
             </button>
           </div>
 
@@ -252,17 +637,16 @@
 
         </div>
       </div>
-      </div>
 
       <!-- RIGHT COLUMN: QUEUE TABS & STATS -->
       <div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="font-size: 1.15rem;">📋 Today's Queue</h3>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="tab-btn active" onclick="switchTab('waiting')" id="tabWaiting">Waiting (<span id="countWaiting">0</span>)</button>
-              <button class="tab-btn" onclick="switchTab('completed')" id="tabCompleted">Done (<span id="countCompleted">0</span>)</button>
-              <button class="tab-btn" onclick="switchTab('skipped')" id="tabSkipped">Skipped (<span id="countSkipped">0</span>)</button>
+          <div class="queue-header">
+            <h3 style="font-size: 1.15rem; margin: 0;">📋 Today's Queue</h3>
+            <div class="queue-tabs" role="tablist" aria-label="Queue status">
+              <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('waiting')" id="tabWaiting">Waiting (<span id="countWaiting">0</span>)</button>
+              <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('completed')" id="tabCompleted">Done (<span id="countCompleted">0</span>)</button>
+              <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('skipped')" id="tabSkipped">Skipped (<span id="countSkipped">0</span>)</button>
             </div>
           </div>
 
@@ -289,7 +673,7 @@
   </div>
 
   <!-- Enhanced Toast Notification Container -->
-  <div id="toast" class="toast" style="z-index: 9999; font-size: 0.95rem; font-weight: 600; padding: 0.85rem 1.25rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Camera Permission Help Modal -->
   <div id="cameraPermissionModal" class="modal-overlay" style="display: none; z-index: 9999;">
@@ -349,7 +733,7 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <div class="form-grid-2">
           <div>
             <label class="input-label">English Name *</label>
             <input type="text" id="newNameEn" class="input-control" placeholder="e.g. Ramesh Kumar" required>
@@ -360,7 +744,7 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <div class="form-grid-2">
           <div>
             <label class="input-label">Card Type</label>
             <select id="newCardType" class="input-control">
@@ -369,14 +753,33 @@
             </select>
           </div>
           <div>
-            <label class="input-label">Village / Area</label>
-            <input type="text" id="newVillage" class="input-control" placeholder="Village name" value="Fair Price Shop #03 Village">
+            <label class="input-label">Village / Area (Optional)</label>
+            <input type="text" id="newVillage" class="input-control" placeholder="Village / Area name" value="">
           </div>
         </div>
 
         <div style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
           <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('modalAddCard')">Cancel</button>
           <button type="submit" class="btn btn-success" style="flex: 2; font-weight: 700;">💾 Save & Issue Token Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Staff PIN Input Modal -->
+  <div id="pinModal" class="modal-overlay" style="z-index: 10000;">
+    <div class="modal" style="max-width: 380px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+      <h3 style="font-size: 1.25rem; color: var(--primary); margin-bottom: 0.35rem;" id="pinModalTitle">Staff Authorization</h3>
+      <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.2rem;" id="pinModalSubtitle">Please enter the staff PIN to continue</p>
+      
+      <form id="pinModalForm" onsubmit="event.preventDefault(); submitPinModal();">
+        <div style="margin-bottom: 1rem;">
+          <input type="password" id="pinModalInput" class="input-control" placeholder="Enter PIN" autocomplete="current-password" inputmode="numeric" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-weight: 700; height: 50px;" required>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="cancelPinModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1.5; font-weight: 700;">Authorize</button>
         </div>
       </form>
     </div>
@@ -390,6 +793,70 @@
     let lastScanTime = 0;
     let currentQueueState = { waiting: [], completed: [], skipped: [], serving: null };
     let currentTab = 'waiting';
+    let matchedKeypadCard = null;
+    let pinModalResolver = null;
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
+
+    function promptStaffPin(title = 'Staff Authorization', subtitle = 'Please enter staff PIN to perform counter actions') {
+      return new Promise((resolve) => {
+        pinModalResolver = resolve;
+        const modal = document.getElementById('pinModal');
+        const input = document.getElementById('pinModalInput');
+        const titleEl = document.getElementById('pinModalTitle');
+        const subEl = document.getElementById('pinModalSubtitle');
+        
+        if (titleEl) titleEl.innerText = title;
+        if (subEl) subEl.innerText = subtitle;
+        if (input) input.value = '';
+        if (modal) modal.style.display = 'flex';
+        
+        setTimeout(() => { if (input) input.focus(); }, 150);
+      });
+    }
+
+    function submitPinModal() {
+      const input = document.getElementById('pinModalInput');
+      const val = input ? input.value.trim() : '';
+      if (!val) return;
+      document.getElementById('pinModal').style.display = 'none';
+      if (pinModalResolver) {
+        pinModalResolver(val);
+        pinModalResolver = null;
+      }
+    }
+
+    function cancelPinModal() {
+      document.getElementById('pinModal').style.display = 'none';
+      if (pinModalResolver) {
+        pinModalResolver(null);
+        pinModalResolver = null;
+      }
+    }
+
+    async function staffFetch(url, options = {}) {
+      let pin = sessionStorage.getItem('staffPin');
+      if (!pin) {
+        pin = await promptStaffPin('Staff Authorization', 'Enter staff PIN to perform counter actions');
+        if (!pin) throw new Error('Staff PIN is required');
+        sessionStorage.setItem('staffPin', pin);
+      }
+      let response = await fetch(url, { ...options, headers: { ...(options.headers || {}), 'X-Admin-Pin': pin } });
+      if (response.status === 401) {
+        sessionStorage.removeItem('staffPin');
+        pin = await promptStaffPin('Invalid PIN', 'The previous PIN was incorrect. Please enter valid staff PIN:');
+        if (!pin) throw new Error('Invalid staff PIN.');
+        sessionStorage.setItem('staffPin', pin);
+        response = await fetch(url, { ...options, headers: { ...(options.headers || {}), 'X-Admin-Pin': pin } });
+        if (response.status === 401) {
+          sessionStorage.removeItem('staffPin');
+          throw new Error('Invalid staff PIN. Authorization failed.');
+        }
+      }
+      return response;
+    }
 
     // ==========================================
     // ENTRY MODES & TOUCH KEYPAD LOGIC
@@ -406,6 +873,10 @@
       document.getElementById('btnModeSnap').classList.toggle('active', mode === 'snap');
       document.getElementById('btnModeSearch').classList.toggle('active', mode === 'search');
       document.getElementById('btnModeLive').classList.toggle('active', mode === 'live');
+      document.getElementById('btnModeKeypad').setAttribute('aria-selected', mode === 'keypad');
+      document.getElementById('btnModeSnap').setAttribute('aria-selected', mode === 'snap');
+      document.getElementById('btnModeSearch').setAttribute('aria-selected', mode === 'search');
+      document.getElementById('btnModeLive').setAttribute('aria-selected', mode === 'live');
 
       if (mode !== 'live' && isCameraRunning) {
         stopCamera();
@@ -442,8 +913,8 @@
       const container = document.getElementById('quickChipsContainer');
       if (container && cards) {
         container.innerHTML = cards.map(c => `
-          <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.cardType})">
-            #${c.sNo} ${c.nameEn.split(' ')[0]} (..${c.last4 || c.rationNo.slice(-4)})
+          <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${escapeHtml(c.nameEn)} (${escapeHtml(c.cardType)})">
+            #${c.sNo} ${escapeHtml(c.nameEn.split(' ')[0])} (..${escapeHtml(c.last4 || c.rationNo.slice(-4))})
           </button>
         `).join('');
       }
@@ -454,8 +925,11 @@
       const previewEl = document.getElementById('keypadCardPreview');
 
       if (!currentKeypadDigits) {
+        matchedKeypadCard = null;
         displayEl.innerText = 'S.No / Last 4';
         previewEl.innerText = 'Type S.No (1-241) or Last 4 digits';
+        document.getElementById('issueTokenBtn').disabled = true;
+        document.getElementById('issueTokenBtn').innerText = 'Select a beneficiary first';
         return;
       }
 
@@ -474,18 +948,24 @@
       }
 
       if (match) {
-        previewEl.innerHTML = `✅ [S.No #${match.sNo}] <strong>${match.nameEn}</strong> <span style="background: ${match.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">${match.cardType || 'FSC'}</span> • ...${match.last4 || match.rationNo.slice(-4)}`;
+        matchedKeypadCard = match;
+        previewEl.innerHTML = `Matched: <strong>${escapeHtml(match.nameEn)}</strong> · ${escapeHtml(match.rationNo)}`;
+        document.getElementById('issueTokenBtn').disabled = false;
+        document.getElementById('issueTokenBtn').innerText = `Issue token for ${match.nameEn}`;
       } else {
+        matchedKeypadCard = null;
         previewEl.innerText = `Searching roster for "${currentKeypadDigits}"...`;
+        document.getElementById('issueTokenBtn').disabled = true;
+        document.getElementById('issueTokenBtn').innerText = 'No matching beneficiary';
       }
     }
 
     function submitKeypad() {
-      if (!currentKeypadDigits) {
+      if (!matchedKeypadCard) {
         showToast('Please type S.No (1-241) or Last 4 digits on the keypad', 'warning');
         return;
       }
-      submitRationScan(currentKeypadDigits);
+      submitRationScan(matchedKeypadCard.rationNo);
       currentKeypadDigits = '';
       updateKeypadDisplay();
     }
@@ -527,7 +1007,7 @@
         icon = '⚠️';
       }
 
-      toast.innerHTML = `<span style="font-size: 1.15rem; margin-right: 6px;">${icon}</span> ${msg}`;
+      toast.innerHTML = `<span aria-hidden="true" style="font-size: 1.15rem; margin-right: 6px;">${icon}</span> ${escapeHtml(msg)}`;
       toast.style.background = bg;
       toast.style.display = 'flex';
       toast.style.alignItems = 'center';
@@ -570,6 +1050,7 @@
 
         playBeep(true);
         showToast(data.message, 'success');
+        showWorkflowState(data.message, 'success');
         const manInp = document.getElementById('manualCardInput');
         if (manInp) manInp.value = '';
       })
@@ -606,7 +1087,7 @@
       ).slice(0, 8);
 
       if (matches.length === 0) {
-        dropdown.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--gray-600); font-size: 0.9rem;">No matching cards found for "${val}"</div>`;
+        dropdown.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--gray-600); font-size: 0.9rem;">No matching cards found for "${escapeHtml(val)}"</div>`;
         dropdown.style.display = 'block';
         return;
       }
@@ -616,11 +1097,11 @@
           <div>
             <div style="font-weight: 700; color: var(--gray-800);">
               <span style="background: #e2e8f0; color: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">#${c.sNo}</span>
-              ${c.nameEn} 
+              ${escapeHtml(c.nameEn)}
               <span style="background: ${c.cardType === 'AFSC' ? '#f59e0b' : '#3b82f6'}; color: white; padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">${c.cardType || 'FSC'}</span>
             </div>
             <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 2px;">
-              Card: <strong>${c.rationNo}</strong> (Ending: <strong style="color: var(--primary);">${c.last4 || c.rationNo.slice(-4)}</strong>)
+              Card: <strong>${escapeHtml(c.rationNo)}</strong> (Ending: <strong style="color: var(--primary);">${escapeHtml(c.last4 || c.rationNo.slice(-4))}</strong>)
             </div>
           </div>
           <button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="event.stopPropagation(); selectSuggestedCard('${c.rationNo}')">
@@ -654,8 +1135,8 @@
           const container = document.getElementById('quickChipsContainer');
           if (container && data.cards) {
             container.innerHTML = data.cards.map(c => `
-              <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${c.nameEn} (${c.nameTe || ''})">
-                ${c.rationNo} (${c.nameEn.split(' ')[0]})
+              <button class="btn btn-outline" style="padding: 0.25rem 0.55rem; font-size: 0.8rem; border-radius: 9999px; background: white;" onclick="submitRationScan('${c.rationNo}')" title="${escapeHtml(c.nameEn)} (${escapeHtml(c.nameTe || '')})">
+                ${escapeHtml(c.rationNo)} (${escapeHtml(c.nameEn.split(' ')[0])})
               </button>
             `).join('');
           }
@@ -951,7 +1432,7 @@
       const nameEn = document.getElementById('newNameEn').value.trim();
       const nameTe = document.getElementById('newNameTe').value.trim() || nameEn;
       const cardType = document.getElementById('newCardType').value;
-      const village = document.getElementById('newVillage').value.trim() || 'Fair Price Shop #03 Village';
+      const village = document.getElementById('newVillage').value.trim();
 
       if (!rationNo || !nameEn) {
         showToast('Please enter Ration Card No and English Name', 'error');
@@ -960,7 +1441,7 @@
 
       showToast('Saving cardholder...', 'info');
 
-      fetch('/api/cards', {
+      staffFetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rationNo, nameEn, nameTe, cardType, village })
@@ -985,12 +1466,16 @@
 
     // Counter Action Controls with Rich Status Feedback
     function callNext() {
-      fetch('/api/queue/call-next', { method: 'POST' })
+      staffFetch('/api/queue/call-next', { method: 'POST' })
         .then(res => res.json())
         .then(data => {
-          if (data.currentToken) {
+          if (!data.success) {
+            playBeep(false);
+            showToast(data.message, 'warning');
+          } else if (data.currentToken) {
             playBeep(true);
             showToast(`📢 Now Calling Token #${data.currentToken.tokenNo} (${data.currentToken.nameEn})`, 'success');
+            showWorkflowState(`Now serving token #${data.currentToken.tokenNo}: ${data.currentToken.nameEn}`, 'success');
           } else {
             playBeep(false);
             showToast('ℹ️ No waiting beneficiaries in queue', 'info');
@@ -1002,7 +1487,8 @@
     }
 
     function repeatAnnouncement() {
-      fetch('/api/queue/repeat', { method: 'POST' })
+      closeMoreMenu();
+      staffFetch('/api/queue/repeat', { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (!data.success) {
@@ -1019,7 +1505,7 @@
     }
 
     function completeCurrent() {
-      fetch('/api/queue/complete', {
+      staffFetch('/api/queue/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ callNext: true })
@@ -1033,8 +1519,10 @@
         playBeep(true);
         if (data.nextToken) {
           showToast(`✅ Previous customer done. Now Calling Token #${data.nextToken.tokenNo}`, 'success');
+          showWorkflowState(`Completed. Token #${data.nextToken.tokenNo} is now being served.`, 'success');
         } else {
           showToast('✅ Customer completed & exited. All tokens done!', 'success');
+          showWorkflowState('Beneficiary completed. The counter is now available.', 'success');
         }
       })
       .catch(err => {
@@ -1043,7 +1531,9 @@
     }
 
     function exitCurrentOnly() {
-      fetch('/api/queue/complete', {
+      closeMoreMenu();
+      if (!window.confirm('Complete the current beneficiary without calling the next token?')) return;
+      staffFetch('/api/queue/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ callNext: false })
@@ -1063,7 +1553,9 @@
     }
 
     function skipCurrent() {
-      fetch('/api/queue/skip', {
+      closeMoreMenu();
+      if (!window.confirm('Mark the current beneficiary as absent and call the next token?')) return;
+      staffFetch('/api/queue/skip', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ callNext: true })
@@ -1083,7 +1575,7 @@
     }
 
     function callSpecific(tokenNo) {
-      fetch('/api/queue/call-token', {
+      staffFetch('/api/queue/call-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenNo })
@@ -1108,6 +1600,9 @@
       document.getElementById('tabWaiting').classList.toggle('active', tab === 'waiting');
       document.getElementById('tabCompleted').classList.toggle('active', tab === 'completed');
       document.getElementById('tabSkipped').classList.toggle('active', tab === 'skipped');
+      document.getElementById('tabWaiting').setAttribute('aria-selected', tab === 'waiting');
+      document.getElementById('tabCompleted').setAttribute('aria-selected', tab === 'completed');
+      document.getElementById('tabSkipped').setAttribute('aria-selected', tab === 'skipped');
       renderQueueTable();
     }
 
@@ -1122,16 +1617,27 @@
 
       tbody.innerHTML = list.map(item => `
         <tr>
-          <td><strong style="font-size: 1.1rem; color: var(--primary);">#${item.tokenNo}</strong></td>
-          <td>
-            <div style="font-weight: 600;">${item.nameEn}</div>
-            <div style="font-size: 0.85rem; color: var(--gray-600);">${item.nameTe || ''} (${item.rationNo})</div>
+          <td class="cell-token">
+            <span class="token-pill">#${item.tokenNo}</span>
+            <span class="badge ${item.status === 'WAITING' ? 'badge-waiting' : (item.status === 'SERVING' ? 'badge-serving' : 'badge-completed')}">${item.status || 'WAITING'}</span>
           </td>
-          <td>${item.village || '--'}</td>
-          <td><small>${item.issuedAt || '--'}</small></td>
           <td>
-            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="callSpecific(${item.tokenNo})">
-              ${item.status === 'WAITING' ? '📢 Call' : '🔄 Recall'}
+            <div style="font-weight: 700; color: var(--gray-800); font-size: 0.95rem;">${escapeHtml(item.nameEn)}</div>
+            <div style="font-size: 0.82rem; color: var(--gray-600); margin-top: 1px;">
+              ${item.nameTe ? escapeHtml(item.nameTe) + ' • ' : ''}<span style="font-family: monospace; font-weight: 600;">${escapeHtml(item.rationNo)}</span>
+            </div>
+          </td>
+          <td>
+            <span class="cell-label-mobile">Village:</span>
+            <span>${escapeHtml(item.village || '--')}</span>
+          </td>
+          <td>
+            <span class="cell-label-mobile">Time:</span>
+            <small style="color: var(--gray-600); font-weight: 500;">${item.issuedAt || '--'}</small>
+          </td>
+          <td class="cell-action">
+            <button class="btn btn-outline" onclick="callSpecific(${item.tokenNo})">
+              ${item.status === 'WAITING' ? '📢 Call Token' : '🔄 Recall'}
             </button>
           </td>
         </tr>
@@ -1147,7 +1653,7 @@
         document.getElementById('activeToken').innerText = '#' + data.serving.tokenNo;
         document.getElementById('activeNameEn').innerText = data.serving.nameEn;
         document.getElementById('activeNameTe').innerText = data.serving.nameTe;
-        document.getElementById('activeDetails').innerText = `Card: ${data.serving.rationNo} | Village: ${data.serving.village}`;
+        document.getElementById('activeDetails').innerText = data.serving.village ? `Card: ${data.serving.rationNo} | Village: ${data.serving.village}` : `Card: ${data.serving.rationNo}`;
       } else {
         document.getElementById('activeToken').innerText = '--';
         document.getElementById('activeNameEn').innerText = 'No Active Token';
@@ -1160,11 +1666,41 @@
       document.getElementById('countCompleted').innerText = data.completedCount;
       document.getElementById('countSkipped').innerText = data.skippedCount;
 
+      const hasServing = Boolean(data.serving);
+      document.getElementById('callNextBtn').disabled = hasServing || data.waitingCount === 0;
+      document.getElementById('callNextBtn').innerText = hasServing ? 'Finish current token first' : 'Call Next Beneficiary';
+      ['completeNextBtn', 'repeatBtn', 'completeOnlyBtn', 'skipBtn'].forEach(id => {
+        document.getElementById(id).disabled = !hasServing;
+      });
+
       renderQueueTable();
     });
 
     socket.on('reset-done', () => {
       showToast('Queue was reset by Admin', 'info');
+    });
+
+    function toggleNav(button) {
+      const nav = button.closest('.navbar');
+      const open = nav.classList.toggle('nav-open');
+      button.setAttribute('aria-expanded', open);
+      button.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    }
+
+    function showWorkflowState(message, type = 'success') {
+      const state = document.getElementById('workflowState');
+      state.className = `workflow-state is-visible ${type}`;
+      state.innerText = message;
+    }
+
+    function closeMoreMenu() {
+      const menu = document.querySelector('.more-actions');
+      if (menu) menu.open = false;
+    }
+
+    document.addEventListener('click', event => {
+      const menu = document.querySelector('.more-actions');
+      if (menu?.open && !menu.contains(event.target)) menu.open = false;
     });
   </script>
 </body>

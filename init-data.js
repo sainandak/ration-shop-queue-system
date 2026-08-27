@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
@@ -37,10 +38,12 @@ if (!fs.existsSync(queueFile)) {
   fs.writeFileSync(queueFile, JSON.stringify(initialQueue, null, 2), 'utf8');
 }
 
+const initialPin = process.env.ADMIN_PIN || crypto.randomInt(100000, 1000000).toString();
+const pinSalt = crypto.randomBytes(16).toString('hex');
 const initialSettings = {
   shopName: 'Sri Lakshmi Fair Price Shop (#042)',
-  village: 'Village Center',
-  adminPin: '1234',
+  village: '',
+  adminPinHash: `${pinSalt}:${crypto.scryptSync(initialPin, pinSalt, 64).toString('hex')}`,
   autoAnnounceOnScan: true,
   chimeEnabled: true,
   speechRate: 0.9,
@@ -50,6 +53,7 @@ const initialSettings = {
 const settingsFile = path.join(dataDir, 'settings.json');
 if (!fs.existsSync(settingsFile)) {
   fs.writeFileSync(settingsFile, JSON.stringify(initialSettings, null, 2), 'utf8');
+  console.log(`Initial staff PIN: ${initialPin}`);
 }
 
 console.log('Initial data files created successfully!');
