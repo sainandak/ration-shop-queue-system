@@ -503,15 +503,19 @@
           <div class="serving-details" id="activeDetails">--</div>
 
           <div class="counter-actions">
-            <button id="callNextBtn" class="btn btn-primary primary-counter-action" onclick="callNext()">
-              <span aria-hidden="true">▶</span> Call Next Beneficiary
+            <!-- Unified Primary Queue Action Button (Dynamically toggles between Call Next and Complete & Next) -->
+            <button id="mainActionBtn" class="btn btn-primary primary-counter-action" onclick="callNext()">
+              <span aria-hidden="true">▶</span> Call Next Beneficiary <small style="opacity: 0.8; font-size: 0.75rem; margin-left: 3px;">[Enter]</small>
             </button>
+            <button id="callNextBtn" style="display: none;" onclick="callNext()"></button>
+            <button id="completeNextBtn" style="display: none;" onclick="completeCurrent()"></button>
+
             <div class="counter-secondary">
-              <button id="completeNextBtn" class="btn btn-success" onclick="completeCurrent()" disabled title="Complete current beneficiary and call next waiting token (Shortcut: Enter)">
-                <span aria-hidden="true">✓</span> Complete & Next <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[Enter]</small>
-              </button>
               <button id="repeatBtn" class="btn btn-repeat" onclick="repeatAnnouncement()" disabled title="Announce / Call active token on audio speaker & display (Shortcut: Space or R)">
                 <span aria-hidden="true">📢</span> Call Token <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[Space]</small>
+              </button>
+              <button id="skipBtn" class="btn btn-danger" onclick="skipCurrent()" disabled title="Skip current beneficiary as absent (Shortcut: S)">
+                ✕ Skip <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[S]</small>
               </button>
               <details class="more-actions">
                 <summary class="btn btn-outline" aria-haspopup="true">More ▾</summary>
@@ -519,36 +523,97 @@
                   <button id="completeOnlyBtn" class="btn btn-outline" onclick="closeMoreMenu(); exitCurrentOnly()" disabled>
                     ✓ Complete without next
                   </button>
-                  <button id="skipBtn" class="btn btn-danger" onclick="closeMoreMenu(); skipCurrent()" disabled title="Skip as absent (Shortcut: S)">
-                    ✕ Skip as absent <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[S]</small>
-                  </button>
                 </div>
               </details>
+            </div>
+          </div>
+
+          <!-- Quick Up-Next Queue Preview Bar -->
+          <div id="quickQueueBar" style="margin-top: 0.85rem; padding: 0.5rem 0.8rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; display: flex; align-items: center; gap: 0.5rem; overflow-x: auto;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; white-space: nowrap;">Up Next:</span>
+            <div id="quickQueueChips" style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: nowrap;">
+              <span style="font-size: 0.8rem; color: #cbd5e1; font-style: italic;">Queue is empty</span>
             </div>
           </div>
         </div>
 
         <div id="workflowState" class="workflow-state" role="status" aria-live="polite"></div>
 
-        <!-- Scanner Card with 4 Fast Entry Modes -->
+        <!-- Simplified 2-Mode Card Entry -->
         <div class="card">
-          <!-- Mode Tabs -->
+          <!-- Mode Tabs: 2 Clear Choices -->
           <div class="mode-tab-bar" role="tablist" aria-label="Card entry method">
-            <button class="tab-btn active" role="tab" aria-selected="true" id="btnModeKeypad" onclick="setEntryMode('keypad')">Keypad</button>
-            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeSnap" onclick="setEntryMode('snap')">Scan QR</button>
-            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeSearch" onclick="setEntryMode('search')">Search</button>
-            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeLive" onclick="setEntryMode('live')">Camera</button>
+            <button class="tab-btn active" role="tab" aria-selected="true" id="btnModeScan" onclick="setEntryMode('scan')">
+              📷 Scan Card QR
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" id="btnModeManual" onclick="setEntryMode('manual')">
+              🔢 Search & Keypad
+            </button>
+            <!-- Hidden compatibility aliases -->
+            <button id="btnModeKeypad" style="display: none;" onclick="setEntryMode('manual')"></button>
+            <button id="btnModeSnap" style="display: none;" onclick="setEntryMode('scan')"></button>
+            <button id="btnModeSearch" style="display: none;" onclick="setEntryMode('manual')"></button>
+            <button id="btnModeLive" style="display: none;" onclick="setEntryMode('scan')"></button>
           </div>
 
-          <!-- 1. TOUCH NUMBER PAD MODE (Fastest & 100% Reliable on all Phones) -->
-          <div id="modeKeypad">
-            <div style="background: #f8fafc; border: 2px solid var(--primary); border-radius: 12px; padding: 0.75rem; text-align: center; margin-bottom: 0.75rem;">
-              <div style="font-size: 0.75rem; color: var(--gray-600); font-weight: 700; letter-spacing: 1px;">ENTER RATION CARD NUMBER:</div>
-              <div id="keypadDisplay" style="font-size: 1.85rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; min-height: 2.2rem; display: flex; align-items: center; justify-content: center;">RC-</div>
-              <div id="keypadCardPreview" style="font-size: 0.9rem; font-weight: 600; color: #0284c7; min-height: 1.3rem;">Type number (e.g. 1 for RC-0001)</div>
+          <!-- MODE 1: SCAN CARD (Live Camera + 1-Tap Mobile Camera Snap) -->
+          <div id="modeScan">
+            <div style="display: flex; gap: 0.5rem; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+              <button id="toggleCameraBtn" class="btn btn-primary" style="flex: 1; padding: 0.5rem 0.85rem; font-size: 0.9rem;" onclick="toggleCamera()">
+                ▶️ Start Camera
+              </button>
+              <button class="btn btn-success" style="flex: 1; padding: 0.5rem 0.85rem; font-size: 0.9rem;" onclick="document.getElementById('qrFileInput').click()">
+                📸 Snap / File
+              </button>
+              <input type="file" id="qrFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileScan(event)">
             </div>
 
-            <!-- Number Pad Grid -->
+            <div style="margin-bottom: 0.5rem; display: none;" id="cameraSelectWrapper">
+              <select id="cameraSelect" class="input-control" style="padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="changeCamera(this.value)">
+                <option value="">Detecting cameras...</option>
+              </select>
+            </div>
+
+            <div id="reader" class="scanner-box" style="position: relative; min-height: 220px; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <video id="scannerVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+              <canvas id="scannerCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
+              
+              <div id="cameraIdleOverlay" style="text-align: center; color: white; padding: 1.75rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.35rem;">📹</div>
+                <div style="font-weight: 700; font-size: 1.05rem;">Live QR Scanner</div>
+                <div style="font-size: 0.82rem; color: #94a3b8; margin-top: 4px;">Tap "Start Camera" or "Snap / File"</div>
+              </div>
+
+              <div id="targetReticle" style="display: none; position: absolute; width: 180px; height: 180px; border: 3px solid #22c55e; border-radius: 16px; box-shadow: 0 0 0 4000px rgba(0,0,0,0.4); pointer-events: none;">
+                <div style="position: absolute; width: 100%; height: 2px; background: #ef4444; top: 50%; box-shadow: 0 0 8px #ef4444;"></div>
+              </div>
+            </div>
+            
+            <div id="scanStatus" style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.5rem; text-align: center;">
+              Aim camera at beneficiary's Ration Card QR code.
+            </div>
+          </div>
+
+          <!-- MODE 2: UNIFIED SEARCH & KEYPAD -->
+          <div id="modeManual" style="display: none;">
+            <!-- Fast Search Input -->
+            <div style="margin-bottom: 0.75rem;">
+              <label class="input-label" for="manualCardInput" style="margin-bottom: 0.25rem;">🔍 Search Name, Telugu name, or Card #:</label>
+              <div style="display: flex; gap: 0.5rem; position: relative;">
+                <input type="text" id="manualCardInput" class="input-control" placeholder="Type Name or RC#..." autocomplete="off" oninput="handleManualInput(this.value)">
+                <button class="btn btn-primary" onclick="handleManualSubmit()">Issue</button>
+              </div>
+              <div id="suggestionsDropdown" style="display: none; background: white; border: 2px solid var(--primary); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 200; max-height: 200px; overflow-y: auto; margin-top: 4px;"></div>
+              <div id="quickChipsContainer" style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem;"></div>
+            </div>
+
+            <!-- Touch Number Pad -->
+            <div style="background: #f8fafc; border: 2px solid var(--primary); border-radius: 12px; padding: 0.6rem; text-align: center; margin-bottom: 0.65rem;">
+              <div style="font-size: 0.72rem; color: var(--gray-600); font-weight: 700; letter-spacing: 1px;">OR TAP NUMBER ON KEYPAD:</div>
+              <div id="keypadDisplay" style="font-size: 1.75rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; min-height: 2.1rem; display: flex; align-items: center; justify-content: center;">RC-</div>
+              <div id="keypadCardPreview" style="font-size: 0.88rem; font-weight: 600; color: #0284c7; min-height: 1.25rem;">Type number (e.g. 1 for RC-0001)</div>
+            </div>
+
             <div class="keypad-grid">
               <button class="keypad-btn" onclick="pressKeypad('1')">1</button>
               <button class="keypad-btn" onclick="pressKeypad('2')">2</button>
@@ -564,75 +629,9 @@
               <button class="keypad-btn keypad-btn-clear" onclick="pressKeypad('RESET')">Clear</button>
             </div>
 
-            <button id="issueTokenBtn" class="btn btn-primary btn-lg btn-block" style="font-size: 1.1rem; padding: 0.75rem;" onclick="submitKeypad()" disabled>
+            <button id="issueTokenBtn" class="btn btn-primary btn-lg btn-block" style="font-size: 1.05rem; padding: 0.7rem; margin-top: 0.6rem;" onclick="submitKeypad()" disabled>
               Select a beneficiary first
             </button>
-          </div>
-
-          <!-- 2. SNAP PHOTO MODE (1-Tap Native Phone Camera) -->
-          <div id="modeSnap" style="display: none; text-align: center; padding: 1.25rem 0.5rem;">
-            <div style="font-size: 3rem; margin-bottom: 0.5rem;">📸</div>
-            <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">Snap Photo with Phone Camera</h3>
-            <p style="color: var(--gray-600); font-size: 0.85rem; margin-bottom: 1rem;">
-              Opens your phone's native camera app. Takes a photo of the card QR and decodes in 0.1 seconds!
-            </p>
-            <button class="btn btn-success btn-lg btn-block" style="padding: 0.85rem; font-size: 1.1rem;" onclick="document.getElementById('qrFileInput').click()">
-              📸 Open Camera & Snap QR
-            </button>
-            <input type="file" id="qrFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileScan(event)">
-          </div>
-
-          <!-- 3. SEARCH ROSTER MODE -->
-          <div id="modeSearch" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <label class="input-label" for="manualCardInput" style="margin-bottom: 0;">⌨️ Search by Name / RC#:</label>
-            </div>
-            
-            <div style="display: flex; gap: 0.5rem; position: relative;">
-              <input type="text" id="manualCardInput" class="input-control" placeholder="Type Name, Telugu name, or RC#..." autocomplete="off" oninput="handleManualInput(this.value)">
-              <button class="btn btn-primary" onclick="handleManualSubmit()">Issue</button>
-            </div>
-
-            <div id="suggestionsDropdown" style="display: none; background: white; border: 2px solid var(--primary); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 200; max-height: 200px; overflow-y: auto; margin-top: 4px;"></div>
-
-            <div style="margin-top: 0.75rem;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; margin-bottom: 0.35rem;">Quick Select:</div>
-              <div id="quickChipsContainer" style="display: flex; gap: 0.35rem; flex-wrap: wrap;"></div>
-            </div>
-          </div>
-
-          <!-- 4. LIVE WEBCAM STREAM MODE -->
-          <div id="modeLive" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <button id="toggleCameraBtn" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="toggleCamera()">
-                ▶️ Start Webcam
-              </button>
-            </div>
-
-            <div style="margin-bottom: 0.5rem; display: none;" id="cameraSelectWrapper">
-              <select id="cameraSelect" class="input-control" style="padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="changeCamera(this.value)">
-                <option value="">Detecting cameras...</option>
-              </select>
-            </div>
-
-            <div id="reader" class="scanner-box" style="position: relative; min-height: 220px; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-              <video id="scannerVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
-              <canvas id="scannerCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
-              
-              <div id="cameraIdleOverlay" style="text-align: center; color: white; padding: 2rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📹</div>
-                <div style="font-weight: 700;">Webcam Stream</div>
-                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">Tap "Start Webcam"</div>
-              </div>
-
-              <div id="targetReticle" style="display: none; position: absolute; width: 180px; height: 180px; border: 3px solid #22c55e; border-radius: 16px; box-shadow: 0 0 0 4000px rgba(0,0,0,0.4); pointer-events: none;">
-                <div style="position: absolute; width: 100%; height: 2px; background: #ef4444; top: 50%; box-shadow: 0 0 8px #ef4444;"></div>
-              </div>
-            </div>
-            
-            <div id="scanStatus" style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.5rem; text-align: center;">
-              Tap <strong>'▶️ Start Webcam'</strong> to scan.
-            </div>
           </div>
 
         </div>
@@ -864,21 +863,24 @@
     let currentKeypadDigits = '';
 
     function setEntryMode(mode) {
-      document.getElementById('modeKeypad').style.display = mode === 'keypad' ? 'block' : 'none';
-      document.getElementById('modeSnap').style.display = mode === 'snap' ? 'block' : 'none';
-      document.getElementById('modeSearch').style.display = mode === 'search' ? 'block' : 'none';
-      document.getElementById('modeLive').style.display = mode === 'live' ? 'block' : 'none';
+      const isScan = mode === 'scan' || mode === 'live' || mode === 'snap';
+      const scanEl = document.getElementById('modeScan');
+      const manualEl = document.getElementById('modeManual');
+      if (scanEl) scanEl.style.display = isScan ? 'block' : 'none';
+      if (manualEl) manualEl.style.display = isScan ? 'none' : 'block';
 
-      document.getElementById('btnModeKeypad').classList.toggle('active', mode === 'keypad');
-      document.getElementById('btnModeSnap').classList.toggle('active', mode === 'snap');
-      document.getElementById('btnModeSearch').classList.toggle('active', mode === 'search');
-      document.getElementById('btnModeLive').classList.toggle('active', mode === 'live');
-      document.getElementById('btnModeKeypad').setAttribute('aria-selected', mode === 'keypad');
-      document.getElementById('btnModeSnap').setAttribute('aria-selected', mode === 'snap');
-      document.getElementById('btnModeSearch').setAttribute('aria-selected', mode === 'search');
-      document.getElementById('btnModeLive').setAttribute('aria-selected', mode === 'live');
+      const btnScan = document.getElementById('btnModeScan');
+      const btnManual = document.getElementById('btnModeManual');
+      if (btnScan) {
+        btnScan.classList.toggle('active', isScan);
+        btnScan.setAttribute('aria-selected', isScan);
+      }
+      if (btnManual) {
+        btnManual.classList.toggle('active', !isScan);
+        btnManual.setAttribute('aria-selected', !isScan);
+      }
 
-      if (mode !== 'live' && isCameraRunning) {
+      if (!isScan && isCameraRunning) {
         stopCamera();
       }
     }
@@ -1679,11 +1681,48 @@
       document.getElementById('countSkipped').innerText = data.skippedCount;
 
       const hasServing = Boolean(data.serving);
-      document.getElementById('callNextBtn').disabled = hasServing || data.waitingCount === 0;
-      document.getElementById('callNextBtn').innerText = hasServing ? 'Finish current token first' : 'Call Next Beneficiary';
-      ['completeNextBtn', 'repeatBtn', 'completeOnlyBtn', 'skipBtn'].forEach(id => {
-        document.getElementById(id).disabled = !hasServing;
-      });
+
+      // Update Unified 1-Click Main Action Button
+      const mainBtn = document.getElementById('mainActionBtn');
+      if (mainBtn) {
+        if (hasServing) {
+          mainBtn.disabled = false;
+          mainBtn.className = 'btn btn-success primary-counter-action';
+          mainBtn.innerHTML = '<span aria-hidden="true">✓</span> Complete & Call Next <small style="opacity: 0.8; font-size: 0.75rem; margin-left: 4px;">[Enter]</small>';
+          mainBtn.onclick = completeCurrent;
+        } else {
+          mainBtn.disabled = data.waitingCount === 0;
+          mainBtn.className = 'btn btn-primary primary-counter-action';
+          mainBtn.innerHTML = '<span aria-hidden="true">▶</span> Call Next Beneficiary <small style="opacity: 0.8; font-size: 0.75rem; margin-left: 4px;">[Enter]</small>';
+          mainBtn.onclick = callNext;
+        }
+      }
+
+      // Update Secondary Action Buttons
+      const repeatBtn = document.getElementById('repeatBtn');
+      if (repeatBtn) repeatBtn.disabled = !hasServing;
+      const skipBtn = document.getElementById('skipBtn');
+      if (skipBtn) skipBtn.disabled = !hasServing;
+      const completeOnlyBtn = document.getElementById('completeOnlyBtn');
+      if (completeOnlyBtn) completeOnlyBtn.disabled = !hasServing;
+
+      // Keep hidden backward-compatible aliases updated
+      const callNextBtn = document.getElementById('callNextBtn');
+      if (callNextBtn) callNextBtn.disabled = hasServing || data.waitingCount === 0;
+      const completeNextBtn = document.getElementById('completeNextBtn');
+      if (completeNextBtn) completeNextBtn.disabled = !hasServing;
+
+      // Update Quick Up-Next Queue Preview Bar
+      const quickChips = document.getElementById('quickQueueChips');
+      if (quickChips) {
+        if (!data.waiting || data.waiting.length === 0) {
+          quickChips.innerHTML = '<span style="font-size: 0.8rem; color: #94a3b8; font-style: italic;">Queue is currently empty</span>';
+        } else {
+          quickChips.innerHTML = data.waiting.slice(0, 4).map(w => 
+            `<span style="background: rgba(30, 58, 138, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); color: #e0f2fe; padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap;">#${w.tokenNo} ${escapeHtml(w.nameEn.split(' ')[0])}</span>`
+          ).join('') + (data.waiting.length > 4 ? `<span style="font-size: 0.75rem; color: #94a3b8; white-space: nowrap;">+${data.waiting.length - 4} more</span>` : '');
+        }
+      }
 
       renderQueueTable();
     });
@@ -1730,14 +1769,10 @@
       if (isInput) return; // Do not trigger queue actions when typing inside inputs
 
       if (e.key === 'Enter') {
-        const completeBtn = document.getElementById('completeNextBtn');
-        const callBtn = document.getElementById('callNextBtn');
-        if (completeBtn && !completeBtn.disabled) {
+        const mainBtn = document.getElementById('mainActionBtn');
+        if (mainBtn && !mainBtn.disabled) {
           e.preventDefault();
-          completeBtn.click();
-        } else if (callBtn && !callBtn.disabled) {
-          e.preventDefault();
-          callBtn.click();
+          mainBtn.click();
         }
       } else if (e.code === 'Space' || e.key === 'r' || e.key === 'R') {
         const repeatBtn = document.getElementById('repeatBtn');
