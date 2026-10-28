@@ -457,11 +457,20 @@
       <div class="shop-title" id="shopNameDisplay">Fair Price Shop (#03)</div>
     </div>
     <div class="header-actions">
+      <select id="voiceSpeedSelect" class="btn-nav-back" style="background: rgba(30, 41, 59, 0.9); color: #cbd5e1; border-color: #475569; cursor: pointer; padding: 0.35rem 0.5rem; font-size: 0.8rem;" title="Adjust Voice Announcement Speed">
+        <option value="0.76">Speed: 0.75x</option>
+        <option value="0.86" selected>Speed: 0.85x (Normal)</option>
+        <option value="0.95">Speed: 0.95x</option>
+        <option value="1.05">Speed: 1.0x</option>
+      </select>
       <button class="btn-nav-back" style="background: #0284c7; color: white; border-color: #0369a1; cursor: pointer;" onclick="replayCurrentVoice()" title="Re-announce in Telugu & English">
         <span>📢 Replay Voice / రీ-అనౌన్స్</span>
       </button>
       <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
         <span aria-hidden="true">🔊</span> <span id="audioBtnText">Enable Voice / ఆడియో ఆన్</span>
+      </button>
+      <button id="fullscreenBtn" class="btn-nav-back" style="background: rgba(51, 65, 85, 0.8); color: white; cursor: pointer;" onclick="toggleFullscreen()" title="Toggle TV Fullscreen">
+        <span aria-hidden="true">⛶</span> <span id="fullscreenBtnText">Fullscreen</span>
       </button>
       <div class="clock" id="liveClock">--:--:--</div>
     </div>
@@ -507,6 +516,9 @@
             <span id="nextSNo">S.No: --</span>
             <span id="nextCardType">Type: --</span>
             <span id="nextCardLast5">Card: --</span>
+          </div>
+          <div id="estWaitBox" style="margin-top: 0.65rem; padding: 0.35rem 0.75rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.85rem; color: #a7f3d0; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>⏱️</span> <span id="nextWaitTime">Est. Wait: Queue Clear</span>
           </div>
         </div>
 
@@ -777,31 +789,48 @@
       const last5DigitsPhonetic = last5.split('').map(d => phoneticDigitWords[d] || d).join(', ');
 
       const teluguName = data.nameTe ? data.nameTe : data.nameEn;
+      const baseRate = parseFloat(document.getElementById('voiceSpeedSelect')?.value) || 0.86;
 
       // Small pause after bell chime
       await new Promise(r => setTimeout(r, 650));
 
       // 1. PRIMARY TELUGU ANNOUNCEMENT (MAIN CALL)
       if (teluguVoice) {
-        await speakUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguName}, కార్డు చివర నంబర్లు: ${last5DigitsSpelledTe}`, 'te-IN', teluguVoice, 0.82);
+        await speakUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguName}, కార్డు చివర నంబర్లు: ${last5DigitsSpelledTe}`, 'te-IN', teluguVoice, baseRate * 0.96);
       } else {
-        await speakUtterance(`Token Sankhya ${data.tokenNo}, ${data.nameEn}, Card chivara sankhyalu: ${last5DigitsPhonetic}`, 'en-IN', englishVoice, 0.85);
+        await speakUtterance(`Token Sankhya ${data.tokenNo}, ${data.nameEn}, Card chivara sankhyalu: ${last5DigitsPhonetic}`, 'en-IN', englishVoice, baseRate);
       }
 
       await new Promise(r => setTimeout(r, 450));
 
       // 2. TELUGU RE-CALL (REPEATING TELUGU MAIN NAME & TOKEN)
       if (teluguVoice) {
-        await speakUtterance(`టోకెన్ ${data.tokenNo}, ${teluguName}, దయచేసి కౌంటర్ వద్దకు రండి`, 'te-IN', teluguVoice, 0.85);
+        await speakUtterance(`టోకెన్ ${data.tokenNo}, ${teluguName}, దయచేసి కౌంటర్ వద్దకు రండి`, 'te-IN', teluguVoice, baseRate);
       } else {
-        await speakUtterance(`Token ${data.tokenNo}, ${data.nameEn}, dayachesi counter vaddaku randi`, 'en-IN', englishVoice, 0.88);
+        await speakUtterance(`Token ${data.tokenNo}, ${data.nameEn}, dayachesi counter vaddaku randi`, 'en-IN', englishVoice, baseRate * 1.02);
       }
 
       await new Promise(r => setTimeout(r, 400));
 
       // 3. ENGLISH CONFIRMATION ANNOUNCEMENT
-      await speakUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in: ${last5DigitsSpelledEn}`, 'en-IN', englishVoice, 0.90);
+      await speakUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in: ${last5DigitsSpelledEn}`, 'en-IN', englishVoice, baseRate * 1.04);
     }
+
+    // Toggle TV Fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen err:', err.message));
+        }
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const textEl = document.getElementById('fullscreenBtnText');
+      if (textEl) textEl.innerText = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+    });
 
     // Visual Flash Animation
     function triggerVisualAlert() {
@@ -815,7 +844,8 @@
       }, 600);
     }
 
-    function renderNextCard(nextItem) {
+    function renderNextCard(nextItem, waitingCount = 0) {
+      const waitTimeEl = document.getElementById('nextWaitTime');
       if (nextItem) {
         const digits = (nextItem.rationNo || '').replace(/\D/g, '');
         const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
@@ -826,6 +856,9 @@
         document.getElementById('nextSNo').innerText = nextItem.sNo ? `S.No: #${nextItem.sNo}` : 'S.No: --';
         document.getElementById('nextCardType').innerText = `Type: ${nextItem.cardType || 'FSC'}`;
         document.getElementById('nextCardLast5').innerText = `Card: ...${last5}`;
+
+        const estMinutes = Math.max(1, Math.round(waitingCount * 2));
+        if (waitTimeEl) waitTimeEl.innerText = `Est. Wait: ~${estMinutes} mins (${waitingCount} waiting)`;
       } else {
         document.getElementById('nextTokenNum').innerText = '--';
         document.getElementById('nextNameTe').innerText = 'క్యూలో ఎవరూ లేరు';
@@ -833,6 +866,7 @@
         document.getElementById('nextSNo').innerText = 'S.No: --';
         document.getElementById('nextCardType').innerText = 'Type: --';
         document.getElementById('nextCardLast5').innerText = 'Card: --';
+        if (waitTimeEl) waitTimeEl.innerText = 'Est. Wait: Queue Clear';
       }
     }
 
@@ -914,7 +948,7 @@
 
       // Render Next in Line Card
       const nextPerson = (state.waiting && state.waiting.length > 0) ? state.waiting[0] : null;
-      renderNextCard(nextPerson);
+      renderNextCard(nextPerson, state.waiting ? state.waiting.length : 0);
 
       // Render Live Issued Queue List
       renderQueueList(state);
@@ -959,7 +993,7 @@
       document.getElementById('lastCalled').innerText = 'Queue reset just now';
       document.getElementById('upcomingChips').innerHTML = '<span class="chip">Queue empty</span>';
       document.getElementById('servedChips').innerHTML = '<span class="chip">None yet</span>';
-      renderNextCard(null);
+      renderNextCard(null, 0);
       renderQueueList({ waiting: [], completed: [], serving: null });
     });
 

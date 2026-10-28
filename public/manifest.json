@@ -1,15 +1,18 @@
-﻿{
-  "name": "Fair Price Shop (#03) - Ration Queue",
-  "short_name": "RationQueue",
-  "start_url": "/counter",
+{
+  "name": "Smart Ration Queue System",
+  "short_name": "Ration Queue",
+  "description": "Bilingual Ration Shop Token & Queue Management System",
+  "start_url": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0f172a",
-  "theme_color": "#1e40af",
+  "theme_color": "#1e3a8a",
   "icons": [
     {
-      "src": "/icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

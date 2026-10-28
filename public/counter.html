@@ -507,11 +507,11 @@
               <span aria-hidden="true">▶</span> Call Next Beneficiary
             </button>
             <div class="counter-secondary">
-              <button id="completeNextBtn" class="btn btn-success" onclick="completeCurrent()" disabled title="Complete current beneficiary and call next waiting token">
-                <span aria-hidden="true">✓</span> Complete & Next
+              <button id="completeNextBtn" class="btn btn-success" onclick="completeCurrent()" disabled title="Complete current beneficiary and call next waiting token (Shortcut: Enter)">
+                <span aria-hidden="true">✓</span> Complete & Next <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[Enter]</small>
               </button>
-              <button id="repeatBtn" class="btn btn-repeat" onclick="repeatAnnouncement()" disabled title="Announce / Call active token on audio speaker & display">
-                <span aria-hidden="true">📢</span> Call Token
+              <button id="repeatBtn" class="btn btn-repeat" onclick="repeatAnnouncement()" disabled title="Announce / Call active token on audio speaker & display (Shortcut: Space or R)">
+                <span aria-hidden="true">📢</span> Call Token <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[Space]</small>
               </button>
               <details class="more-actions">
                 <summary class="btn btn-outline" aria-haspopup="true">More ▾</summary>
@@ -519,8 +519,8 @@
                   <button id="completeOnlyBtn" class="btn btn-outline" onclick="closeMoreMenu(); exitCurrentOnly()" disabled>
                     ✓ Complete without next
                   </button>
-                  <button id="skipBtn" class="btn btn-danger" onclick="closeMoreMenu(); skipCurrent()" disabled>
-                    ✕ Skip as absent
+                  <button id="skipBtn" class="btn btn-danger" onclick="closeMoreMenu(); skipCurrent()" disabled title="Skip as absent (Shortcut: S)">
+                    ✕ Skip as absent <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[S]</small>
                   </button>
                 </div>
               </details>
@@ -1464,6 +1464,12 @@
       });
     }
 
+    function triggerHaptic(pattern = 40) {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(pattern); } catch (e) {}
+      }
+    }
+
     // Counter Action Controls with Rich Status Feedback
     function callNext() {
       staffFetch('/api/queue/call-next', { method: 'POST' })
@@ -1474,6 +1480,7 @@
             showToast(data.message, 'warning');
           } else if (data.currentToken) {
             playBeep(true);
+            triggerHaptic(45);
             showToast(`📢 Now Calling Token #${data.currentToken.tokenNo} (${data.currentToken.nameEn})`, 'success');
             showWorkflowState(`Now serving token #${data.currentToken.tokenNo}: ${data.currentToken.nameEn}`, 'success');
           } else {
@@ -1496,6 +1503,7 @@
             showToast('⚠️ ' + data.message, 'warning');
           } else {
             playBeep(true);
+            triggerHaptic([30, 40, 30]);
             showToast(`📢 Re-announcing Token #${data.token.tokenNo} on outside display`, 'success');
           }
         })
@@ -1517,6 +1525,7 @@
           return;
         }
         playBeep(true);
+        triggerHaptic(45);
         if (data.nextToken) {
           showToast(`✅ Previous customer done. Now Calling Token #${data.nextToken.tokenNo}`, 'success');
           showWorkflowState(`Completed. Token #${data.nextToken.tokenNo} is now being served.`, 'success');
@@ -1545,6 +1554,7 @@
           return;
         }
         playBeep(true);
+        triggerHaptic(35);
         showToast('🚪 Customer exited. Counter is now free / idle.', 'success');
       })
       .catch(err => {
@@ -1567,6 +1577,7 @@
           return;
         }
         playBeep(false);
+        triggerHaptic(60);
         showToast('⏸️ Token marked as SKIPPED (Absent)', 'warning');
       })
       .catch(err => {
@@ -1584,6 +1595,7 @@
       .then(data => {
         if (data.success) {
           playBeep(true);
+          triggerHaptic(40);
           showToast('📢 Calling Token #' + tokenNo + ' (' + data.currentToken.nameEn + ')', 'success');
         } else {
           playBeep(false);
@@ -1701,6 +1713,45 @@
     document.addEventListener('click', event => {
       const menu = document.querySelector('.more-actions');
       if (menu?.open && !menu.contains(event.target)) menu.open = false;
+    });
+
+    // High-speed Counter Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      const isInput = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+
+      // Escape always closes open modals
+      if (e.key === 'Escape') {
+        ['modalCamera', 'modalAddCard', 'pinModal', 'cameraPermissionModal'].forEach(id => closeModal(id));
+        closeMoreMenu();
+        return;
+      }
+
+      if (isInput) return; // Do not trigger queue actions when typing inside inputs
+
+      if (e.key === 'Enter') {
+        const completeBtn = document.getElementById('completeNextBtn');
+        const callBtn = document.getElementById('callNextBtn');
+        if (completeBtn && !completeBtn.disabled) {
+          e.preventDefault();
+          completeBtn.click();
+        } else if (callBtn && !callBtn.disabled) {
+          e.preventDefault();
+          callBtn.click();
+        }
+      } else if (e.code === 'Space' || e.key === 'r' || e.key === 'R') {
+        const repeatBtn = document.getElementById('repeatBtn');
+        if (repeatBtn && !repeatBtn.disabled) {
+          e.preventDefault();
+          repeatBtn.click();
+        }
+      } else if (e.key === 's' || e.key === 'S') {
+        const skipBtn = document.getElementById('skipBtn');
+        if (skipBtn && !skipBtn.disabled) {
+          e.preventDefault();
+          skipBtn.click();
+        }
+      }
     });
   </script>
 </body>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#grad)"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="12"/>
+  <!-- Ration Card Emblem / Wheat -->
+  <g transform="translate(156, 120)">
+    <text x="100" y="160" font-size="160" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">🌾</text>
+    <rect x="10" y="190" width="180" height="40" rx="12" fill="url(#gold)"/>
+    <text x="100" y="218" font-size="22" font-weight="900" fill="#0f172a" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" letter-spacing="2">RATION</text>
+  </g>
+</svg>
