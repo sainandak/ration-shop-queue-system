@@ -103,6 +103,10 @@ async function runTests() {
   const reportCsv = await request(BASE + '/api/reports/today-csv');
   console.log('✅ Daily Report CSV Export:', reportCsv.status === 200 && reportCsv.raw.includes(c1.nameEn) ? 'PASS' : 'FAIL');
 
+  // Test Cleanup: Reset queue to pristine state
+  await request(BASE + '/api/queue/reset', { method: 'POST' }, { pin: '1234', clearHistory: true });
+  console.log('✅ Clean state restored after tests.');
+
   console.log('--- ALL BACKEND AND QUEUE TESTS COMPLETED SUCCESSFULLY! ---');
   process.exit(0);
 }

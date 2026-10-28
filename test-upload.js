@@ -1,4 +1,4 @@
-﻿const xlsx = require('xlsx');
+const xlsx = require('xlsx');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -42,6 +42,9 @@ const req = http.request('http://localhost:3000/api/cards/upload', {
   res.on('end', () => {
     console.log('Upload response status:', res.statusCode);
     console.log('Upload response body:', respData);
+    if (fs.existsSync(testFile)) {
+      try { fs.unlinkSync(testFile); } catch (e) {}
+    }
   });
 });
 

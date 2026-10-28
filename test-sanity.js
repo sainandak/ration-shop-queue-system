@@ -7,7 +7,8 @@ const javascriptFiles = [
   'test-system.js',
   'test-card-entry.js',
   'test-downloads.js',
-  'test-upload.js'
+  'test-upload.js',
+  'test-tokens-live.js'
 ];
 
 for (const file of javascriptFiles) {

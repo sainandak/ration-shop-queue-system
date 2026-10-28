@@ -13,6 +13,7 @@ const selfsigned = require('selfsigned');
 const crypto = require('crypto');
 
 const app = express();
+app.set('trust proxy', 1);
 const httpServer = http.createServer(app);
 
 // Generate self-signed SSL certificate for Mobile HTTPS Camera access
@@ -1125,6 +1126,9 @@ httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
 });
 
 if (httpsServer) {
+  httpsServer.on('error', (err) => {
+    console.warn(`Local HTTPS server note (${err.code || err.message}): HTTPS is handled by cloud platform.`);
+  });
   httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
     const ips = getLocalIpAddresses();
     console.log('--------------------------------------------------');
@@ -1135,3 +1139,18 @@ if (httpsServer) {
     console.log('==================================================');
   });
 }
+
+function handleShutdown(signal) {
+  console.log(`\nReceived ${signal}. Gracefully saving state and shutting down...`);
+  try {
+    saveJson(QUEUE_FILE, queueState);
+    saveJson(CARDS_FILE, cards);
+    saveJson(SETTINGS_FILE, settings);
+  } catch (err) {
+    console.error('Error during shutdown save:', err.message);
+  }
+  process.exit(0);
+}
+
+process.on('SIGINT', () => handleShutdown('SIGINT'));
+process.on('SIGTERM', () => handleShutdown('SIGTERM'));

@@ -72,6 +72,10 @@ function req(path, method = 'GET', body = null, headers = {}) {
   console.log('   🔊 English Speech: "Token number ' + serving.tokenNo + ', ' + serving.nameEn + ', Card ending in: ' + enDigits + '"');
   console.log('   🔊 Telugu Speech:  "టోకెన్ సంఖ్య ' + serving.tokenNo + ', ' + serving.nameTe + ', కార్డు చివర నంబర్లు: ' + teDigits + '"');
 
+  // Clean up test state
+  await req('/api/queue/reset', 'POST', { pin: '1234', clearHistory: true });
+  console.log('\n   🧹 Queue reset to clean state after test run.');
+
   console.log('\n=====================================================');
   console.log('  ✅ ALL TOKEN ISSUING & QUEUE FLOW CHECKS PASSED!');
   console.log('=====================================================');
