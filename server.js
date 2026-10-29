@@ -1133,7 +1133,7 @@ httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
   });
 });
 
-if (httpsServer) {
+if (httpsServer && !process.env.RENDER) {
   httpsServer.on('error', (err) => {
     console.warn(`Local HTTPS server note (${err.code || err.message}): HTTPS is handled by cloud platform.`);
   });

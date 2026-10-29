@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ration-queue-system
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_PIN
+        sync: false
