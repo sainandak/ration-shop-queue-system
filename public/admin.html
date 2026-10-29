@@ -489,10 +489,15 @@
         This will archive today's queue and reset token counter back to 1.
       </p>
 
-      <div class="input-group">
+      <div class="input-group" style="margin-bottom: 0.75rem;">
         <label class="input-label">Enter admin PIN</label>
         <input type="password" id="resetPinInput" class="input-control" placeholder="Enter PIN" maxlength="10">
       </div>
+
+      <label style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; cursor: pointer; background: #fef2f2; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid #fecaca; color: #991b1b; font-weight: 600;">
+        <input type="checkbox" id="clearHistoryCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+        <span>Also reset "DISTRIBUTED / ISSUED" to 0 (New Month / Fresh Cycle)</span>
+      </label>
 
       <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem;">
         <button class="btn btn-outline" onclick="closeModal('resetModal')">Cancel</button>
@@ -1066,6 +1071,7 @@
     // Reset Day
     function openResetModal() {
       document.getElementById('resetPinInput').value = '';
+      if (document.getElementById('clearHistoryCheckbox')) document.getElementById('clearHistoryCheckbox').checked = false;
       document.getElementById('resetModal').style.display = 'flex';
       setTimeout(() => document.getElementById('resetPinInput').focus(), 100);
     }
@@ -1073,17 +1079,21 @@
     function confirmResetDay() {
       const pin = document.getElementById('resetPinInput').value.trim();
       if (!pin) return alert('Enter Admin PIN');
+      const clearHistory = document.getElementById('clearHistoryCheckbox') ? document.getElementById('clearHistoryCheckbox').checked : false;
 
       fetch('/api/queue/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin })
+        body: JSON.stringify({ pin, clearHistory })
       })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
           closeModal('resetModal');
-          alert('Queue reset successfully! Token number starts from 1.');
+          fetchMonthlyStats();
+          alert(clearHistory 
+            ? 'Queue & Monthly Tracker reset successfully! Distributed count is 0 and Token starts from 1.' 
+            : 'Queue reset successfully! Token number starts from 1.');
         } else {
           alert(data.message);
         }
