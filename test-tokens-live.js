@@ -61,16 +61,10 @@ function req(path, method = 'GET', body = null, headers = {}) {
   console.log('   👉 NEW NEXT IN LINE:        Token #' + qState2.waiting[0].tokenNo + ' - ' + qState2.waiting[0].nameEn + ' (' + qState2.waiting[0].nameTe + ')');
   console.log('   👉 REMAINING WAITING:       ' + qState2.waitingCount);
 
-  console.log('\n5. VERIFYING SINGLE-DIGIT VOICE ANNOUNCEMENT FORMAT...');
+  console.log('\n5. VERIFYING SIMPLIFIED SEQUENCE & NAME VOICE FORMAT (NO CARD NUMBERS)...');
   const serving = qState2.serving;
-  const digits = (serving.rationNo || '').replace(/\D/g, '');
-  const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
-  const enDigits = last5.split('').join(', ');
-  const teWords = { '0': 'సున్నా', '1': 'ఒకటి', '2': 'రెండు', '3': 'మూడు', '4': 'నాలుగు', '5': 'ఐదు', '6': 'ఆరు', '7': 'ఏడు', '8': 'ఎనిమిది', '9': 'తొమ్మిది' };
-  const teDigits = last5.split('').map(d => teWords[d] || d).join(', ');
-
-  console.log('   🔊 English Speech: "Token number ' + serving.tokenNo + ', ' + serving.nameEn + ', Card ending in: ' + enDigits + '"');
-  console.log('   🔊 Telugu Speech:  "టోకెన్ సంఖ్య ' + serving.tokenNo + ', ' + serving.nameTe + ', కార్డు చివర నంబర్లు: ' + teDigits + '"');
+  console.log('   🔊 English Speech: "Token number ' + serving.tokenNo + ', ' + serving.nameEn + '"');
+  console.log('   🔊 Telugu Speech:  "టోకెన్ సంఖ్య ' + serving.tokenNo + ', ' + serving.nameTe + '"');
 
   // Clean up test state
   await req('/api/queue/reset', 'POST', { pin: '1234', clearHistory: true });

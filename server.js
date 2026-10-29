@@ -1106,10 +1106,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Socket.io Connection
+// Socket.io Connection & Global Voice Pause Sync
+let isVoicePaused = false;
+
 io.on('connection', (socket) => {
   socket.emit('queue-updated', getQueueStateFormatted());
   socket.emit('settings-updated', settings);
+  socket.emit('voice-pause-updated', { paused: isVoicePaused });
+
+  socket.on('toggle-voice-pause', (data) => {
+    isVoicePaused = typeof data?.paused === 'boolean' ? data.paused : !isVoicePaused;
+    io.emit('voice-pause-updated', { paused: isVoicePaused });
+  });
 });
 
 const HTTP_PORT = process.env.PORT || 3000;

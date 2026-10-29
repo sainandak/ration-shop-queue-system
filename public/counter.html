@@ -517,6 +517,9 @@
               <button id="skipBtn" class="btn btn-danger" onclick="skipCurrent()" disabled title="Skip current beneficiary as absent (Shortcut: S)">
                 ✕ Skip <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 3px;">[S]</small>
               </button>
+              <button id="counterVoicePauseBtn" class="btn btn-outline" style="border-color: rgba(255, 255, 255, 0.3); color: white;" onclick="toggleCounterVoicePause()" title="Pause or Resume Outside Loudspeaker Voice (Shortcut: P)">
+                <span id="counterPauseIcon">⏸️</span> <span id="counterPauseText">Pause Voice</span> <small style="opacity: 0.75; font-size: 0.72rem; margin-left: 2px;">[P]</small>
+              </button>
               <details class="more-actions">
                 <summary class="btn btn-outline" aria-haspopup="true">More ▾</summary>
                 <div class="more-menu" role="menu">
@@ -1731,6 +1734,55 @@
       showToast('Queue was reset by Admin', 'info');
     });
 
+    let isCounterVoicePaused = false;
+
+    function toggleCounterVoicePause() {
+      isCounterVoicePaused = !isCounterVoicePaused;
+      socket.emit('toggle-voice-pause', { paused: isCounterVoicePaused });
+      updateCounterVoicePauseUI();
+    }
+
+    function updateCounterVoicePauseUI() {
+      const btn = document.getElementById('counterVoicePauseBtn');
+      const icon = document.getElementById('counterPauseIcon');
+      const text = document.getElementById('counterPauseText');
+      if (!btn) return;
+      if (isCounterVoicePaused) {
+        btn.style.background = '#15803d';
+        btn.style.borderColor = '#166534';
+        if (icon) icon.innerText = '▶️';
+        if (text) text.innerText = 'Resume Voice';
+        showToast('⏸️ Loudspeaker voice announcement paused', 'info');
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+        if (icon) icon.innerText = '⏸️';
+        if (text) text.innerText = 'Pause Voice';
+        showToast('▶️ Loudspeaker voice announcement active', 'success');
+      }
+    }
+
+    socket.on('voice-pause-updated', (data) => {
+      if (typeof data?.paused === 'boolean') {
+        isCounterVoicePaused = data.paused;
+        const btn = document.getElementById('counterVoicePauseBtn');
+        const icon = document.getElementById('counterPauseIcon');
+        const text = document.getElementById('counterPauseText');
+        if (!btn) return;
+        if (isCounterVoicePaused) {
+          btn.style.background = '#15803d';
+          btn.style.borderColor = '#166534';
+          if (icon) icon.innerText = '▶️';
+          if (text) text.innerText = 'Resume Voice';
+        } else {
+          btn.style.background = 'transparent';
+          btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+          if (icon) icon.innerText = '⏸️';
+          if (text) text.innerText = 'Pause Voice';
+        }
+      }
+    });
+
     function toggleNav(button) {
       const nav = button.closest('.navbar');
       const open = nav.classList.toggle('nav-open');
@@ -1785,6 +1837,12 @@
         if (skipBtn && !skipBtn.disabled) {
           e.preventDefault();
           skipBtn.click();
+        }
+      } else if (e.key === 'p' || e.key === 'P') {
+        const pauseBtn = document.getElementById('counterVoicePauseBtn');
+        if (pauseBtn) {
+          e.preventDefault();
+          pauseBtn.click();
         }
       }
     });

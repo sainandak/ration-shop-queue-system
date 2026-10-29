@@ -466,6 +466,9 @@
       <button class="btn-nav-back" style="background: #0284c7; color: white; border-color: #0369a1; cursor: pointer;" onclick="replayCurrentVoice()" title="Re-announce in Telugu & English">
         <span>📢 Replay Voice / రీ-అనౌన్స్</span>
       </button>
+      <button id="pauseVoiceBtn" class="btn-nav-back" style="background: rgba(217, 119, 6, 0.9); color: white; border-color: #b45309; cursor: pointer;" onclick="toggleAudioPause()" title="Pause or Resume Loudspeaker Voice Announcements">
+        <span aria-hidden="true" id="pauseBtnIcon">⏸️</span> <span id="pauseBtnText">Pause Voice</span>
+      </button>
       <button id="audioToggleBtn" class="audio-btn" onclick="enableAudio()">
         <span aria-hidden="true">🔊</span> <span id="audioBtnText">Enable Voice / ఆడియో ఆన్</span>
       </button>
@@ -565,6 +568,44 @@
     let teluguVoice = null;
     let englishVoice = null;
     let lastAnnouncedData = null;
+    let isAudioPaused = false;
+
+    function toggleAudioPause(forceState = null) {
+      isAudioPaused = typeof forceState === 'boolean' ? forceState : !isAudioPaused;
+      if (isAudioPaused && speechSynth) {
+        speechSynth.cancel();
+      }
+      updatePauseButtonUI();
+      socket.emit('toggle-voice-pause', { paused: isAudioPaused });
+    }
+
+    function updatePauseButtonUI() {
+      const btn = document.getElementById('pauseVoiceBtn');
+      const icon = document.getElementById('pauseBtnIcon');
+      const text = document.getElementById('pauseBtnText');
+      if (!btn) return;
+      if (isAudioPaused) {
+        btn.style.background = '#16a34a'; // Green resume button
+        btn.style.borderColor = '#15803d';
+        if (icon) icon.innerText = '▶️';
+        if (text) text.innerText = 'Resume Voice';
+      } else {
+        btn.style.background = 'rgba(217, 119, 6, 0.9)';
+        btn.style.borderColor = '#b45309';
+        if (icon) icon.innerText = '⏸️';
+        if (text) text.innerText = 'Pause Voice';
+      }
+    }
+
+    socket.on('voice-pause-updated', (data) => {
+      if (typeof data?.paused === 'boolean') {
+        isAudioPaused = data.paused;
+        if (isAudioPaused && speechSynth) {
+          speechSynth.cancel();
+        }
+        updatePauseButtonUI();
+      }
+    });
 
     function replayCurrentVoice() {
       if (!audioUnlocked) enableAudio();
@@ -772,8 +813,9 @@
     }
 
     // MAIN BILINGUAL ANNOUNCEMENT: TELUGU IS FIRST & MAIN, THEN REPEATED
+    // ONLY Token Sequence Number & Cardholder Name (NO card numbers spoken)
     async function makeAnnouncement(data) {
-      if (!audioUnlocked) return;
+      if (!audioUnlocked || isAudioPaused) return;
 
       playChime();
 
@@ -781,27 +823,22 @@
       speechSynth.cancel();
       activeUtterances = [];
 
-      const digits = (data.rationNo || '').replace(/\D/g, '');
-      const last5 = digits.length >= 5 ? digits.slice(-5) : digits;
-
-      const last5DigitsSpelledEn = last5.split('').join(', ');
-      const last5DigitsSpelledTe = last5.split('').map(d => teluguDigitWords[d] || d).join(', ');
-      const last5DigitsPhonetic = last5.split('').map(d => phoneticDigitWords[d] || d).join(', ');
-
       const teluguName = data.nameTe ? data.nameTe : data.nameEn;
       const baseRate = parseFloat(document.getElementById('voiceSpeedSelect')?.value) || 0.86;
 
       // Small pause after bell chime
       await new Promise(r => setTimeout(r, 650));
+      if (isAudioPaused) return;
 
-      // 1. PRIMARY TELUGU ANNOUNCEMENT (MAIN CALL)
+      // 1. PRIMARY TELUGU ANNOUNCEMENT (MAIN CALL: SEQUENCE NO & NAME ONLY)
       if (teluguVoice) {
-        await speakUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguName}, కార్డు చివర నంబర్లు: ${last5DigitsSpelledTe}`, 'te-IN', teluguVoice, baseRate * 0.96);
+        await speakUtterance(`టోకెన్ సంఖ్య ${data.tokenNo}, ${teluguName}`, 'te-IN', teluguVoice, baseRate * 0.96);
       } else {
-        await speakUtterance(`Token Sankhya ${data.tokenNo}, ${data.nameEn}, Card chivara sankhyalu: ${last5DigitsPhonetic}`, 'en-IN', englishVoice, baseRate);
+        await speakUtterance(`Token Sankhya ${data.tokenNo}, ${data.nameEn}`, 'en-IN', englishVoice, baseRate);
       }
 
       await new Promise(r => setTimeout(r, 450));
+      if (isAudioPaused) return;
 
       // 2. TELUGU RE-CALL (REPEATING TELUGU MAIN NAME & TOKEN)
       if (teluguVoice) {
@@ -811,9 +848,10 @@
       }
 
       await new Promise(r => setTimeout(r, 400));
+      if (isAudioPaused) return;
 
-      // 3. ENGLISH CONFIRMATION ANNOUNCEMENT
-      await speakUtterance(`Token number ${data.tokenNo}, ${data.nameEn}, Card ending in: ${last5DigitsSpelledEn}`, 'en-IN', englishVoice, baseRate * 1.04);
+      // 3. ENGLISH CONFIRMATION ANNOUNCEMENT (SEQUENCE NO & NAME ONLY)
+      await speakUtterance(`Token number ${data.tokenNo}, ${data.nameEn}`, 'en-IN', englishVoice, baseRate * 1.04);
     }
 
     // Toggle TV Fullscreen
