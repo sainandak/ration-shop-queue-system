@@ -127,6 +127,7 @@ body {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0.75rem));
   }
 
   .nav-brand {
@@ -169,19 +170,38 @@ body {
   }
 
   .container {
-    padding: 1rem;
+    padding: 1rem 0.75rem;
   }
 
   .card {
-    padding: 1rem;
+    padding: 1rem 0.85rem;
   }
 
   .grid-2 {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Prevent automatic iOS Safari zoom-in on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 0.65rem 0.5rem;
+  }
+
+  .card {
+    padding: 0.85rem 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+
   .btn {
     max-width: 100%;
   }
@@ -205,6 +225,8 @@ body {
   cursor: pointer;
   transition: all 0.15s;
   text-decoration: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
@@ -281,6 +303,8 @@ button:disabled, .btn:disabled {
 
 .table-responsive {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
 table.data-table {

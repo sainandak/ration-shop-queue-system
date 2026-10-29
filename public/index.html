@@ -52,9 +52,20 @@
       .device-card img.qr { display: none; }
       .device-card img.qr.is-visible { display: block; }
       .qr-toggle { display: inline-flex; margin: 0 0 0.85rem; }
-      .stats-row { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
-      .stats-row .stat-box { padding: 0.85rem; }
-      .stats-row .stat-box:first-child { display: none; }
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .stats-row .stat-box { padding: 0.75rem 0.5rem; }
+      .stats-row .stat-box:first-child {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 1rem;
+        text-align: left;
+      }
+      .stats-row .stat-box:first-child .stat-icon { margin-bottom: 0; }
+      .stats-row .stat-box:first-child .stat-value { font-size: 1.5rem; }
+      .stats-row .stat-box:first-child .stat-label { margin-top: 0; }
+      .stat-value { font-size: 1.75rem; }
     }
   </style>
 </head>
@@ -76,8 +87,8 @@
 
   <div class="container">
     <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white;">
-      <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="bannerShop">Smart Ration Card Queue & Token Management</h1>
-      <p style="opacity: 0.9; font-size: 1.05rem;">Bilingual Voice Announcements (Telugu + English) | Live QR Scanner | Zero Waiting Chaos</p>
+      <h1 style="font-size: clamp(1.25rem, 5vw, 1.8rem); margin-bottom: 0.5rem;" id="bannerShop">Smart Ration Card Queue & Token Management</h1>
+      <p style="opacity: 0.9; font-size: clamp(0.88rem, 3.2vw, 1.05rem);">Bilingual Voice Announcements (Telugu + English) | Live QR Scanner | Zero Waiting Chaos</p>
       
       <div class="connection-panel" aria-label="Connection information">
         <strong id="serverLabel">Connection:</strong> <span id="wifiIp">Loading...</span>

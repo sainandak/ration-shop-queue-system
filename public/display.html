@@ -400,10 +400,79 @@
     }
 
     @media (max-width: 768px) {
-      footer {
-        grid-template-columns: 1fr;
+      header {
+        padding: 0.5rem 0.75rem;
+        padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
+      }
+      .shop-title {
+        font-size: 1.05rem;
+      }
+      .header-actions {
+        gap: 0.35rem;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .header-actions .btn-nav-back,
+      .header-actions .audio-btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.78rem;
+      }
+      .hide-mobile {
+        display: none !important;
+      }
+      main {
+        padding: 0.65rem 0.5rem;
+      }
+      .display-layout {
         gap: 0.75rem;
       }
+      .serving-container {
+        padding: 1.25rem 0.75rem;
+        border-radius: 14px;
+      }
+      .token-number {
+        font-size: clamp(3.6rem, 15vw, 6rem);
+      }
+      .name-telugu {
+        font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+      }
+      .name-english {
+        font-size: clamp(1.1rem, 4.8vw, 1.6rem);
+      }
+      .next-card {
+        padding: 0.85rem 1rem;
+      }
+      .next-token-badge {
+        font-size: 1.5rem;
+      }
+      .next-name-te {
+        font-size: 1.25rem;
+      }
+      .next-name-en {
+        font-size: 1rem;
+      }
+      .queue-list-card {
+        max-height: 300px;
+      }
+      footer {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+        padding: 0.5rem 0.75rem;
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0.5rem));
+      }
+      .queue-total strong {
+        font-size: 1.5rem;
+      }
+      .queue-total {
+        min-width: 95px;
+        padding-right: 0.65rem;
+      }
+    }
+
+    button, select, a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .queue-box {
@@ -464,7 +533,7 @@
         <option value="1.05">Speed: 1.0x</option>
       </select>
       <button class="btn-nav-back" style="background: #0284c7; color: white; border-color: #0369a1; cursor: pointer;" onclick="replayCurrentVoice()" title="Re-announce in Telugu & English">
-        <span>📢 Replay Voice / రీ-అనౌన్స్</span>
+        <span>📢 Replay<span class="hide-mobile"> Voice / రీ-అనౌన్స్</span></span>
       </button>
       <button id="pauseVoiceBtn" class="btn-nav-back" style="background: rgba(217, 119, 6, 0.9); color: white; border-color: #b45309; cursor: pointer;" onclick="toggleAudioPause()" title="Pause or Resume Loudspeaker Voice Announcements">
         <span aria-hidden="true" id="pauseBtnIcon">⏸️</span> <span id="pauseBtnText">Pause Voice</span>

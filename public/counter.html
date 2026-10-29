@@ -75,7 +75,7 @@
     .counter-actions { margin-top: 0.9rem; position: relative; }
     .counter-secondary {
       display: grid;
-      grid-template-columns: 1.25fr 1.15fr auto;
+      grid-template-columns: 1.25fr 1fr 1.2fr auto;
       gap: 0.5rem;
       margin-top: 0.65rem;
       align-items: stretch;
@@ -197,6 +197,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .tab-btn.active {
       color: var(--primary);
@@ -230,6 +232,7 @@
       transition: transform 0.05s ease, background 0.1s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .keypad-btn:active {
       transform: scale(0.95);
@@ -367,55 +370,103 @@
       }
     }
 
-    @media (max-width: 540px) {
+    @media (max-width: 600px) {
+      .container {
+        padding: 0.65rem 0.5rem;
+      }
+      .card {
+        padding: 0.95rem 0.8rem;
+        margin-bottom: 0.85rem;
+        border-radius: 12px;
+      }
+      .serving-card {
+        padding: 1.1rem 0.85rem;
+        margin-bottom: 0.85rem;
+        border-radius: 12px;
+      }
+      .serving-token {
+        font-size: clamp(2.4rem, 10vw, 3.2rem);
+        margin: 0.25rem 0;
+      }
+      .serving-name-en {
+        font-size: clamp(1.25rem, 5.2vw, 1.5rem);
+      }
+      .serving-name-te {
+        font-size: clamp(1.05rem, 4.4vw, 1.25rem);
+        margin-top: 0.15rem;
+      }
+      .serving-details {
+        font-size: 0.85rem;
+        margin-top: 0.35rem;
+      }
+      .counter-actions small {
+        display: none !important;
+      }
       .counter-secondary {
         grid-template-columns: 1fr 1fr;
         gap: 0.45rem;
       }
-      .counter-secondary .btn {
-        font-size: 0.86rem;
-        padding: 0.45rem 0.35rem;
+      .counter-secondary .btn,
+      .more-actions summary {
+        font-size: 0.88rem;
+        padding: 0.5rem 0.4rem;
+        min-height: 48px;
+        white-space: nowrap;
       }
       .more-actions {
-        grid-column: 1 / -1;
+        grid-column: auto;
       }
       .more-actions summary {
         width: 100%;
         justify-content: center;
-        min-height: 42px;
       }
       .more-menu {
-        position: static;
-        width: 100%;
-        margin-top: 0.4rem;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 0.45rem);
+        width: 220px;
+        max-width: calc(100vw - 2rem);
+        z-index: 1000;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
       }
       .counter-actions {
-        position: sticky;
-        bottom: 0;
-        z-index: 40;
-        margin: 0.75rem -0.9rem -1.25rem;
-        padding: 0.75rem 0.9rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
-        background: rgba(30, 58, 138, 0.97);
+        margin: 0.75rem -0.85rem -1.1rem;
+        padding: 0.75rem 0.85rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+        background: rgba(30, 58, 138, 0.98);
         border-top: 1px solid rgba(255,255,255,0.25);
-        backdrop-filter: blur(8px);
+        border-radius: 0 0 12px 12px;
+      }
+      .scanner-box {
+        min-height: 190px;
+        height: clamp(190px, 34vh, 260px);
       }
       .form-grid-2 {
         grid-template-columns: 1fr !important;
       }
       .modal {
-        padding: 1.1rem;
+        padding: 1.1rem 1rem;
+        width: 95%;
+        max-height: 88vh;
       }
       .queue-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 0.5rem;
       }
       .queue-tabs {
         width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.25rem;
       }
       .queue-tabs .tab-btn {
         flex: 1;
         text-align: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0.4rem 0.2rem;
+        font-size: 0.82rem;
+        white-space: nowrap;
       }
 
       /* Mobile Card-Style Queue Table */
@@ -450,6 +501,10 @@
         padding-bottom: 0.4rem;
         margin-bottom: 0.35rem;
       }
+      table.data-table td.cell-beneficiary {
+        display: block;
+        padding: 0.35rem 0;
+      }
       table.data-table td.cell-action {
         margin-top: 0.5rem;
         padding-top: 0.45rem;
@@ -457,9 +512,10 @@
       }
       table.data-table td.cell-action .btn {
         width: 100%;
-        min-height: 42px;
+        min-height: 44px;
         font-weight: 700;
         justify-content: center;
+        font-size: 0.95rem;
       }
       .cell-label-mobile {
         display: inline-block;
@@ -1638,7 +1694,7 @@
             <span class="token-pill">#${item.tokenNo}</span>
             <span class="badge ${item.status === 'WAITING' ? 'badge-waiting' : (item.status === 'SERVING' ? 'badge-serving' : 'badge-completed')}">${item.status || 'WAITING'}</span>
           </td>
-          <td>
+          <td class="cell-beneficiary">
             <div style="font-weight: 700; color: var(--gray-800); font-size: 0.95rem;">${escapeHtml(item.nameEn)}</div>
             <div style="font-size: 0.82rem; color: var(--gray-600); margin-top: 1px;">
               ${item.nameTe ? escapeHtml(item.nameTe) + ' • ' : ''}<span style="font-family: monospace; font-weight: 600;">${escapeHtml(item.rationNo)}</span>
