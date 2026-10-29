@@ -11,3 +11,4 @@ services:
         value: production
       - key: ADMIN_PIN
         sync: false
+
